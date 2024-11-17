@@ -11,7 +11,7 @@ Whisp, at it's core, is a stack-based language with support for abstract concept
 
 ### Basics
 
-The most basic hello world program is as follows
+The most basic hello world program is written as
 
 ```
 > ["Hello World!"]out
@@ -21,7 +21,7 @@ Hello World!
 
 Using an application, `[...]`, this program pushes a string literal `"Hello World!` to the `out` stream.
 
-To showcase the power of the language, we can it's code into a variable called `print`.
+To showcase the power of the language, we can it's generalize the code and wrap it into a variable called `print`, i.e. create a function.
 
 ```
 > [<x> . [x]out] . <print>
