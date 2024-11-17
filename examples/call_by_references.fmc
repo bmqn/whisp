@@ -1,0 +1,16 @@
+get = (<@a> . a<x> . [x]a . [x])
+set = (<@a> . <x> . a<_> . [x]a)
+
+write = (<@a> . <x> . [x]a)
+print = ([#out] . write)
+
+double_it = (
+    <@a> . [#a] . get . <x> . [x] . [x] . + . [#a] . set
+)
+
+main = (
+    new<@a> . [5]a .
+    [#a] . get . print .
+    [#a] . double_it .
+    [#a] . get . print
+)

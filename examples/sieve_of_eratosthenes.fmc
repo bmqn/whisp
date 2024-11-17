@@ -1,0 +1,41 @@
+write = (<@a> . <x> . [x]a)
+print = ([#out] . write)
+
+get = (<@a> . a<x> . [x]a . [x])
+
+LinkedList = (
+    <v> . new<@p> . [#null]p . [v]p . [#p]
+)
+push_back = (
+    <v> . <@p> . p<pv> . p<@pp> . [#pp] . (
+        null      -> [v] . LinkedList . <@npp> . [#npp]p . [pv]p,
+        otherwise -> [#pp]p . [pv]p . [#pp] . [v] . push_back
+    )
+)
+traverse = (
+    <f> . <@p> . p<pv> . p<@pp> . [#pp]p . [pv]p . [#pp] . (
+        null      -> [pv] . f,
+        otherwise -> [pv] . f . [#pp] . [f] . traverse
+    )
+)
+rtraverse = (
+    <f> . <@p> . p<pv> . p<@pp> . [#pp]p . [pv]p . [#pp] . (
+        null      -> [pv] . f,
+        otherwise -> [pv] . [#pp] . [f] . rtraverse . f
+    )
+)
+
+Pair  = (<y> . <x> . new<@p> . [y]p . [x]p . [#p])
+fst   = (<@p> . p<x> . [x]p . [x])
+snd   = (<@p> . p<x> . p<y> . [y]p . [x]p . [y])
+
+enumerate_aux = (
+    <n> . <k> . <i> . <f> . [n] . (0 -> *, otherwise -> [i] . f . [f] . [i] . [k] . + . [k] . [n] . [k] . - . enumerate_aux)
+)
+enumerate = (<k> . <n> . [0] . [k] . [n] . enumerate_aux)
+
+main = (
+    new<@n> . [100]n .
+    new<@p> . [2]p .
+    [print] . [#n] . get . [#p] . get . enumerate
+)

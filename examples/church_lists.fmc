@@ -1,0 +1,21 @@
+write = (<@a> . <x> . [x]a)
+print = ([#out] . write)
+
+multiply_aux = (
+    <t> . <n> . <m> . [m] . (
+        0 -> [t],
+        otherwise -> [m] . [1] . - . [n] . [t] . [n] . + . multiply_aux
+    )
+)
+multiply = ([0] . multiply_aux)
+square = (<x> . [x] . [x] . multiply)
+
+nil =  (<_> . <x> . [x])
+cons = (<h> . <t> . <f> . <x> . [t] . [h] . f)
+head = (<l> . [nil] . [<h> . <_> . h] . l)
+tail = (<l> . [nil] . [<_> . <t> . t] . l)
+map = (<f> . <l> . [nil] . [<h> . <t> . [[[t] . [f] . map] . [[h] . f] . cons]] . l)
+
+main = (
+    [[[[nil] . [3] . cons] . [2] . cons] . [1] . cons] . [square] . map . print
+)

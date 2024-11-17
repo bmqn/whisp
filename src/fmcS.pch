@@ -1,0 +1,20 @@
+#ifndef PCH_FMCS_PCH
+#define PCH_FMCS_PCH
+
+#include <format>
+#include <utility>
+
+#include <iostream>
+
+#include <memory>
+
+#include <string>
+#include <string_view>
+#include <sstream>
+
+#include <stack>
+#include <unordered_map>
+#include <variant>
+#include <vector>
+
+#endif // PCH_FMCS_PCH

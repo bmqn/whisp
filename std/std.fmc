@@ -1,0 +1,5 @@
+get = (<@a> . a<x> . [x]a . [x])
+set = (<@a> . a<_> . <x> . [x]a)
+
+write = (<@a> . <x> . [x]a)
+print = ([#out] . write)

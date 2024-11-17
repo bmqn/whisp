@@ -1,0 +1,162 @@
+#ifndef H_TREE_H
+#define H_TREE_H
+
+namespace fmcs {
+namespace ast {
+
+struct Node;
+
+struct LitNode;
+struct StrLitNode;
+
+struct VarNode;
+
+struct SeqTermNode;
+struct SeqNilNode;
+struct SeqVarNode;
+struct SeqAppNode;
+struct SeqAbsNode;
+
+class Visitor;
+
+using NodePtr_t = Node*;
+using LitPtr_t = LitNode*;
+using TermPtr_t = SeqTermNode*;
+
+template<typename WrappedNode>
+using Owner_t = std::unique_ptr<WrappedNode>;
+
+template<typename WrappedNode, typename... Args>
+Owner_t<WrappedNode> MakeOwner(Args&&... args)
+{
+	return std::make_unique<WrappedNode>(std::forward<Args>(args)...);
+}
+
+struct Node
+{
+	virtual ~Node() = default;
+
+	virtual void Accept(Visitor& visitor) const = 0;
+
+protected:
+	template<typename ImplNode, typename ImplVisitor>
+	void Visit(const ImplNode& node, ImplVisitor& visitor) const
+	{
+		visitor.Visit(node);
+	}
+
+public:
+	std::string Snippet;
+};
+
+struct LitNode : public Node
+{
+	virtual ~LitNode() = default;
+
+	virtual void Accept(Visitor& visitor) const override;
+};
+
+struct Int32LitNode : public LitNode
+{
+	explicit Int32LitNode(int32_t val)
+		: Val(val)
+	{}
+
+	virtual void Accept(Visitor& visitor) const override;
+
+	int32_t Val;
+};
+
+struct StrLitNode : public LitNode
+{
+	explicit StrLitNode(std::string_view val)
+		: Val(val)
+	{}
+
+	virtual void Accept(Visitor& visitor) const override;
+
+	std::string Val;
+};
+
+struct VarNode : public Node
+{
+	explicit VarNode(std::string_view name)
+		: Name(name)
+	{}
+
+	virtual void Accept(Visitor& visitor) const override;
+
+	std::string Name;
+};
+
+struct SeqTermNode : public Node
+{
+	virtual ~SeqTermNode() = default;
+
+	virtual void Accept(Visitor& visitor) const override;
+
+	Owner_t<SeqTermNode> Next;
+};
+
+struct SeqNilNode : public SeqTermNode
+{
+	virtual void Accept(Visitor& visitor) const override;
+};
+
+struct SeqVarNode : public SeqTermNode
+{
+	explicit SeqVarNode(std::string_view name)
+		: Name(name)
+	{}
+
+	virtual void Accept(Visitor& visitor) const override;
+
+	std::string Name;
+};
+
+struct SeqAppNode : public SeqTermNode
+{
+	SeqAppNode() = default;
+	SeqAppNode(Owner_t<SeqTermNode> arg, Owner_t<VarNode> loc = nullptr)
+		: Arg(std::move(arg))
+		, Loc(std::move(loc))
+	{}
+
+	virtual void Accept(Visitor& visitor) const override;
+
+	Owner_t<SeqTermNode> Arg;
+	Owner_t<VarNode> Loc;
+};
+
+struct SeqAppLitNode : public SeqTermNode
+{
+	SeqAppLitNode() = default;
+	SeqAppLitNode(Owner_t<LitNode> lit, Owner_t<VarNode> loc = nullptr)
+		: Lit(std::move(lit))
+		, Loc(std::move(loc))
+	{}
+
+	virtual void Accept(Visitor& visitor) const override;
+
+	Owner_t<LitNode> Lit;
+	Owner_t<VarNode> Loc;
+};
+
+struct SeqAbsNode : public SeqTermNode
+{
+	SeqAbsNode() = default;
+	SeqAbsNode(Owner_t<VarNode> binder, Owner_t<VarNode> loc = nullptr)
+		: Binder(std::move(binder))
+		, Loc(std::move(loc))
+	{}
+
+	virtual void Accept(Visitor& visitor) const override;
+
+	Owner_t<VarNode> Binder;
+	Owner_t<VarNode> Loc;
+};
+
+} // namespace ast
+} // namespace fmcs
+
+#endif // H_TREE_H
