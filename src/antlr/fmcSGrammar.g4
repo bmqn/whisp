@@ -2,7 +2,7 @@ parser grammar fmcSGrammar;
 options { tokenVocab=fmcSLexer; }
 
 lit         : INT
-            | QUOTE ID QUOTE
+            | STR
             ;
 
 var         : ID

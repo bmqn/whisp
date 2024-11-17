@@ -44,6 +44,9 @@ public:
   virtual void enterTerm(fmcSGrammar::TermContext *ctx) = 0;
   virtual void exitTerm(fmcSGrammar::TermContext *ctx) = 0;
 
+  virtual void enterInclude(fmcSGrammar::IncludeContext *ctx) = 0;
+  virtual void exitInclude(fmcSGrammar::IncludeContext *ctx) = 0;
+
   virtual void enterFunction(fmcSGrammar::FunctionContext *ctx) = 0;
   virtual void exitFunction(fmcSGrammar::FunctionContext *ctx) = 0;
 

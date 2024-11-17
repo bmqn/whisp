@@ -136,6 +136,8 @@ void Evaluator::Visit(const ast::SeqAppNode& node)
 		{
 			Writer writer(&std::cout, node.Arg.get(), m_Env);
 
+			std::cout << std::endl;
+
 			return;
 		}
 		else
@@ -160,6 +162,8 @@ void Evaluator::Visit(const ast::SeqAppLitNode& node)
 		if (node.Loc->Name == "out")
 		{
 			Writer writer(&std::cout, node.Lit.get(), m_Env);
+
+			std::cout << std::endl;
 
 			return;
 		}
@@ -231,8 +235,6 @@ Writer::Writer(std::ostream* ss, const ast::NodePtr_t node, const Env_t* env)
 	, m_Env(env)
 {
 	m_Node->Accept(*this);
-
-	*m_Ss << std::endl;
 }
 
 void Writer::Visit(const ast::Int32LitNode& node)

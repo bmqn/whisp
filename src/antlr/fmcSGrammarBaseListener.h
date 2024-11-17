@@ -46,6 +46,9 @@ public:
   virtual void enterTerm(fmcSGrammar::TermContext * /*ctx*/) override { }
   virtual void exitTerm(fmcSGrammar::TermContext * /*ctx*/) override { }
 
+  virtual void enterInclude(fmcSGrammar::IncludeContext * /*ctx*/) override { }
+  virtual void exitInclude(fmcSGrammar::IncludeContext * /*ctx*/) override { }
+
   virtual void enterFunction(fmcSGrammar::FunctionContext * /*ctx*/) override { }
   virtual void exitFunction(fmcSGrammar::FunctionContext * /*ctx*/) override { }
 

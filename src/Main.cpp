@@ -10,7 +10,7 @@ void Interactive()
 
 	interp::Machine machine;
 	interp::Env_t env;
-	
+
 	auto GetLine = []() {
 		std::cout << "Whisp > ";
 
@@ -28,7 +28,9 @@ void Interactive()
 
 		std::visit([&](auto&& arg) {
 			interp::Writer writer(&std::cout, arg, &subEnv);
-		}, closee);
+			}, closee);
+
+		std::cout << std::endl;
 	};
 
 	auto ShowWith = [&](interp::Closee_t closee, std::string message) {
@@ -40,14 +42,16 @@ void Interactive()
 		std::visit([&](auto&& arg) {
 			interp::Writer writer(&std::cout, arg, &subEnv);
 			}, closee);
-		};
+
+		std::cout << std::endl;
+	};
 
 	auto Warn = [](std::string_view message) {
 		std::cout <<
 			std::format("      > Warning : {}",
 				message) <<
 			std::endl;
-		};
+	};
 
 	std::vector<ast::Owner_t<ast::SeqTermNode>> terms;
 

@@ -105,12 +105,16 @@ private:
 
 					seqAppLit->Lit->Snippet = ctx->app()->lit()->INT()->getText();
 				}
-				else if (ctx->app()->lit()->ID())
+				else if (ctx->app()->lit()->STR())
 				{
-					seqAppLit->Lit = MakeOwner<StrLitNode>(
-						ctx->app()->lit()->ID()->getText());
+					std::string litStr = ctx->app()->lit()->STR()->getText();
+					litStr.erase(litStr.begin());
+					litStr.erase(litStr.end() - 1);
 
-					seqAppLit->Lit->Snippet = ctx->app()->lit()->ID()->getText();
+					seqAppLit->Lit = MakeOwner<StrLitNode>(
+						litStr);
+
+					seqAppLit->Lit->Snippet = ctx->app()->lit()->STR()->getText();
 				}
 
 				if (ctx->app()->var())

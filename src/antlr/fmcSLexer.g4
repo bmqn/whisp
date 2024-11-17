@@ -23,5 +23,8 @@ DEFAULT : 'default' ;
 INCLUDE : 'include' ;
 
 INT : [0-9]+ ;
+STR: '"' ~["]* '"';
+
 ID: [a-zA-Z_][a-zA-Z_0-9]* ;
+
 WS: [ \t\n\r\f]+ -> skip ;

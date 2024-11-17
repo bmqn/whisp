@@ -15,13 +15,13 @@ public:
     EQ = 1, COMMA = 2, SEMI = 3, LPAREN = 4, RPAREN = 5, LCURLY = 6, RCURLY = 7, 
     LSQUARE = 8, RSQUARE = 9, LTRIAN = 10, RTRIAN = 11, HASH = 12, AT = 13, 
     STAR = 14, DOT = 15, ARROW = 16, UNDERSCORE = 17, QUOTE = 18, DEFAULT = 19, 
-    INT = 20, ID = 21, WS = 22
+    INCLUDE = 20, INT = 21, STR = 22, ID = 23, WS = 24
   };
 
   enum {
     RuleLit = 0, RuleVar = 1, RuleBinder = 2, RuleApp = 3, RuleAbs = 4, 
     RuleLocApp = 5, RuleLocAbs = 6, RuleCond = 7, RuleConds = 8, RuleTerm = 9, 
-    RuleFunction = 10, RuleProgram = 11
+    RuleInclude = 10, RuleFunction = 11, RuleProgram = 12
   };
 
   explicit fmcSGrammar(antlr4::TokenStream *input);
@@ -51,6 +51,7 @@ public:
   class CondContext;
   class CondsContext;
   class TermContext;
+  class IncludeContext;
   class FunctionContext;
   class ProgramContext; 
 
@@ -59,9 +60,7 @@ public:
     LitContext(antlr4::ParserRuleContext *parent, size_t invokingState);
     virtual size_t getRuleIndex() const override;
     antlr4::tree::TerminalNode *INT();
-    std::vector<antlr4::tree::TerminalNode *> QUOTE();
-    antlr4::tree::TerminalNode* QUOTE(size_t i);
-    antlr4::tree::TerminalNode *ID();
+    antlr4::tree::TerminalNode *STR();
 
     virtual void enterRule(antlr4::tree::ParseTreeListener *listener) override;
     virtual void exitRule(antlr4::tree::ParseTreeListener *listener) override;
@@ -224,6 +223,23 @@ public:
 
   TermContext* term();
 
+  class  IncludeContext : public antlr4::ParserRuleContext {
+  public:
+    IncludeContext(antlr4::ParserRuleContext *parent, size_t invokingState);
+    virtual size_t getRuleIndex() const override;
+    antlr4::tree::TerminalNode *HASH();
+    antlr4::tree::TerminalNode *INCLUDE();
+    std::vector<antlr4::tree::TerminalNode *> QUOTE();
+    antlr4::tree::TerminalNode* QUOTE(size_t i);
+    antlr4::tree::TerminalNode *ID();
+
+    virtual void enterRule(antlr4::tree::ParseTreeListener *listener) override;
+    virtual void exitRule(antlr4::tree::ParseTreeListener *listener) override;
+   
+  };
+
+  IncludeContext* include();
+
   class  FunctionContext : public antlr4::ParserRuleContext {
   public:
     FunctionContext(antlr4::ParserRuleContext *parent, size_t invokingState);
@@ -247,6 +263,10 @@ public:
   public:
     ProgramContext(antlr4::ParserRuleContext *parent, size_t invokingState);
     virtual size_t getRuleIndex() const override;
+    std::vector<IncludeContext *> include();
+    IncludeContext* include(size_t i);
+    std::vector<antlr4::tree::TerminalNode *> WS();
+    antlr4::tree::TerminalNode* WS(size_t i);
     std::vector<FunctionContext *> function();
     FunctionContext* function(size_t i);
 
