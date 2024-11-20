@@ -32,7 +32,7 @@ Using an abstraction, `<...>`, we pop the top of the default stack, to which we 
 To use `print` like a function, we can push our string literal `"Hello World!` to the default stack and execute the code bound in `print`
 
 ```
-> ["Hello World!] . print
+> ["Hello World!"] . print
 
 Hello World!
 ```
