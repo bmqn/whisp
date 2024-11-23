@@ -37,6 +37,29 @@ To use `print` like a function, we can push our string literal `"Hello World!` t
 Hello World!
 ```
 
+### Conditional cases
+
+Conditional cases are defined similarly to a conventional switch-case statement, and they enable us to branch the program.
+
+```
+> [0] . {0 -> ["Hello"]out, ["Goodbye"]out}
+
+Hello
+```
+
+```
+> [1] . {0 -> ["Hello"]out, ["Goodbye"]out}
+
+Goodbye
+```
+
+This program will print `"Hello"` if there is `0` at the top of the default stack, or `"Goodbye"` otherwise.
+
+- All conditional cases must have a _base case_, which will be used uncondtionally if all other cases fail to match.
+- Variables bound inside a case term are scoped inside that term only, but it can use variables previously bound outside.
+
+Recusive functions will often use conditional cases in order to operate on the stack until some _base case_ is met.
+
 ### Programs
 
 Program which pushes (prints) `0` to the output stream. 
