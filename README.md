@@ -1,8 +1,8 @@
 # Whisp
 
-An interpreter for a C-inspired Functional Machine Calculus (FMC) variant which has first-class locations.
+Whisp is a stack-based programming language with support for abstract concepts such as first-class functions.
 
-Whisp, at it's core, is a stack-based language with support for abstract concepts such as first-class functions etc.
+It's inspired by C and Haskell, and is based on a Functional Machine Calculus (FMC) variant which has first-class locations - this prototype can be seen at [cFMC](https://github.com/bmqn/cFMC).
 
 ## Goals
 - Typed
