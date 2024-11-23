@@ -1,0 +1,71 @@
+----------------------------------------------------
+Notes on typing
+----------------------------------------------------
+
+<@a : x> = <@a> . a<x>
+
+x : T
+a : #T
+N : U
+
+Does a<x> . a<x> : T# -> T make sense ?
+Not on it's own, I think that
+a<x> . a<x> . N : T# -> (T -> U)
+
+       a<x> . N :  T -> U
+<@a> . a<x> . N : T# -> T -> U
+<@a : x>    . N : T# -> U
+
+----------------------------------------------------
+
+x : Char
+s : Char#
+
+f      : Int -> Int
+f_     : Int
+strlen : Char# -> Int
+
+f      = <x> . s(0 -> [x], [#s] . [x + 1] . f)
+f_     = [0] . f
+strlen = <@s> . f_
+
+----------------------------------------------------
+
+Const locations, which means abstractions read instead of pop
+You cannot push to a const location
+
+f      : Int -> Int
+f_     : Int
+strlen : ~Char# -> Int
+
+f      = <x> . s++(0 -> [x], [#s] . [x + 1] . f)
+f_     = [0] . f
+strlen = <~@s> . f_
+
+If s : ~T#, then
+
+s<...> or s(...) will bind the value at s, but not pop it
+s++<...> or s++(...) will bind the value at s, move the ptr forward, but not pop it
+
+----------------------------------------------------
+
+s : Char#
+x : Char
+
+f      : Nil
+print  : Char# -> Nil
+
+f      = s(x : 0 -> *, [x]out . f)
+print  = <@s> . f
+
+----------------------------------------------------
+
+s : Char#
+x : Char
+
+f      : Nil
+print  : ~Char# -> Nil
+
+f      = s++(x : 0 -> *, [x]out . f)
+print  = <~@s> . f
+
