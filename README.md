@@ -19,7 +19,7 @@ The most basic hello world program is written as
 Hello World!
 ```
 
-Using an application, `[...]`, this program pushes a string literal `"Hello World!` to the `out` stream.
+Using an application, `[...]`, this program pushes a string literal `"Hello World!"` to the `out` stream.
 
 To showcase the power of the language, we can it's generalize the code and wrap it into a variable called `print`, i.e. create a function.
 
@@ -29,7 +29,7 @@ To showcase the power of the language, we can it's generalize the code and wrap 
 
 Using an abstraction, `<...>`, we pop the top of the default stack, to which we previously pushed our code to print, and bind it in a variable called `print`.
 
-To use `print` like a function, we can push our string literal `"Hello World!` to the default stack and execute the code bound in `print`
+To use `print` like a function, we can push our string literal `"Hello World!"` to the default stack and execute the code bound in `print`
 
 ```
 > ["Hello World!"] . print
