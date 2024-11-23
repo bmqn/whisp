@@ -69,5 +69,17 @@ void SeqAbsNode::Accept(Visitor& visitor) const
 	SeqTermNode::Accept(visitor);
 }
 
+void CondNode::Accept(Visitor& visitor) const
+{
+	Visit(*this, visitor);
+}
+
+void SeqCondsNode::Accept(Visitor& visitor) const
+{
+	Visit(*this, visitor);
+
+	SeqTermNode::Accept(visitor);
+}
+
 } // namespace ast
 } // namespace fmcs

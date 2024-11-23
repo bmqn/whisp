@@ -89,6 +89,21 @@ struct VarNode : public Node
 	std::string Name;
 };
 
+struct CondNode : public Node
+{
+	CondNode() = default;
+	CondNode(Owner_t<LitNode> matcher, Owner_t<SeqTermNode> arg)
+		: Matcher(std::move(matcher))
+		, Arg(std::move(arg))
+	{}
+
+	virtual void Accept(Visitor& visitor) const override;
+
+	Owner_t<LitNode> Matcher;
+	Owner_t<SeqTermNode> Arg;
+	Owner_t<CondNode> Next;
+};
+
 struct SeqTermNode : public Node
 {
 	virtual ~SeqTermNode() = default;
@@ -153,6 +168,22 @@ struct SeqAbsNode : public SeqTermNode
 	virtual void Accept(Visitor& visitor) const override;
 
 	Owner_t<VarNode> Binder;
+	Owner_t<VarNode> Loc;
+};
+
+struct SeqCondsNode : public SeqTermNode
+{
+	SeqCondsNode() = default;
+	SeqCondsNode(Owner_t<SeqTermNode> cond, Owner_t<CondNode> conds, Owner_t<VarNode> loc = nullptr)
+		: Cond(std::move(Cond))
+		, Conds(std::move(conds))
+		, Loc(std::move(loc))
+	{}
+
+	virtual void Accept(Visitor& visitor) const override;
+
+	Owner_t<SeqTermNode> Cond;
+	Owner_t<CondNode> Conds;
 	Owner_t<VarNode> Loc;
 };
 

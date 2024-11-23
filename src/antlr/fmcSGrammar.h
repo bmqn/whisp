@@ -19,9 +19,9 @@ public:
   };
 
   enum {
-    RuleLit = 0, RuleVar = 1, RuleBinder = 2, RuleApp = 3, RuleAbs = 4, 
-    RuleLocApp = 5, RuleLocAbs = 6, RuleCond = 7, RuleConds = 8, RuleTerm = 9, 
-    RuleInclude = 10, RuleFunction = 11, RuleProgram = 12
+    RuleLit = 0, RuleVar = 1, RuleLoc = 2, RuleBinder = 3, RuleApp = 4, 
+    RuleAbs = 5, RuleLocApp = 6, RuleLocAbs = 7, RuleCond = 8, RuleConds = 9, 
+    RuleTerm = 10, RuleInclude = 11, RuleFunction = 12, RuleProgram = 13
   };
 
   explicit fmcSGrammar(antlr4::TokenStream *input);
@@ -43,6 +43,7 @@ public:
 
   class LitContext;
   class VarContext;
+  class LocContext;
   class BinderContext;
   class AppContext;
   class AbsContext;
@@ -82,6 +83,19 @@ public:
 
   VarContext* var();
 
+  class  LocContext : public antlr4::ParserRuleContext {
+  public:
+    LocContext(antlr4::ParserRuleContext *parent, size_t invokingState);
+    virtual size_t getRuleIndex() const override;
+    antlr4::tree::TerminalNode *ID();
+
+    virtual void enterRule(antlr4::tree::ParseTreeListener *listener) override;
+    virtual void exitRule(antlr4::tree::ParseTreeListener *listener) override;
+   
+  };
+
+  LocContext* loc();
+
   class  BinderContext : public antlr4::ParserRuleContext {
   public:
     BinderContext(antlr4::ParserRuleContext *parent, size_t invokingState);
@@ -102,7 +116,7 @@ public:
     antlr4::tree::TerminalNode *LSQUARE();
     TermContext *term();
     antlr4::tree::TerminalNode *RSQUARE();
-    VarContext *var();
+    LocContext *loc();
     LitContext *lit();
 
     virtual void enterRule(antlr4::tree::ParseTreeListener *listener) override;
@@ -119,7 +133,7 @@ public:
     antlr4::tree::TerminalNode *LTRIAN();
     BinderContext *binder();
     antlr4::tree::TerminalNode *RTRIAN();
-    VarContext *var();
+    LocContext *loc();
     antlr4::tree::TerminalNode *UNDERSCORE();
 
     virtual void enterRule(antlr4::tree::ParseTreeListener *listener) override;
@@ -135,9 +149,9 @@ public:
     virtual size_t getRuleIndex() const override;
     antlr4::tree::TerminalNode *LSQUARE();
     antlr4::tree::TerminalNode *HASH();
-    std::vector<VarContext *> var();
-    VarContext* var(size_t i);
+    VarContext *var();
     antlr4::tree::TerminalNode *RSQUARE();
+    LocContext *loc();
 
     virtual void enterRule(antlr4::tree::ParseTreeListener *listener) override;
     virtual void exitRule(antlr4::tree::ParseTreeListener *listener) override;
@@ -154,7 +168,7 @@ public:
     antlr4::tree::TerminalNode *AT();
     BinderContext *binder();
     antlr4::tree::TerminalNode *RTRIAN();
-    VarContext *var();
+    LocContext *loc();
     antlr4::tree::TerminalNode *UNDERSCORE();
 
     virtual void enterRule(antlr4::tree::ParseTreeListener *listener) override;
@@ -168,7 +182,7 @@ public:
   public:
     CondContext(antlr4::ParserRuleContext *parent, size_t invokingState);
     virtual size_t getRuleIndex() const override;
-    VarContext *var();
+    LitContext *lit();
     antlr4::tree::TerminalNode *ARROW();
     TermContext *term();
     std::vector<antlr4::tree::TerminalNode *> WS();
@@ -186,12 +200,15 @@ public:
     CondsContext(antlr4::ParserRuleContext *parent, size_t invokingState);
     virtual size_t getRuleIndex() const override;
     antlr4::tree::TerminalNode *LCURLY();
+    TermContext *term();
+    antlr4::tree::TerminalNode *RCURLY();
+    LocContext *loc();
     std::vector<CondContext *> cond();
     CondContext* cond(size_t i);
-    antlr4::tree::TerminalNode *RCURLY();
-    VarContext *var();
     std::vector<antlr4::tree::TerminalNode *> COMMA();
     antlr4::tree::TerminalNode* COMMA(size_t i);
+    std::vector<antlr4::tree::TerminalNode *> WS();
+    antlr4::tree::TerminalNode* WS(size_t i);
 
     virtual void enterRule(antlr4::tree::ParseTreeListener *listener) override;
     virtual void exitRule(antlr4::tree::ParseTreeListener *listener) override;

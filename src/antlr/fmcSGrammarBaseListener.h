@@ -22,6 +22,9 @@ public:
   virtual void enterVar(fmcSGrammar::VarContext * /*ctx*/) override { }
   virtual void exitVar(fmcSGrammar::VarContext * /*ctx*/) override { }
 
+  virtual void enterLoc(fmcSGrammar::LocContext * /*ctx*/) override { }
+  virtual void exitLoc(fmcSGrammar::LocContext * /*ctx*/) override { }
+
   virtual void enterBinder(fmcSGrammar::BinderContext * /*ctx*/) override { }
   virtual void exitBinder(fmcSGrammar::BinderContext * /*ctx*/) override { }
 

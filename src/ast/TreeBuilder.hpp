@@ -75,12 +75,12 @@ private:
 				seqAbs->Binder->Snippet = ctx->abs()->binder()->ID()->getText();
 			}
 
-			if (ctx->abs()->var())
+			if (ctx->abs()->loc())
 			{
 				seqAbs->Loc = MakeOwner<VarNode>(
-					ctx->abs()->var()->ID()->getText());
+					ctx->abs()->loc()->ID()->getText());
 
-				seqAbs->Loc->Snippet = ctx->abs()->var()->ID()->getText();
+				seqAbs->Loc->Snippet = ctx->abs()->loc()->ID()->getText();
 			}
 
 			PushNextTerm(std::move(seqAbs));
@@ -117,12 +117,12 @@ private:
 					seqAppLit->Lit->Snippet = ctx->app()->lit()->STR()->getText();
 				}
 
-				if (ctx->app()->var())
+				if (ctx->app()->loc())
 				{
 					seqAppLit->Loc = MakeOwner<VarNode>(
-						ctx->app()->var()->ID()->getText());
+						ctx->app()->loc()->ID()->getText());
 
-					seqAppLit->Loc->Snippet = ctx->app()->var()->ID()->getText();
+					seqAppLit->Loc->Snippet = ctx->app()->loc()->ID()->getText();
 				}
 
 				PushNextTerm(std::move(seqAppLit));
@@ -143,16 +143,82 @@ private:
 					seqApp->Arg = PopNextTerm();
 				}
 
-				if (ctx->app()->var())
+				if (ctx->app()->loc())
 				{
 					seqApp->Loc = MakeOwner<VarNode>(
-						ctx->app()->var()->ID()->getText());
+						ctx->app()->loc()->ID()->getText());
 
-					seqApp->Loc->Snippet = ctx->app()->var()->ID()->getText();
+					seqApp->Loc->Snippet = ctx->app()->loc()->ID()->getText();
 				}
 
 				PushNextTerm(std::move(seqApp));
 			}
+		}
+		else if (ctx->conds())
+		{
+			auto seqConds = MakeOwner<SeqCondsNode>();
+
+			seqConds->Snippet = ctx->conds()->getText();
+
+			if (ctx->term())
+			{
+				seqConds->Next = PopNextTerm();
+			}
+
+			if (ctx->conds()->term())
+			{
+				seqConds->Cond = PopNextTerm();
+			}
+
+			if (!ctx->conds()->cond().empty())
+			{
+				auto condCtxs = ctx->conds()->cond();
+
+				seqConds->Conds = MakeOwner<CondNode>();
+
+				CondNode* currentCond = seqConds->Conds.get();
+
+				for (int i = condCtxs.size() - 1; i >= 0; --i)
+				{
+					auto condCtx = condCtxs[i];
+
+					if (condCtx->term())
+					{
+						currentCond->Arg = PopNextTerm();
+					}
+
+					if (condCtx->lit())
+					{
+						if (condCtx->lit()->INT())
+						{
+							currentCond->Matcher = MakeOwner<Int32LitNode>(
+								std::stoi(condCtx->lit()->INT()->getText()));
+
+							currentCond->Matcher->Snippet = condCtx->lit()->INT()->getText();
+						}
+						else if (condCtx->lit()->STR())
+						{
+							std::string litStr = condCtx->lit()->STR()->getText();
+							litStr.erase(litStr.begin());
+							litStr.erase(litStr.end() - 1);
+
+							currentCond->Matcher = MakeOwner<StrLitNode>(
+								litStr);
+
+							currentCond->Matcher->Snippet = condCtx->lit()->STR()->getText();
+						}
+					}
+
+					if (i > 0)
+					{
+						currentCond->Next = MakeOwner<CondNode>();
+
+						currentCond = currentCond->Next.get();
+					}
+				}
+			}
+
+			PushNextTerm(std::move(seqConds));
 		}
 	}
 

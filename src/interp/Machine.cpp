@@ -89,6 +89,10 @@ void Evaluator::Visit(const ast::VarNode& node)
 {
 }
 
+void Evaluator::Visit(const ast::CondNode& node)
+{
+}
+
 void Evaluator::Visit(const ast::SeqTermNode& node)
 {
 	Env_t& env = *m_Env;
@@ -229,6 +233,92 @@ void Evaluator::Visit(const ast::SeqAbsNode& node)
 	env[node.Binder->Name] = closure.Closee;
 }
 
+void Evaluator::Visit(const ast::SeqCondsNode& node)
+{
+	Stack_t* stack;
+	Env_t& env = *m_Env;
+
+	if (node.Loc)
+	{
+		if (node.Loc->Name == "in")
+		{
+			stack = &(*m_Mem)[2];
+
+			std::string inStr;
+			std::getline(std::cin, inStr);
+
+			static std::vector<ast::Owner_t<ast::SeqTermNode>> s_Terms;
+			s_Terms.emplace_back(ast::TreeBuilder::Parse(inStr));
+
+			ast::TermPtr_t term = s_Terms.back().get();
+
+			stack->emplace_back(term);
+		}
+		else
+		{
+			Error("Unbound location", node, *node.Loc);
+		}
+
+		if (stack->empty())
+		{
+			Error("Stack underflow", node, *node.Loc);
+		}
+	}
+	else
+	{
+		stack = &(*m_Mem)[0];
+
+		if (stack->empty())
+		{
+			Error("Stack underflow", node);
+		}
+	}
+
+	Closure closure = stack->back();
+	stack->pop_back();
+
+	Resolver resolve(&closure);
+
+	ast::LitNode* lit = nullptr;
+
+	if (std::holds_alternative<ast::LitNode*>(closure.Closee))
+	{
+		lit = std::get<ast::LitNode*>(closure.Closee);
+	}
+	else
+	{
+		Error("Non literal matching in conditions", node, *node.Loc);
+	}
+
+	ast::SeqTermNode* next = nullptr;
+
+	if (node.Conds)
+	{
+		auto currentConds = node.Conds.get();
+
+		for (; currentConds; currentConds = currentConds->Next.get())
+		{
+			// Type checking...
+
+			auto litInt32 = static_cast<ast::Int32LitNode*>(lit);
+			auto litInt32Matcher = static_cast<ast::Int32LitNode*>(currentConds->Matcher.get());
+
+			if (litInt32->Val == litInt32Matcher->Val)
+			{
+				next = currentConds->Arg.get();
+				break;
+			}
+		}
+	}
+
+	if (!next)
+	{
+		next = node.Cond.get();
+	}
+
+	m_Frames.emplace_back(next, env);
+}
+
 Writer::Writer(std::ostream* ss, const ast::NodePtr_t node, const Env_t* env)
 	: m_Ss(ss)
 	, m_Node(node)
@@ -250,6 +340,19 @@ void Writer::Visit(const ast::StrLitNode& node)
 void Writer::Visit(const ast::VarNode& node)
 {
 	*m_Ss << node.Name;
+}
+
+void Writer::Visit(const ast::CondNode& node)
+{
+	node.Matcher->Accept(*this);
+	*m_Ss << " -> ";
+	node.Arg->Accept(*this);
+
+	if (node.Next)
+	{
+		*m_Ss << ", ";
+		node.Next->Accept(*this);
+	}
 }
 
 void Writer::Visit(const ast::SeqNilNode& node)
@@ -336,6 +439,37 @@ void Writer::Visit(const ast::SeqAbsNode& node)
 	node.Binder->Accept(*this);
 
 	*m_Ss << ">";
+
+	if (node.Next)
+	{
+		*m_Ss << " . ";
+
+		node.Next->Accept(*this);
+	}
+}
+
+void Writer::Visit(const ast::SeqCondsNode& node)
+{
+	if (node.Loc)
+	{
+		node.Loc->Accept(*this);
+	}
+
+	*m_Ss << "{";
+
+	if (node.Conds)
+	{
+		node.Conds->Accept(*this);
+	}
+
+	if (node.Conds)
+	{
+		*m_Ss << ", ";
+	}
+
+	node.Cond->Accept(*this);
+
+	*m_Ss << "}";
 
 	if (node.Next)
 	{

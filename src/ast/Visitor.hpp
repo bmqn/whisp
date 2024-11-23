@@ -17,12 +17,15 @@ protected:
 
 	virtual void Visit(const VarNode& node) {}
 
+	virtual void Visit(const CondNode& node) {}
+
 	virtual void Visit(const SeqTermNode& node) {}
 	virtual void Visit(const SeqNilNode& node) {}
 	virtual void Visit(const SeqVarNode& node) {}
 	virtual void Visit(const SeqAppNode& node) {}
 	virtual void Visit(const SeqAppLitNode& node) {}
 	virtual void Visit(const SeqAbsNode& node) {}
+	virtual void Visit(const SeqCondsNode& node) {}
 };
 
 } // namespace ast

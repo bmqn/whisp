@@ -20,6 +20,9 @@ public:
   virtual void enterVar(fmcSGrammar::VarContext *ctx) = 0;
   virtual void exitVar(fmcSGrammar::VarContext *ctx) = 0;
 
+  virtual void enterLoc(fmcSGrammar::LocContext *ctx) = 0;
+  virtual void exitLoc(fmcSGrammar::LocContext *ctx) = 0;
+
   virtual void enterBinder(fmcSGrammar::BinderContext *ctx) = 0;
   virtual void exitBinder(fmcSGrammar::BinderContext *ctx) = 0;
 

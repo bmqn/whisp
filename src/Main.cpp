@@ -118,6 +118,11 @@ int main(int argc, char** argv)
 	//ast::Owner_t<ast::SeqTermNode> termParsed = ast::TreeBuilder::Parse(
 	//	"[<a> . <b> . a] . <true> . [<a> . <b> . b] . <false> . [<b> . <a> . <p> . [b] . [a] . p] . <if> . [<p> . [p] . [in<p> . [p] . [\"Continue\"]out . f] . [[\"Exit\"]out ] . if] . <f> . [[true] . f] . <main> . main");
 
+	//ast::Owner_t<ast::SeqTermNode> termParsed = ast::TreeBuilder::Parse(
+	//	"[0] . {0 -> [\"Hello\"], [\"Goodbye\"]}");
+	//ast::Owner_t<ast::SeqTermNode> termParsed = ast::TreeBuilder::Parse(
+	//	"[0] . {0 -> [\"Hello\"], 1 -> [\"Hmmm\"], [\"Goodbye\"]}");
+
 	//interp::Machine machine;
 	//machine.Execute(termParsed.get());
 

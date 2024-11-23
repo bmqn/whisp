@@ -61,12 +61,15 @@ private:
 
 	virtual void Visit(const ast::VarNode& node) override;
 
+	virtual void Visit(const ast::CondNode& node) override;
+
 	virtual void Visit(const ast::SeqTermNode& node) override;
 	virtual void Visit(const ast::SeqNilNode& node) override;
 	virtual void Visit(const ast::SeqVarNode& node) override;
 	virtual void Visit(const ast::SeqAppNode& node) override;
 	virtual void Visit(const ast::SeqAppLitNode& node) override;
 	virtual void Visit(const ast::SeqAbsNode& node) override;
+	virtual void Visit(const ast::SeqCondsNode& node) override;
 
 private:
 	ast::NodePtr_t m_Node;
@@ -87,11 +90,14 @@ private:
 
 	virtual void Visit(const ast::VarNode& node) override;
 
+	virtual void Visit(const ast::CondNode& node) override;
+
 	virtual void Visit(const ast::SeqNilNode& node) override;
 	virtual void Visit(const ast::SeqVarNode& node) override;
 	virtual void Visit(const ast::SeqAppNode& node) override;
 	virtual void Visit(const ast::SeqAppLitNode& node) override;
 	virtual void Visit(const ast::SeqAbsNode& node) override;
+	virtual void Visit(const ast::SeqCondsNode& node) override;
 
 private:
 	const ast::NodePtr_t m_Node;

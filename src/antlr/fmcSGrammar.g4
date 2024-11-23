@@ -8,28 +8,31 @@ lit         : INT
 var         : ID
             ;
 
+loc         : ID
+            ;
+
 binder      : ID
             ;
 
-app         : LSQUARE term RSQUARE var?
-            | LSQUARE lit RSQUARE var?
+app         : LSQUARE term RSQUARE loc?
+            | LSQUARE lit RSQUARE loc?
             ;
 
-abs         : var? LTRIAN binder RTRIAN
-            | var? LTRIAN UNDERSCORE RTRIAN
+abs         : loc? LTRIAN binder RTRIAN
+            | loc? LTRIAN UNDERSCORE RTRIAN
             ;
 
-locApp      : LSQUARE HASH var RSQUARE var?
+locApp      : LSQUARE HASH var RSQUARE loc?
             ;
 
-locAbs      : var? LTRIAN AT binder RTRIAN
-            | var? LTRIAN UNDERSCORE RTRIAN
+locAbs      : loc? LTRIAN AT binder RTRIAN
+            | loc? LTRIAN UNDERSCORE RTRIAN
             ;
 
-cond        : var WS* ARROW WS* term
+cond        : lit WS* ARROW WS* term
             ;
         
-conds       : var? LCURLY cond (COMMA cond)* RCURLY
+conds       : loc? LCURLY (WS* cond WS* COMMA)* WS* term WS* RCURLY
             ;
 
 term        : STAR
