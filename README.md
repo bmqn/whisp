@@ -62,6 +62,8 @@ Recusive functions will often use conditional cases in order to operate on the s
 
 ### Programs
 
+#### Printing
+
 Program which pushes (prints) `0` to the output stream. 
 
 ```
@@ -71,6 +73,8 @@ main  = ([0] . print)
 ```
 
 The function `print` is defined in terms of a more general variant called `write` which parameterizes the location to write to and the term to write.
+
+#### Linked-list
 
 How about a linked-list ? Let's define function `LinkedList` to create a linked-list and function `push_back` to push elements to its tail.
 
@@ -114,3 +118,23 @@ main = (
     . [#p] . [print] . traverse
 )
 ```
+
+#### Church list + map
+
+```
+[<x> . [x]out] . <print> .
+[<z> . <x> . [x]] . <nil> .
+[<h> . <t> . <f>  . [t] . [h] . f] . <cons> .
+[<lh> . [nil] . [<hh> . <th> . [hh]] . lh] . <head> .
+[<l> . [nil] . [<h> . <t> . [t]] . l] . <tail> .
+[<fm> . <lm> . [nil] . [<hm> . <tm> . [[[tm] . [fm] . map] . [[hm] . fm] . cons]] . lm] . <map> .
+[<x> . [x] . [x] . +] . <double> . [[[nil] . [1] . cons] . [2] . cons] . <list> . [list] .
+[double] . map .
+tail .
+<x> . x .
+head .
+<x> . x .
+print
+```
+
+Notice the use of `<x> . x` in order to evaluate lazy parts of the list!
