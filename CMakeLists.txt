@@ -21,9 +21,9 @@ endif()
 if(MSVC)
 set(ANTLR4_WITH_STATIC_CRT OFF)
 endif()
-if(CMAKE_CXX_COMPILER_ID STREQUAL "Clang")
-set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -stdlib=libc++")
-set(CMAKE_EXE_LINKER_FLAGS "${CMAKE_EXE_LINKER_FLAGS} -stdlib=libc++ -lc++20")
+if(CMAKE_CXX_COMPILER_ID MATCHES "Clang")
+set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -stdlib=libstdc++")
+set(CMAKE_EXE_LINKER_FLAGS "${CMAKE_EXE_LINKER_FLAGS} -stdlib=libstdc++")
 endif()
 
 set(CMAKE_PROJECT_VERSION "0.0.1")
@@ -114,6 +114,8 @@ set(PRJ_SRC_SHARED
 	"${PRJ_SRC_DIR}/ast/Printer.hpp"
 	"${PRJ_SRC_DIR}/interp/Machine.hpp"
 	"${PRJ_SRC_DIR}/interp/Machine.cpp"
+	"${PRJ_SRC_DIR}/interp/Writer.hpp"
+	"${PRJ_SRC_DIR}/interp/Writer.cpp"
 	"${PRJ_SRC_DIR}/antlr/fmcSGrammar.h"
 	"${PRJ_SRC_DIR}/antlr/fmcSGrammar.cpp"
 	"${PRJ_SRC_DIR}/antlr/fmcSGrammarBaseListener.h"
@@ -185,6 +187,10 @@ target_compile_definitions(fmcS
 		$<$<CONFIG:Debug>:FMCS_DEBUG=1>
 		$<$<CONFIG:Release>:FMCS_RELEASE=1>
 		$<$<CONFIG:Distribution>:FMCS_DISTRIBUTION=1>
+)
+target_link_libraries(fmcS
+	PRIVATE
+		-lreadline
 )
 
 set_target_properties(fmcS PROPERTIES

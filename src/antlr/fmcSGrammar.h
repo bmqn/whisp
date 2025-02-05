@@ -1,5 +1,5 @@
 
-// Generated from ./fmcSGrammar.g4 by ANTLR 4.13.2
+// Generated from fmcSGrammar.g4 by ANTLR 4.13.2
 
 #pragma once
 
@@ -14,14 +14,14 @@ public:
   enum {
     EQ = 1, COMMA = 2, SEMI = 3, LPAREN = 4, RPAREN = 5, LCURLY = 6, RCURLY = 7, 
     LSQUARE = 8, RSQUARE = 9, LTRIAN = 10, RTRIAN = 11, HASH = 12, AT = 13, 
-    STAR = 14, DOT = 15, ARROW = 16, UNDERSCORE = 17, QUOTE = 18, DEFAULT = 19, 
-    INCLUDE = 20, INT = 21, STR = 22, ID = 23, WS = 24
+    STAR = 14, DOT = 15, ARROW = 16, UNDERSCORE = 17, QUOTE = 18, PLUS = 19, 
+    DEFAULT = 20, INCLUDE = 21, INT = 22, STR = 23, ID = 24, WS = 25
   };
 
   enum {
     RuleLit = 0, RuleVar = 1, RuleLoc = 2, RuleBinder = 3, RuleApp = 4, 
     RuleAbs = 5, RuleLocApp = 6, RuleLocAbs = 7, RuleCond = 8, RuleConds = 9, 
-    RuleTerm = 10, RuleInclude = 11, RuleFunction = 12, RuleProgram = 13
+    RuleOp = 10, RuleTerm = 11, RuleInclude = 12, RuleFunction = 13, RuleProgram = 14
   };
 
   explicit fmcSGrammar(antlr4::TokenStream *input);
@@ -51,6 +51,7 @@ public:
   class LocAbsContext;
   class CondContext;
   class CondsContext;
+  class OpContext;
   class TermContext;
   class IncludeContext;
   class FunctionContext;
@@ -217,6 +218,20 @@ public:
 
   CondsContext* conds();
 
+  class  OpContext : public antlr4::ParserRuleContext {
+  public:
+    OpContext(antlr4::ParserRuleContext *parent, size_t invokingState);
+    virtual size_t getRuleIndex() const override;
+    antlr4::tree::TerminalNode *PLUS();
+    antlr4::tree::TerminalNode *LTRIAN();
+
+    virtual void enterRule(antlr4::tree::ParseTreeListener *listener) override;
+    virtual void exitRule(antlr4::tree::ParseTreeListener *listener) override;
+   
+  };
+
+  OpContext* op();
+
   class  TermContext : public antlr4::ParserRuleContext {
   public:
     TermContext(antlr4::ParserRuleContext *parent, size_t invokingState);
@@ -232,6 +247,7 @@ public:
     LocAppContext *locApp();
     LocAbsContext *locAbs();
     CondsContext *conds();
+    OpContext *op();
 
     virtual void enterRule(antlr4::tree::ParseTreeListener *listener) override;
     virtual void exitRule(antlr4::tree::ParseTreeListener *listener) override;

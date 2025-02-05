@@ -218,7 +218,37 @@ private:
 				}
 			}
 
+			if (ctx->conds()->loc())
+			{
+				seqConds->Loc = MakeOwner<VarNode>(
+					ctx->conds()->loc()->ID()->getText());
+
+				seqConds->Loc->Snippet = ctx->conds()->loc()->ID()->getText();
+			}
+
 			PushNextTerm(std::move(seqConds));
+		}
+		else if (ctx->op())
+		{
+			auto seqOp = MakeOwner<SeqOpNode>();
+
+			seqOp->Snippet = ctx->op()->getText();
+
+			if (ctx->op()->PLUS())
+			{
+				seqOp->Op = Operation::Plus;
+			}
+			else if (ctx->op()->LTRIAN())
+			{
+				seqOp->Op = Operation::Less;
+			}
+
+			if (ctx->term())
+			{
+				seqOp->Next = PopNextTerm();
+			}
+
+			PushNextTerm(std::move(seqOp));
 		}
 	}
 

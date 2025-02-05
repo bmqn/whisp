@@ -11,11 +11,15 @@ struct StrLitNode;
 
 struct VarNode;
 
+struct CondNode;
+
 struct SeqTermNode;
 struct SeqNilNode;
 struct SeqVarNode;
 struct SeqAppNode;
 struct SeqAbsNode;
+struct SeqCondsNode;
+struct SeqOpNode;
 
 class Visitor;
 
@@ -185,6 +189,24 @@ struct SeqCondsNode : public SeqTermNode
 	Owner_t<SeqTermNode> Cond;
 	Owner_t<CondNode> Conds;
 	Owner_t<VarNode> Loc;
+};
+
+enum class Operation
+{
+	Plus,
+	Less
+};
+
+struct SeqOpNode : public SeqTermNode
+{
+	SeqOpNode() = default;
+	SeqOpNode(Operation op)
+		: Op(op)
+	{}
+
+	virtual void Accept(Visitor& visitor) const override;
+
+	Operation Op;
 };
 
 } // namespace ast

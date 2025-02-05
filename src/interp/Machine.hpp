@@ -9,22 +9,101 @@ namespace interp {
 using Var_t = std::string;
 using Loc_t = uintptr_t;
 
-using Closee_t = std::variant<ast::TermPtr_t, ast::LitPtr_t>;
-using Env_t = std::unordered_map<std::string, Closee_t>;
+struct Closee
+{
+	enum Kind
+	{
+		Unknown,
+		TermPtr,	// This is an instruction
+		Data32,		// This is data
+	};
+
+	static constexpr size_t GetSize(Kind kind)
+	{
+		switch (kind)
+		{
+			case TermPtr:
+				return sizeof(ast::TermPtr_t);
+			case Data32:
+				return 4;
+		}
+
+		return 0;
+	}
+
+	Closee() = default;
+
+	Closee(ast::TermPtr_t term)
+		: kind(TermPtr)
+	{
+		std::memcpy(data, &term, sizeof(ast::TermPtr_t));
+	}
+
+	Closee(int32_t val)
+		: kind(Data32)
+	{
+		std::memcpy(data, &val, sizeof(int32_t));
+	}
+
+	template<typename T>
+	bool Is() const
+	{
+		static_assert(sizeof(T) <= sizeof(data));
+
+		switch (kind)
+		{
+			case TermPtr:
+				return std::is_same_v<T, ast::TermPtr_t>;
+		}
+
+		return sizeof(T) == GetSize(kind);
+	}
+
+	template<typename T>
+	T As() const
+	{
+		static_assert(sizeof(T) <= sizeof(data));
+
+		T res;
+		std::memcpy(&res, data, sizeof(T));
+
+		return res;
+	}
+
+	Kind kind = Unknown;
+	uint8_t data[8] = {0};
+};
+
+// This env maps local terms within a closure!
+using LocalEnv_t = std::unordered_map<std::string, Closee>;
 
 struct Closure
 {
-	Closure(Closee_t closee) : Env(), Closee(closee) {}
-	Closure(Closee_t closee, Env_t env) : Closee(closee), Env(env) {}
+	Closure() = default;
 
-	Closee_t Closee;
-	Env_t Env;
+	Closure(Closee closee)
+		: closee(closee)
+		, localEnv()
+	{
+	}
+
+	Closure(Closee closee, LocalEnv_t env)
+		: closee(closee)
+		, localEnv(env)
+	{
+	}
+
+	Closee closee = Closee();
+	LocalEnv_t localEnv = {};
 };
 
 using Stack_t = std::vector<Closure>;
 using Mem_t = std::unordered_map<Loc_t, Stack_t>;
 
-using Callstack_t = std::vector<std::pair<std::string, ast::TermPtr_t>>;
+// This env maps variables to closures (functions)
+// It MUST refer to the stuff bound when that variable was first bound!
+using Env_t = std::unordered_map<std::string, Closure>;
+using Control_t = std::vector<std::pair<Closure, Env_t>>;
 
 class Resolver : public ast::Visitor
 {
@@ -41,7 +120,7 @@ private:
 class Evaluator : public ast::Visitor
 {
 public:
-	Evaluator(ast::NodePtr_t node, Env_t *env, Mem_t *mem);
+	Evaluator(Env_t *env, Mem_t *mem, ast::NodePtr_t node, LocalEnv_t *localEnv);
 
 	inline bool HasFrame()
 	{
@@ -70,50 +149,28 @@ private:
 	virtual void Visit(const ast::SeqAppLitNode& node) override;
 	virtual void Visit(const ast::SeqAbsNode& node) override;
 	virtual void Visit(const ast::SeqCondsNode& node) override;
+	virtual void Visit(const ast::SeqOpNode& node) override;
 
 private:
-	ast::NodePtr_t m_Node;
 	Env_t *m_Env;
 	Mem_t *m_Mem;
 
+	ast::NodePtr_t m_Node;
+	LocalEnv_t *m_LocalEnv;
+
+	Stack_t *m_Control;
+
 	std::vector<Closure> m_Frames;
-};
-
-class Writer : public ast::Visitor
-{
-public:
-	Writer(std::ostream* ss, const ast::NodePtr_t node, const Env_t* env);
-
-private:
-	virtual void Visit(const ast::Int32LitNode& node) override;
-	virtual void Visit(const ast::StrLitNode& node) override;
-
-	virtual void Visit(const ast::VarNode& node) override;
-
-	virtual void Visit(const ast::CondNode& node) override;
-
-	virtual void Visit(const ast::SeqNilNode& node) override;
-	virtual void Visit(const ast::SeqVarNode& node) override;
-	virtual void Visit(const ast::SeqAppNode& node) override;
-	virtual void Visit(const ast::SeqAppLitNode& node) override;
-	virtual void Visit(const ast::SeqAbsNode& node) override;
-	virtual void Visit(const ast::SeqCondsNode& node) override;
-
-private:
-	const ast::NodePtr_t m_Node;
-	const Env_t* m_Env;
-	
-	std::ostream* m_Ss;
 };
 
 class Machine
 {
 public:
-	Env_t Execute(const ast::TermPtr_t term, Env_t env = Env_t());
+	void Execute(const ast::TermPtr_t term, Env_t env = Env_t());
 
 private:
 	Mem_t m_Mem;
-	Stack_t m_Stck;
+	Control_t m_Control;
 };
 
 } // namespace interp

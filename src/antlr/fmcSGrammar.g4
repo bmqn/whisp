@@ -35,6 +35,10 @@ cond        : lit WS* ARROW WS* term
 conds       : loc? LCURLY (WS* cond WS* COMMA)* WS* term WS* RCURLY
             ;
 
+op          : PLUS
+            | LTRIAN
+            ;
+
 term        : STAR
             | var (WS* DOT WS* term)?
             | app (WS* DOT WS* term)?
@@ -42,6 +46,7 @@ term        : STAR
             | locApp (WS* DOT WS* term)?
             | locAbs (WS* DOT WS* term)?
             | conds (WS* DOT WS* term)?
+            | op (WS* DOT WS* term)?
             ;
 
 include     : HASH INCLUDE QUOTE ID QUOTE

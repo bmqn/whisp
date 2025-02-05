@@ -1,5 +1,6 @@
 #include "Machine.hpp"
 
+#include "Writer.hpp"
 #include "ast/TreeBuilder.hpp"
 
 namespace fmcs {
@@ -42,37 +43,32 @@ void Error(std::string_view message, const ast::Node& node, Args... args)
 
 	(
 		PrintAdditional(args)
-		, ...);
+	, ...);
 
 	std::cerr << std::endl;
 
 	exit(1);
 }
 
-Resolver::Resolver(Closure* closure)
-	: m_Closure(closure)
+template<typename... Args>
+void ErrorNoNode(std::format_string<Args...> fmt, Args&&... args)
 {
-	std::visit([&](auto&& arg) {
-		arg->Accept(*this);
-	}, closure->Closee);
+	std::cerr
+		<< "Error: "
+		<< std::format(fmt,
+			std::forward<Args>(args)...);
+
+	std::cerr << std::endl;
+
+	exit(1);
 }
 
-void Resolver::Visit(const ast::SeqVarNode& node)
-{
-	Env_t& env = m_Closure->Env;
-
-	if (auto it = env.find(node.Name); it != env.end())
-	{
-		m_Closure->Closee = it->second;
-	}
-}
-
-Evaluator::Evaluator(ast::NodePtr_t node, Env_t *env, Mem_t *mem)
-	: m_Node(node)
-	, m_Env(env)
+Evaluator::Evaluator(Env_t *env, Mem_t *mem, ast::NodePtr_t node, LocalEnv_t *localEnv)
+	: m_Env(env)
 	, m_Mem(mem)
+	, m_Node(node)
+	, m_LocalEnv(localEnv)
 {
-	m_Node->Accept(*this);
 }
 
 void Evaluator::Visit(const ast::Int32LitNode& node)
@@ -95,11 +91,17 @@ void Evaluator::Visit(const ast::CondNode& node)
 
 void Evaluator::Visit(const ast::SeqTermNode& node)
 {
-	Env_t& env = *m_Env;
-
 	if (auto term = node.Next.get())
 	{
-		m_Frames.emplace_back(term, env);
+		const LocalEnv_t &currentLocalEnv = *m_LocalEnv;
+
+		// Use the next term
+		Closee closee = term;
+		// Use the current local env
+		LocalEnv_t localEnv = currentLocalEnv;
+
+		// Push the next term as a new frame
+		m_Frames.emplace_back(closee, localEnv);
 	}
 }
 
@@ -109,9 +111,11 @@ void Evaluator::Visit(const ast::SeqNilNode& node)
 
 void Evaluator::Visit(const ast::SeqVarNode& node)
 {
-	Env_t& env = *m_Env;
+	const Env_t &currentEnv = *m_Env;
+	const LocalEnv_t &currentLocalEnv = *m_LocalEnv;
 
-	if (auto it = env.find(node.Name); it != env.end())
+	// Look in the current env for bindings
+	if (auto it = currentEnv.find(node.Name); it != currentEnv.end())
 	{
 		// TODO
 		//
@@ -122,24 +126,101 @@ void Evaluator::Visit(const ast::SeqVarNode& node)
 		// This would mean we need to track the env for every term.
 		// We could have a sparse map from term to env, then lookup envs that way.
 
-		m_Frames.emplace_back(it->second, env);
+		const Closure &closure = it->second;
+		// Use the bound closee
+		const Closee &closee = closure.closee;
+		// Use the bound local env
+		LocalEnv_t localEnv = closure.localEnv;
+
+		// Add additional bindings from the current local env
+		for (const auto &[existingBinder, existingClosee] : currentLocalEnv)
+		{
+			localEnv.emplace(existingBinder, existingClosee);
+		}
+
+		// Push the bound closure as a new frame
+		m_Frames.emplace_back(closee, localEnv);
+	}
+	// Look in the current local env for bindings
+	else if (auto it = currentLocalEnv.find(node.Name); it != currentLocalEnv.end())
+	{
+		// Use the bound closee
+		const Closee &closee = it->second;
+		// Use the bound local env
+		LocalEnv_t localEnv = currentLocalEnv;
+
+		// Push the bound closure as a new frame
+		m_Frames.emplace_back(closee, localEnv);
 	}
 	else
 	{
-		Warn("Unbound variable", node);
+		Error("Unbound variable", node);
 	}
 }
 
+class ArgResolver : public ast::Visitor
+{
+public:
+	ArgResolver(Stack_t *stack, const LocalEnv_t *localEnv)
+		: m_Stack(stack)
+		, m_LocalEnv(localEnv)
+	{
+	}
+
+	bool DidResolve() const
+	{
+		return m_DidResolve;
+	}
+
+private:
+	virtual void Visit(const ast::SeqVarNode& node) override
+	{
+		const LocalEnv_t &localEnv = *m_LocalEnv;
+
+		if (auto it = localEnv.find(node.Name); it != localEnv.end())
+		{
+			const Closee &closee = it->second;
+			
+			if (closee.Is<ast::TermPtr_t>())
+			{
+				ast::TermPtr_t term = closee.As<ast::TermPtr_t>();
+
+				m_Stack->emplace_back(term, localEnv);
+
+				m_DidResolve = true;
+			}
+			else if (closee.Is<int32_t>())
+			{
+				int32_t val = closee.As<int32_t>();
+
+				m_Stack->emplace_back(val, localEnv);
+
+				m_DidResolve = true;
+			}
+		}
+	}
+
+private:
+	Stack_t *m_Stack;
+	const LocalEnv_t *m_LocalEnv;
+
+	bool m_DidResolve = false;
+};
+
 void Evaluator::Visit(const ast::SeqAppNode& node)
 {
-	Stack_t* stack;
+	Stack_t *stack;
 
 	if (node.Loc)
 	{
 		if (node.Loc->Name == "out")
 		{
-			Writer writer(&std::cout, node.Arg.get(), m_Env);
+			Stack_t outStack;
 
+			const Env_t &currentEnv = *m_Env;
+
+			Writer writer(&std::cout, &currentEnv);
+			node.Arg->Accept(writer);
 			std::cout << std::endl;
 
 			return;
@@ -154,8 +235,58 @@ void Evaluator::Visit(const ast::SeqAppNode& node)
 		stack = &(*m_Mem)[0];
 	}
 
-	stack->emplace_back(node.Arg.get() , *m_Env);
+	const LocalEnv_t &currentLocalEnv = *m_LocalEnv;
+
+	ArgResolver argResolver(stack, &currentLocalEnv);
+
+	node.Arg->Accept(argResolver);
+
+	if (!argResolver.DidResolve())
+	{
+		// Use the arg term
+		Closee closee = node.Arg.get();
+		// Use the current local env
+		LocalEnv_t localEnv = currentLocalEnv;
+
+		stack->emplace_back(closee, localEnv);
+	}
 }
+
+class LitResolver : public ast::Visitor
+{
+public:
+	LitResolver(Stack_t *stack, const LocalEnv_t *localEnv)
+		: m_Stack(stack)
+		, m_LocalEnv(localEnv)
+	{
+	}
+
+	bool DidResolve() const
+	{
+		return m_DidResolve;
+	}
+
+private:
+	virtual void Visit(const ast::Int32LitNode& node) override
+	{
+		m_Stack->emplace_back(node.Val, *m_LocalEnv);
+
+		m_DidResolve = true;
+	}
+
+	virtual void Visit(const ast::StrLitNode& node) override
+	{
+		Warn("Cannot push string literal to stack (at the moment)!", node);
+
+		m_DidResolve = true;
+	}
+
+private:
+	Stack_t *m_Stack;
+	const LocalEnv_t *m_LocalEnv;
+
+	bool m_DidResolve = false;
+};
 
 void Evaluator::Visit(const ast::SeqAppLitNode& node)
 {
@@ -165,8 +296,10 @@ void Evaluator::Visit(const ast::SeqAppLitNode& node)
 	{
 		if (node.Loc->Name == "out")
 		{
-			Writer writer(&std::cout, node.Lit.get(), m_Env);
-
+			const Env_t &currentEnv = *m_Env;
+	
+			Writer writer(&std::cout, &currentEnv);
+			node.Lit->Accept(writer);
 			std::cout << std::endl;
 
 			return;
@@ -181,13 +314,21 @@ void Evaluator::Visit(const ast::SeqAppLitNode& node)
 		stack = &(*m_Mem)[0];
 	}
 
-	stack->emplace_back(node.Lit.get() , *m_Env);
+	const LocalEnv_t &currentLocalEnv = *m_LocalEnv;
+
+	LitResolver litResolver(stack, &currentLocalEnv);
+
+	node.Lit->Accept(litResolver);
+
+	if (!litResolver.DidResolve())
+	{
+		Error("Could not resolve literal for push", node);
+	}
 }
 
 void Evaluator::Visit(const ast::SeqAbsNode& node)
 {
-	Stack_t* stack;
-	Env_t& env = *m_Env;
+	Stack_t *stack;
 
 	if (node.Loc)
 	{
@@ -198,12 +339,21 @@ void Evaluator::Visit(const ast::SeqAbsNode& node)
 			std::string inStr;
 			std::getline(std::cin, inStr);
 
-			static std::vector<ast::Owner_t<ast::SeqTermNode>> s_Terms;
-			s_Terms.emplace_back(ast::TreeBuilder::Parse(inStr));
+			int32_t val = std::strtol(inStr.c_str(), nullptr, 10);
 
-			ast::TermPtr_t term = s_Terms.back().get();
+			if (val != 0)
+			{
+				stack->emplace_back(val);
+			}
+			else
+			{
+				static std::vector<ast::Owner_t<ast::SeqTermNode>> s_Terms;
+				s_Terms.emplace_back(ast::TreeBuilder::Parse(inStr));
 
-			stack->emplace_back(term);
+				ast::TermPtr_t term = s_Terms.back().get();
+
+				stack->emplace_back(term);
+			}
 		}
 		else
 		{
@@ -225,18 +375,40 @@ void Evaluator::Visit(const ast::SeqAbsNode& node)
 		}
 	}
 
+	LocalEnv_t &currentLocalEnv = *m_LocalEnv;
+
 	Closure closure = stack->back();
 	stack->pop_back();
 
-	Resolver resolve(&closure);
+	Closee &closee = closure.closee;
+	LocalEnv_t localEnv = closure.localEnv;
 
-	env[node.Binder->Name] = closure.Closee;
+	// // Add additional bindings from the closure local env
+	// for (const auto &[existingBinder, existingClosee] : localEnv)
+	// {
+	// 	currentLocalEnv[existingBinder] = existingClosee;
+	// 	// currentLocalEnv.emplace(existingBinder, existingClosee);
+	// }
+
+	// Add binding for binder in the local env
+	currentLocalEnv[node.Binder->Name] = closee;
+
+	Env_t &env = *m_Env;
+
+	// Add additional bindings from the current local env
+	for (const auto &[existingBinder, existingClosee] : currentLocalEnv)
+	{
+		// localEnv[existingBinder] = existingClosee;
+		localEnv.emplace(existingBinder, existingClosee);
+	}
+
+	// Add binding for binder in the env
+	env[node.Binder->Name] = Closure(closee, localEnv);
 }
 
 void Evaluator::Visit(const ast::SeqCondsNode& node)
 {
-	Stack_t* stack;
-	Env_t& env = *m_Env;
+	Stack_t *stack;
 
 	if (node.Loc)
 	{
@@ -247,12 +419,21 @@ void Evaluator::Visit(const ast::SeqCondsNode& node)
 			std::string inStr;
 			std::getline(std::cin, inStr);
 
-			static std::vector<ast::Owner_t<ast::SeqTermNode>> s_Terms;
-			s_Terms.emplace_back(ast::TreeBuilder::Parse(inStr));
+			int32_t val = std::strtol(inStr.c_str(), nullptr, 10);
 
-			ast::TermPtr_t term = s_Terms.back().get();
+			if (val != 0)
+			{
+				stack->emplace_back(val);
+			}
+			else
+			{
+				static std::vector<ast::Owner_t<ast::SeqTermNode>> s_Terms;
+				s_Terms.emplace_back(ast::TreeBuilder::Parse(inStr));
 
-			stack->emplace_back(term);
+				ast::TermPtr_t term = s_Terms.back().get();
+
+				stack->emplace_back(term);
+			}
 		}
 		else
 		{
@@ -277,20 +458,18 @@ void Evaluator::Visit(const ast::SeqCondsNode& node)
 	Closure closure = stack->back();
 	stack->pop_back();
 
-	Resolver resolve(&closure);
+	int32_t val;
 
-	ast::LitNode* lit = nullptr;
-
-	if (std::holds_alternative<ast::LitNode*>(closure.Closee))
+	if (closure.closee.Is<int32_t>())
 	{
-		lit = std::get<ast::LitNode*>(closure.Closee);
+		val = closure.closee.As<int32_t>();
 	}
 	else
 	{
 		Error("Non literal matching in conditions", node, *node.Loc);
 	}
 
-	ast::SeqTermNode* next = nullptr;
+	ast::SeqTermNode* term = nullptr;
 
 	if (node.Conds)
 	{
@@ -300,217 +479,158 @@ void Evaluator::Visit(const ast::SeqCondsNode& node)
 		{
 			// Type checking...
 
-			auto litInt32 = static_cast<ast::Int32LitNode*>(lit);
 			auto litInt32Matcher = static_cast<ast::Int32LitNode*>(currentConds->Matcher.get());
 
-			if (litInt32->Val == litInt32Matcher->Val)
+			if (val == litInt32Matcher->Val)
 			{
-				next = currentConds->Arg.get();
+				term = currentConds->Arg.get();
 				break;
 			}
 		}
 	}
 
-	if (!next)
+	if (!term)
 	{
-		next = node.Cond.get();
+		term = node.Cond.get();
 	}
 
-	m_Frames.emplace_back(next, env);
+	const LocalEnv_t &currentLocalEnv = *m_LocalEnv;
+
+	// Use the condition term
+	Closee closee = term;
+	// Use the current local env
+	LocalEnv_t localEnv = currentLocalEnv;
+
+	m_Frames.emplace_back(closee, localEnv);
 }
 
-Writer::Writer(std::ostream* ss, const ast::NodePtr_t node, const Env_t* env)
-	: m_Ss(ss)
-	, m_Node(node)
-	, m_Env(env)
+void Evaluator::Visit(const ast::SeqOpNode& node)
 {
-	m_Node->Accept(*this);
-}
+	Stack_t* stack;
 
-void Writer::Visit(const ast::Int32LitNode& node)
-{
-	*m_Ss << node.Val;
-}
+	stack = &(*m_Mem)[0];
 
-void Writer::Visit(const ast::StrLitNode& node)
-{
-	*m_Ss << node.Val;
-}
-
-void Writer::Visit(const ast::VarNode& node)
-{
-	*m_Ss << node.Name;
-}
-
-void Writer::Visit(const ast::CondNode& node)
-{
-	node.Matcher->Accept(*this);
-	*m_Ss << " -> ";
-	node.Arg->Accept(*this);
-
-	if (node.Next)
+	if (stack->size() < 2)
 	{
-		*m_Ss << ", ";
-		node.Next->Accept(*this);
+		Error("Stack underflow", node);
 	}
-}
 
-void Writer::Visit(const ast::SeqNilNode& node)
-{
-	*m_Ss << "*";
-}
+	Closure closure1 = stack->back();
+	stack->pop_back();
 
-void Writer::Visit(const ast::SeqVarNode& node)
-{
-	const Env_t& env = *m_Env;
+	int32_t val1;
 
-	if (auto it = env.find(node.Name); it != env.end())
+	if (closure1.closee.Is<int32_t>())
 	{
-		Env_t subEnv;
-
-		std::visit([this, &subEnv](auto&& arg) {
-			Writer subWriter(m_Ss, arg, &subEnv);
-		}, it->second);
+		val1 = closure1.closee.As<int32_t>();
 	}
 	else
 	{
-		*m_Ss << node.Name;
+		Error("Non literal on stack for op", node);
 	}
 
-	if (node.Next)
+	Closure closure2 = stack->back();
+	stack->pop_back();
+
+	int32_t val2;
+
+	if (closure2.closee.Is<int32_t>())
 	{
-		*m_Ss << " . ";
-
-		node.Next->Accept(*this);
+		val2 = closure2.closee.As<int32_t>();
 	}
+	else
+	{
+		Error("Non literal on stack for op", node);
+	}
+
+	const LocalEnv_t &currentLocalEnv = *m_LocalEnv;
+
+	Closee closee;
+
+	// Use the op result
+	switch (node.Op)
+	{
+		case ast::Operation::Plus:
+			closee = val1 + val2;
+			break;
+		case ast::Operation::Less:
+			closee = val1 < val2;
+			break;
+	}
+
+	// Use the current local env
+	LocalEnv_t localEnv = currentLocalEnv;
+
+	stack->emplace_back(closee, localEnv);
 }
 
-void Writer::Visit(const ast::SeqAppNode& node)
+void Machine::Execute(const ast::TermPtr_t term, Env_t env)
 {
-	*m_Ss << "[";
+	m_Control.emplace_back(term, env);
 
-	node.Arg->Accept(*this);
-
-	*m_Ss << "]";
-
-	if (node.Loc)
-	{
-		node.Loc->Accept(*this);
-	}
-
-	if (node.Next)
-	{
-		*m_Ss << " . ";
-
-		node.Next->Accept(*this);
-	}
-}
-
-void Writer::Visit(const ast::SeqAppLitNode& node)
-{
-	*m_Ss << "[\"";
-
-	node.Lit->Accept(*this);
-
-	*m_Ss << "\"]";
-
-	if (node.Loc)
-	{
-		node.Loc->Accept(*this);
-	}
-
-	if (node.Next)
-	{
-		*m_Ss << " . ";
-
-		node.Next->Accept(*this);
-	}
-}
-
-void Writer::Visit(const ast::SeqAbsNode& node)
-{
-	if (node.Loc)
-	{
-		node.Loc->Accept(*this);
-	}
-
-	*m_Ss << "<";
-
-	node.Binder->Accept(*this);
-
-	*m_Ss << ">";
-
-	if (node.Next)
-	{
-		*m_Ss << " . ";
-
-		node.Next->Accept(*this);
-	}
-}
-
-void Writer::Visit(const ast::SeqCondsNode& node)
-{
-	if (node.Loc)
-	{
-		node.Loc->Accept(*this);
-	}
-
-	*m_Ss << "{";
-
-	if (node.Conds)
-	{
-		node.Conds->Accept(*this);
-	}
-
-	if (node.Conds)
-	{
-		*m_Ss << ", ";
-	}
-
-	node.Cond->Accept(*this);
-
-	*m_Ss << "}";
-
-	if (node.Next)
-	{
-		*m_Ss << " . ";
-
-		node.Next->Accept(*this);
-	}
-}
-
-Env_t Machine::Execute(const ast::TermPtr_t term, Env_t env)
-{
-	Env_t finishingEnv;
-
-	m_Stck.push_back(Closure(term, env));
-
-	while (!m_Stck.empty())
+	while (!m_Control.empty())
 	{
 		// Get the next environment and term
-		Closure closure = m_Stck.back();
-		m_Stck.pop_back();
+		auto [closure, env] = m_Control.back();
+		m_Control.pop_back();
 
-		Env_t env = closure.Env;
-		auto closee = closure.Closee;
+		auto &closee = closure.closee;
+		auto &localEnv = closure.localEnv;
 
-		std::visit([&](auto&& arg) {
-			for (Evaluator eval(arg, &env, &m_Mem); eval.HasFrame(); )
+		// if (closee.Is<ast::TermPtr_t>())
+		// {
+		// 	Writer writer(&std::cout, closee.As<ast::TermPtr_t>(), &env);
+		// 	std::cout << " :" << std::endl;
+		// }
+
+		// std::cout << std::endl;
+		// for (const auto& [binder, closee] : env)
+		// {
+		// 	std::cout << std::format("{} -> ", binder);
+		// 	if (closee.Is<ast::TermPtr_t>())
+		// 	{
+		// 		Writer writer(&std::cout, closee.As<ast::TermPtr_t>(), &env);
+		// 	}
+		// 	else if (closee.Is<int32_t>())
+		// 	{
+		// 		std::cout << closee.As<int32_t>();
+		// 	}
+		// 	std::cout << std::endl;
+		// }
+		// std::cout << std::endl;
+
+		// TODO: Max
+		// We need the env to be shared for all terms but index it using the variable!
+		// The env shouldn't be stored entirely for a closure, instead it should map
+		// variables to indices in the global map?
+
+		if (closee.Is<ast::TermPtr_t>())
+		{
+			ast::TermPtr_t term = closee.As<ast::TermPtr_t>();
+
+			Evaluator eval(&env, &m_Mem, term, &localEnv);
+
+			term->Accept(eval);
+
+			while (eval.HasFrame())
 			{
-				if (auto frameClosure = eval.NextFrame();
-					std::visit<bool>([](auto&& arg) {
-						return bool(arg);
-					}, frameClosure.Closee))
-				{
-					m_Stck.emplace_back(frameClosure);
-				}
+				m_Control.emplace_back(eval.NextFrame(), env);
 			}
-		}, closee);
-
-		finishingEnv = env;
+		}
+		else
+		{
+			if (closee.Is<int32_t>())
+			{
+				int32_t val = closee.As<int32_t>();
+			
+				ErrorNoNode("Int32 literal encountered in control: {}", val);
+			}
+			else
+			{
+				ErrorNoNode("Non-term encountered in control");
+			}
+		}
 	}
-
-	return finishingEnv;
 }
 
 } // namespace interp

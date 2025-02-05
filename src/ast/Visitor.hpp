@@ -26,6 +26,7 @@ protected:
 	virtual void Visit(const SeqAppLitNode& node) {}
 	virtual void Visit(const SeqAbsNode& node) {}
 	virtual void Visit(const SeqCondsNode& node) {}
+	virtual void Visit(const SeqOpNode& node) {}
 };
 
 } // namespace ast

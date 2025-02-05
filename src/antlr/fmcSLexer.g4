@@ -18,13 +18,14 @@ DOT : '.' ;
 ARROW : '->' ;
 UNDERSCORE : '_' ;
 QUOTE : '"' ;
+PLUS : '+' ;
 
 DEFAULT : 'default' ;
 INCLUDE : 'include' ;
 
-INT : [0-9]+ ;
-STR: '"' ~["]* '"';
+INT : [-]?[0-9]+ ;
+STR : '"' ~["]* '"';
 
-ID: [a-zA-Z_][a-zA-Z_0-9]* ;
+ID : [a-zA-Z_][a-zA-Z_0-9]* ;
 
-WS: [ \t\n\r\f]+ -> skip ;
+WS : [ \t\n\r\f]+ -> skip ;

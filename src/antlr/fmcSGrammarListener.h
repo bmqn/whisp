@@ -1,5 +1,5 @@
 
-// Generated from ./fmcSGrammar.g4 by ANTLR 4.13.2
+// Generated from fmcSGrammar.g4 by ANTLR 4.13.2
 
 #pragma once
 
@@ -43,6 +43,9 @@ public:
 
   virtual void enterConds(fmcSGrammar::CondsContext *ctx) = 0;
   virtual void exitConds(fmcSGrammar::CondsContext *ctx) = 0;
+
+  virtual void enterOp(fmcSGrammar::OpContext *ctx) = 0;
+  virtual void exitOp(fmcSGrammar::OpContext *ctx) = 0;
 
   virtual void enterTerm(fmcSGrammar::TermContext *ctx) = 0;
   virtual void exitTerm(fmcSGrammar::TermContext *ctx) = 0;
