@@ -22,8 +22,8 @@ if(MSVC)
 set(ANTLR4_WITH_STATIC_CRT OFF)
 endif()
 if(CMAKE_CXX_COMPILER_ID MATCHES "Clang")
-set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -stdlib=libstdc++")
-set(CMAKE_EXE_LINKER_FLAGS "${CMAKE_EXE_LINKER_FLAGS} -stdlib=libstdc++")
+set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -stdlib=libc++")
+set(CMAKE_EXE_LINKER_FLAGS "${CMAKE_EXE_LINKER_FLAGS} -stdlib=libc++ -lc++ -lc++abi")
 endif()
 
 set(CMAKE_PROJECT_VERSION "0.0.1")
@@ -74,10 +74,14 @@ add_link_options(
 else()
 
 add_compile_options(
+	-fstandalone-debug
+	$<$<CONFIG:Debug>:-O0>
+	$<$<CONFIG:Debug>:-g>
 	$<$<CONFIG:Release>:-O3>
 	$<$<CONFIG:Distribution>:-O3>
 )
 add_link_options(
+	$<$<CONFIG:Debug>:-fno-lto>
 	$<$<CONFIG:Release>:-flto>
 	$<$<CONFIG:Distribution>:-flto>
 )

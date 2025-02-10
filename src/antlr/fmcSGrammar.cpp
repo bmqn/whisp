@@ -52,134 +52,137 @@ void fmcsgrammarParserInitialize() {
 #endif
   auto staticData = std::make_unique<FmcSGrammarStaticData>(
     std::vector<std::string>{
-      "lit", "var", "loc", "binder", "app", "abs", "locApp", "locAbs", "cond", 
-      "conds", "op", "term", "include", "function", "program"
+      "lit", "var", "loc", "seqVar", "seqApp", "seqLocApp", "binder", "seqAbs", 
+      "seqLocAbs", "cond", "seqConds", "seqOp", "seqTerm", "include", "function", 
+      "program"
     },
     std::vector<std::string>{
       "", "'='", "','", "';'", "'('", "')'", "'{'", "'}'", "'['", "']'", 
       "'<'", "'>'", "'#'", "'@'", "'*'", "'.'", "'->'", "'_'", "'\"'", "'+'", 
-      "'default'", "'include'"
+      "'!'", "'default'", "'include'"
     },
     std::vector<std::string>{
       "", "EQ", "COMMA", "SEMI", "LPAREN", "RPAREN", "LCURLY", "RCURLY", 
       "LSQUARE", "RSQUARE", "LTRIAN", "RTRIAN", "HASH", "AT", "STAR", "DOT", 
-      "ARROW", "UNDERSCORE", "QUOTE", "PLUS", "DEFAULT", "INCLUDE", "INT", 
-      "STR", "ID", "WS"
+      "ARROW", "UNDERSCORE", "QUOTE", "PLUS", "EXCLAM", "DEFAULT", "INCLUDE", 
+      "INT", "STR", "ID", "WS"
     }
   );
   static const int32_t serializedATNSegment[] = {
-  	4,1,25,324,2,0,7,0,2,1,7,1,2,2,7,2,2,3,7,3,2,4,7,4,2,5,7,5,2,6,7,6,2,
+  	4,1,26,331,2,0,7,0,2,1,7,1,2,2,7,2,2,3,7,3,2,4,7,4,2,5,7,5,2,6,7,6,2,
   	7,7,7,2,8,7,8,2,9,7,9,2,10,7,10,2,11,7,11,2,12,7,12,2,13,7,13,2,14,7,
-  	14,1,0,1,0,1,1,1,1,1,2,1,2,1,3,1,3,1,4,1,4,1,4,1,4,3,4,43,8,4,1,4,1,4,
-  	1,4,1,4,3,4,49,8,4,3,4,51,8,4,1,5,3,5,54,8,5,1,5,1,5,1,5,1,5,1,5,3,5,
-  	61,8,5,1,5,1,5,1,5,3,5,66,8,5,1,6,1,6,1,6,1,6,1,6,3,6,73,8,6,1,7,3,7,
-  	76,8,7,1,7,1,7,1,7,1,7,1,7,1,7,3,7,84,8,7,1,7,1,7,1,7,3,7,89,8,7,1,8,
-  	1,8,5,8,93,8,8,10,8,12,8,96,9,8,1,8,1,8,5,8,100,8,8,10,8,12,8,103,9,8,
-  	1,8,1,8,1,9,3,9,108,8,9,1,9,1,9,5,9,112,8,9,10,9,12,9,115,9,9,1,9,1,9,
-  	5,9,119,8,9,10,9,12,9,122,9,9,1,9,1,9,5,9,126,8,9,10,9,12,9,129,9,9,1,
-  	9,5,9,132,8,9,10,9,12,9,135,9,9,1,9,1,9,5,9,139,8,9,10,9,12,9,142,9,9,
-  	1,9,1,9,1,10,1,10,1,11,1,11,1,11,5,11,151,8,11,10,11,12,11,154,9,11,1,
-  	11,1,11,5,11,158,8,11,10,11,12,11,161,9,11,1,11,3,11,164,8,11,1,11,1,
-  	11,5,11,168,8,11,10,11,12,11,171,9,11,1,11,1,11,5,11,175,8,11,10,11,12,
-  	11,178,9,11,1,11,3,11,181,8,11,1,11,1,11,5,11,185,8,11,10,11,12,11,188,
-  	9,11,1,11,1,11,5,11,192,8,11,10,11,12,11,195,9,11,1,11,3,11,198,8,11,
-  	1,11,1,11,5,11,202,8,11,10,11,12,11,205,9,11,1,11,1,11,5,11,209,8,11,
-  	10,11,12,11,212,9,11,1,11,3,11,215,8,11,1,11,1,11,5,11,219,8,11,10,11,
-  	12,11,222,9,11,1,11,1,11,5,11,226,8,11,10,11,12,11,229,9,11,1,11,3,11,
-  	232,8,11,1,11,1,11,5,11,236,8,11,10,11,12,11,239,9,11,1,11,1,11,5,11,
-  	243,8,11,10,11,12,11,246,9,11,1,11,3,11,249,8,11,1,11,1,11,5,11,253,8,
-  	11,10,11,12,11,256,9,11,1,11,1,11,5,11,260,8,11,10,11,12,11,263,9,11,
-  	1,11,3,11,266,8,11,3,11,268,8,11,1,12,1,12,1,12,1,12,1,12,1,12,1,13,1,
-  	13,5,13,278,8,13,10,13,12,13,281,9,13,1,13,1,13,5,13,285,8,13,10,13,12,
-  	13,288,9,13,1,13,1,13,5,13,292,8,13,10,13,12,13,295,9,13,1,13,1,13,5,
-  	13,299,8,13,10,13,12,13,302,9,13,1,13,1,13,1,14,5,14,307,8,14,10,14,12,
-  	14,310,9,14,1,14,5,14,313,8,14,10,14,12,14,316,9,14,1,14,5,14,319,8,14,
-  	10,14,12,14,322,9,14,1,14,0,0,15,0,2,4,6,8,10,12,14,16,18,20,22,24,26,
-  	28,0,2,1,0,22,23,2,0,10,10,19,19,361,0,30,1,0,0,0,2,32,1,0,0,0,4,34,1,
-  	0,0,0,6,36,1,0,0,0,8,50,1,0,0,0,10,65,1,0,0,0,12,67,1,0,0,0,14,88,1,0,
-  	0,0,16,90,1,0,0,0,18,107,1,0,0,0,20,145,1,0,0,0,22,267,1,0,0,0,24,269,
-  	1,0,0,0,26,275,1,0,0,0,28,308,1,0,0,0,30,31,7,0,0,0,31,1,1,0,0,0,32,33,
-  	5,24,0,0,33,3,1,0,0,0,34,35,5,24,0,0,35,5,1,0,0,0,36,37,5,24,0,0,37,7,
-  	1,0,0,0,38,39,5,8,0,0,39,40,3,22,11,0,40,42,5,9,0,0,41,43,3,4,2,0,42,
-  	41,1,0,0,0,42,43,1,0,0,0,43,51,1,0,0,0,44,45,5,8,0,0,45,46,3,0,0,0,46,
-  	48,5,9,0,0,47,49,3,4,2,0,48,47,1,0,0,0,48,49,1,0,0,0,49,51,1,0,0,0,50,
-  	38,1,0,0,0,50,44,1,0,0,0,51,9,1,0,0,0,52,54,3,4,2,0,53,52,1,0,0,0,53,
-  	54,1,0,0,0,54,55,1,0,0,0,55,56,5,10,0,0,56,57,3,6,3,0,57,58,5,11,0,0,
-  	58,66,1,0,0,0,59,61,3,4,2,0,60,59,1,0,0,0,60,61,1,0,0,0,61,62,1,0,0,0,
-  	62,63,5,10,0,0,63,64,5,17,0,0,64,66,5,11,0,0,65,53,1,0,0,0,65,60,1,0,
-  	0,0,66,11,1,0,0,0,67,68,5,8,0,0,68,69,5,12,0,0,69,70,3,2,1,0,70,72,5,
-  	9,0,0,71,73,3,4,2,0,72,71,1,0,0,0,72,73,1,0,0,0,73,13,1,0,0,0,74,76,3,
-  	4,2,0,75,74,1,0,0,0,75,76,1,0,0,0,76,77,1,0,0,0,77,78,5,10,0,0,78,79,
-  	5,13,0,0,79,80,3,6,3,0,80,81,5,11,0,0,81,89,1,0,0,0,82,84,3,4,2,0,83,
-  	82,1,0,0,0,83,84,1,0,0,0,84,85,1,0,0,0,85,86,5,10,0,0,86,87,5,17,0,0,
-  	87,89,5,11,0,0,88,75,1,0,0,0,88,83,1,0,0,0,89,15,1,0,0,0,90,94,3,0,0,
-  	0,91,93,5,25,0,0,92,91,1,0,0,0,93,96,1,0,0,0,94,92,1,0,0,0,94,95,1,0,
-  	0,0,95,97,1,0,0,0,96,94,1,0,0,0,97,101,5,16,0,0,98,100,5,25,0,0,99,98,
-  	1,0,0,0,100,103,1,0,0,0,101,99,1,0,0,0,101,102,1,0,0,0,102,104,1,0,0,
-  	0,103,101,1,0,0,0,104,105,3,22,11,0,105,17,1,0,0,0,106,108,3,4,2,0,107,
-  	106,1,0,0,0,107,108,1,0,0,0,108,109,1,0,0,0,109,127,5,6,0,0,110,112,5,
-  	25,0,0,111,110,1,0,0,0,112,115,1,0,0,0,113,111,1,0,0,0,113,114,1,0,0,
-  	0,114,116,1,0,0,0,115,113,1,0,0,0,116,120,3,16,8,0,117,119,5,25,0,0,118,
-  	117,1,0,0,0,119,122,1,0,0,0,120,118,1,0,0,0,120,121,1,0,0,0,121,123,1,
-  	0,0,0,122,120,1,0,0,0,123,124,5,2,0,0,124,126,1,0,0,0,125,113,1,0,0,0,
-  	126,129,1,0,0,0,127,125,1,0,0,0,127,128,1,0,0,0,128,133,1,0,0,0,129,127,
-  	1,0,0,0,130,132,5,25,0,0,131,130,1,0,0,0,132,135,1,0,0,0,133,131,1,0,
-  	0,0,133,134,1,0,0,0,134,136,1,0,0,0,135,133,1,0,0,0,136,140,3,22,11,0,
-  	137,139,5,25,0,0,138,137,1,0,0,0,139,142,1,0,0,0,140,138,1,0,0,0,140,
-  	141,1,0,0,0,141,143,1,0,0,0,142,140,1,0,0,0,143,144,5,7,0,0,144,19,1,
-  	0,0,0,145,146,7,1,0,0,146,21,1,0,0,0,147,268,5,14,0,0,148,163,3,2,1,0,
-  	149,151,5,25,0,0,150,149,1,0,0,0,151,154,1,0,0,0,152,150,1,0,0,0,152,
-  	153,1,0,0,0,153,155,1,0,0,0,154,152,1,0,0,0,155,159,5,15,0,0,156,158,
-  	5,25,0,0,157,156,1,0,0,0,158,161,1,0,0,0,159,157,1,0,0,0,159,160,1,0,
-  	0,0,160,162,1,0,0,0,161,159,1,0,0,0,162,164,3,22,11,0,163,152,1,0,0,0,
-  	163,164,1,0,0,0,164,268,1,0,0,0,165,180,3,8,4,0,166,168,5,25,0,0,167,
-  	166,1,0,0,0,168,171,1,0,0,0,169,167,1,0,0,0,169,170,1,0,0,0,170,172,1,
-  	0,0,0,171,169,1,0,0,0,172,176,5,15,0,0,173,175,5,25,0,0,174,173,1,0,0,
-  	0,175,178,1,0,0,0,176,174,1,0,0,0,176,177,1,0,0,0,177,179,1,0,0,0,178,
-  	176,1,0,0,0,179,181,3,22,11,0,180,169,1,0,0,0,180,181,1,0,0,0,181,268,
-  	1,0,0,0,182,197,3,10,5,0,183,185,5,25,0,0,184,183,1,0,0,0,185,188,1,0,
-  	0,0,186,184,1,0,0,0,186,187,1,0,0,0,187,189,1,0,0,0,188,186,1,0,0,0,189,
-  	193,5,15,0,0,190,192,5,25,0,0,191,190,1,0,0,0,192,195,1,0,0,0,193,191,
-  	1,0,0,0,193,194,1,0,0,0,194,196,1,0,0,0,195,193,1,0,0,0,196,198,3,22,
-  	11,0,197,186,1,0,0,0,197,198,1,0,0,0,198,268,1,0,0,0,199,214,3,12,6,0,
-  	200,202,5,25,0,0,201,200,1,0,0,0,202,205,1,0,0,0,203,201,1,0,0,0,203,
-  	204,1,0,0,0,204,206,1,0,0,0,205,203,1,0,0,0,206,210,5,15,0,0,207,209,
-  	5,25,0,0,208,207,1,0,0,0,209,212,1,0,0,0,210,208,1,0,0,0,210,211,1,0,
-  	0,0,211,213,1,0,0,0,212,210,1,0,0,0,213,215,3,22,11,0,214,203,1,0,0,0,
-  	214,215,1,0,0,0,215,268,1,0,0,0,216,231,3,14,7,0,217,219,5,25,0,0,218,
-  	217,1,0,0,0,219,222,1,0,0,0,220,218,1,0,0,0,220,221,1,0,0,0,221,223,1,
-  	0,0,0,222,220,1,0,0,0,223,227,5,15,0,0,224,226,5,25,0,0,225,224,1,0,0,
-  	0,226,229,1,0,0,0,227,225,1,0,0,0,227,228,1,0,0,0,228,230,1,0,0,0,229,
-  	227,1,0,0,0,230,232,3,22,11,0,231,220,1,0,0,0,231,232,1,0,0,0,232,268,
-  	1,0,0,0,233,248,3,18,9,0,234,236,5,25,0,0,235,234,1,0,0,0,236,239,1,0,
-  	0,0,237,235,1,0,0,0,237,238,1,0,0,0,238,240,1,0,0,0,239,237,1,0,0,0,240,
-  	244,5,15,0,0,241,243,5,25,0,0,242,241,1,0,0,0,243,246,1,0,0,0,244,242,
-  	1,0,0,0,244,245,1,0,0,0,245,247,1,0,0,0,246,244,1,0,0,0,247,249,3,22,
-  	11,0,248,237,1,0,0,0,248,249,1,0,0,0,249,268,1,0,0,0,250,265,3,20,10,
-  	0,251,253,5,25,0,0,252,251,1,0,0,0,253,256,1,0,0,0,254,252,1,0,0,0,254,
-  	255,1,0,0,0,255,257,1,0,0,0,256,254,1,0,0,0,257,261,5,15,0,0,258,260,
-  	5,25,0,0,259,258,1,0,0,0,260,263,1,0,0,0,261,259,1,0,0,0,261,262,1,0,
-  	0,0,262,264,1,0,0,0,263,261,1,0,0,0,264,266,3,22,11,0,265,254,1,0,0,0,
-  	265,266,1,0,0,0,266,268,1,0,0,0,267,147,1,0,0,0,267,148,1,0,0,0,267,165,
-  	1,0,0,0,267,182,1,0,0,0,267,199,1,0,0,0,267,216,1,0,0,0,267,233,1,0,0,
-  	0,267,250,1,0,0,0,268,23,1,0,0,0,269,270,5,12,0,0,270,271,5,21,0,0,271,
-  	272,5,18,0,0,272,273,5,24,0,0,273,274,5,18,0,0,274,25,1,0,0,0,275,279,
-  	5,24,0,0,276,278,5,25,0,0,277,276,1,0,0,0,278,281,1,0,0,0,279,277,1,0,
-  	0,0,279,280,1,0,0,0,280,282,1,0,0,0,281,279,1,0,0,0,282,286,5,1,0,0,283,
-  	285,5,25,0,0,284,283,1,0,0,0,285,288,1,0,0,0,286,284,1,0,0,0,286,287,
-  	1,0,0,0,287,289,1,0,0,0,288,286,1,0,0,0,289,293,5,4,0,0,290,292,5,25,
-  	0,0,291,290,1,0,0,0,292,295,1,0,0,0,293,291,1,0,0,0,293,294,1,0,0,0,294,
-  	296,1,0,0,0,295,293,1,0,0,0,296,300,3,22,11,0,297,299,5,25,0,0,298,297,
-  	1,0,0,0,299,302,1,0,0,0,300,298,1,0,0,0,300,301,1,0,0,0,301,303,1,0,0,
-  	0,302,300,1,0,0,0,303,304,5,5,0,0,304,27,1,0,0,0,305,307,3,24,12,0,306,
-  	305,1,0,0,0,307,310,1,0,0,0,308,306,1,0,0,0,308,309,1,0,0,0,309,314,1,
-  	0,0,0,310,308,1,0,0,0,311,313,5,25,0,0,312,311,1,0,0,0,313,316,1,0,0,
-  	0,314,312,1,0,0,0,314,315,1,0,0,0,315,320,1,0,0,0,316,314,1,0,0,0,317,
-  	319,3,26,13,0,318,317,1,0,0,0,319,322,1,0,0,0,320,318,1,0,0,0,320,321,
-  	1,0,0,0,321,29,1,0,0,0,322,320,1,0,0,0,47,42,48,50,53,60,65,72,75,83,
-  	88,94,101,107,113,120,127,133,140,152,159,163,169,176,180,186,193,197,
-  	203,210,214,220,227,231,237,244,248,254,261,265,267,279,286,293,300,308,
-  	314,320
+  	14,2,15,7,15,1,0,1,0,1,1,1,1,1,2,1,2,1,3,1,3,1,3,3,3,42,8,3,1,4,1,4,1,
+  	4,1,4,3,4,48,8,4,1,4,1,4,1,4,1,4,3,4,54,8,4,3,4,56,8,4,1,5,1,5,1,5,1,
+  	5,1,5,3,5,63,8,5,1,6,1,6,1,7,3,7,68,8,7,1,7,1,7,1,7,1,7,1,7,3,7,75,8,
+  	7,1,7,1,7,1,7,3,7,80,8,7,1,8,3,8,83,8,8,1,8,1,8,1,8,1,8,1,8,1,8,3,8,91,
+  	8,8,1,8,1,8,1,8,3,8,96,8,8,1,9,1,9,5,9,100,8,9,10,9,12,9,103,9,9,1,9,
+  	1,9,5,9,107,8,9,10,9,12,9,110,9,9,1,9,1,9,1,10,3,10,115,8,10,1,10,1,10,
+  	5,10,119,8,10,10,10,12,10,122,9,10,1,10,1,10,5,10,126,8,10,10,10,12,10,
+  	129,9,10,1,10,1,10,5,10,133,8,10,10,10,12,10,136,9,10,1,10,5,10,139,8,
+  	10,10,10,12,10,142,9,10,1,10,1,10,5,10,146,8,10,10,10,12,10,149,9,10,
+  	1,10,1,10,1,11,1,11,1,12,1,12,1,12,5,12,158,8,12,10,12,12,12,161,9,12,
+  	1,12,1,12,5,12,165,8,12,10,12,12,12,168,9,12,1,12,3,12,171,8,12,1,12,
+  	1,12,5,12,175,8,12,10,12,12,12,178,9,12,1,12,1,12,5,12,182,8,12,10,12,
+  	12,12,185,9,12,1,12,3,12,188,8,12,1,12,1,12,5,12,192,8,12,10,12,12,12,
+  	195,9,12,1,12,1,12,5,12,199,8,12,10,12,12,12,202,9,12,1,12,3,12,205,8,
+  	12,1,12,1,12,5,12,209,8,12,10,12,12,12,212,9,12,1,12,1,12,5,12,216,8,
+  	12,10,12,12,12,219,9,12,1,12,3,12,222,8,12,1,12,1,12,5,12,226,8,12,10,
+  	12,12,12,229,9,12,1,12,1,12,5,12,233,8,12,10,12,12,12,236,9,12,1,12,3,
+  	12,239,8,12,1,12,1,12,5,12,243,8,12,10,12,12,12,246,9,12,1,12,1,12,5,
+  	12,250,8,12,10,12,12,12,253,9,12,1,12,3,12,256,8,12,1,12,1,12,5,12,260,
+  	8,12,10,12,12,12,263,9,12,1,12,1,12,5,12,267,8,12,10,12,12,12,270,9,12,
+  	1,12,3,12,273,8,12,3,12,275,8,12,1,13,1,13,1,13,1,13,1,13,1,13,1,14,1,
+  	14,5,14,285,8,14,10,14,12,14,288,9,14,1,14,1,14,5,14,292,8,14,10,14,12,
+  	14,295,9,14,1,14,1,14,5,14,299,8,14,10,14,12,14,302,9,14,1,14,1,14,5,
+  	14,306,8,14,10,14,12,14,309,9,14,1,14,1,14,1,15,5,15,314,8,15,10,15,12,
+  	15,317,9,15,1,15,5,15,320,8,15,10,15,12,15,323,9,15,1,15,5,15,326,8,15,
+  	10,15,12,15,329,9,15,1,15,0,0,16,0,2,4,6,8,10,12,14,16,18,20,22,24,26,
+  	28,30,0,2,1,0,23,24,2,0,10,10,19,19,368,0,32,1,0,0,0,2,34,1,0,0,0,4,36,
+  	1,0,0,0,6,41,1,0,0,0,8,55,1,0,0,0,10,57,1,0,0,0,12,64,1,0,0,0,14,79,1,
+  	0,0,0,16,95,1,0,0,0,18,97,1,0,0,0,20,114,1,0,0,0,22,152,1,0,0,0,24,274,
+  	1,0,0,0,26,276,1,0,0,0,28,282,1,0,0,0,30,315,1,0,0,0,32,33,7,0,0,0,33,
+  	1,1,0,0,0,34,35,5,25,0,0,35,3,1,0,0,0,36,37,5,25,0,0,37,5,1,0,0,0,38,
+  	42,5,25,0,0,39,40,5,25,0,0,40,42,5,20,0,0,41,38,1,0,0,0,41,39,1,0,0,0,
+  	42,7,1,0,0,0,43,44,5,8,0,0,44,45,3,24,12,0,45,47,5,9,0,0,46,48,3,4,2,
+  	0,47,46,1,0,0,0,47,48,1,0,0,0,48,56,1,0,0,0,49,50,5,8,0,0,50,51,3,0,0,
+  	0,51,53,5,9,0,0,52,54,3,4,2,0,53,52,1,0,0,0,53,54,1,0,0,0,54,56,1,0,0,
+  	0,55,43,1,0,0,0,55,49,1,0,0,0,56,9,1,0,0,0,57,58,5,8,0,0,58,59,5,12,0,
+  	0,59,60,3,2,1,0,60,62,5,9,0,0,61,63,3,4,2,0,62,61,1,0,0,0,62,63,1,0,0,
+  	0,63,11,1,0,0,0,64,65,5,25,0,0,65,13,1,0,0,0,66,68,3,4,2,0,67,66,1,0,
+  	0,0,67,68,1,0,0,0,68,69,1,0,0,0,69,70,5,10,0,0,70,71,3,12,6,0,71,72,5,
+  	11,0,0,72,80,1,0,0,0,73,75,3,4,2,0,74,73,1,0,0,0,74,75,1,0,0,0,75,76,
+  	1,0,0,0,76,77,5,10,0,0,77,78,5,17,0,0,78,80,5,11,0,0,79,67,1,0,0,0,79,
+  	74,1,0,0,0,80,15,1,0,0,0,81,83,3,4,2,0,82,81,1,0,0,0,82,83,1,0,0,0,83,
+  	84,1,0,0,0,84,85,5,10,0,0,85,86,5,13,0,0,86,87,3,12,6,0,87,88,5,11,0,
+  	0,88,96,1,0,0,0,89,91,3,4,2,0,90,89,1,0,0,0,90,91,1,0,0,0,91,92,1,0,0,
+  	0,92,93,5,10,0,0,93,94,5,17,0,0,94,96,5,11,0,0,95,82,1,0,0,0,95,90,1,
+  	0,0,0,96,17,1,0,0,0,97,101,3,0,0,0,98,100,5,26,0,0,99,98,1,0,0,0,100,
+  	103,1,0,0,0,101,99,1,0,0,0,101,102,1,0,0,0,102,104,1,0,0,0,103,101,1,
+  	0,0,0,104,108,5,16,0,0,105,107,5,26,0,0,106,105,1,0,0,0,107,110,1,0,0,
+  	0,108,106,1,0,0,0,108,109,1,0,0,0,109,111,1,0,0,0,110,108,1,0,0,0,111,
+  	112,3,24,12,0,112,19,1,0,0,0,113,115,3,4,2,0,114,113,1,0,0,0,114,115,
+  	1,0,0,0,115,116,1,0,0,0,116,134,5,6,0,0,117,119,5,26,0,0,118,117,1,0,
+  	0,0,119,122,1,0,0,0,120,118,1,0,0,0,120,121,1,0,0,0,121,123,1,0,0,0,122,
+  	120,1,0,0,0,123,127,3,18,9,0,124,126,5,26,0,0,125,124,1,0,0,0,126,129,
+  	1,0,0,0,127,125,1,0,0,0,127,128,1,0,0,0,128,130,1,0,0,0,129,127,1,0,0,
+  	0,130,131,5,2,0,0,131,133,1,0,0,0,132,120,1,0,0,0,133,136,1,0,0,0,134,
+  	132,1,0,0,0,134,135,1,0,0,0,135,140,1,0,0,0,136,134,1,0,0,0,137,139,5,
+  	26,0,0,138,137,1,0,0,0,139,142,1,0,0,0,140,138,1,0,0,0,140,141,1,0,0,
+  	0,141,143,1,0,0,0,142,140,1,0,0,0,143,147,3,24,12,0,144,146,5,26,0,0,
+  	145,144,1,0,0,0,146,149,1,0,0,0,147,145,1,0,0,0,147,148,1,0,0,0,148,150,
+  	1,0,0,0,149,147,1,0,0,0,150,151,5,7,0,0,151,21,1,0,0,0,152,153,7,1,0,
+  	0,153,23,1,0,0,0,154,275,5,14,0,0,155,170,3,6,3,0,156,158,5,26,0,0,157,
+  	156,1,0,0,0,158,161,1,0,0,0,159,157,1,0,0,0,159,160,1,0,0,0,160,162,1,
+  	0,0,0,161,159,1,0,0,0,162,166,5,15,0,0,163,165,5,26,0,0,164,163,1,0,0,
+  	0,165,168,1,0,0,0,166,164,1,0,0,0,166,167,1,0,0,0,167,169,1,0,0,0,168,
+  	166,1,0,0,0,169,171,3,24,12,0,170,159,1,0,0,0,170,171,1,0,0,0,171,275,
+  	1,0,0,0,172,187,3,8,4,0,173,175,5,26,0,0,174,173,1,0,0,0,175,178,1,0,
+  	0,0,176,174,1,0,0,0,176,177,1,0,0,0,177,179,1,0,0,0,178,176,1,0,0,0,179,
+  	183,5,15,0,0,180,182,5,26,0,0,181,180,1,0,0,0,182,185,1,0,0,0,183,181,
+  	1,0,0,0,183,184,1,0,0,0,184,186,1,0,0,0,185,183,1,0,0,0,186,188,3,24,
+  	12,0,187,176,1,0,0,0,187,188,1,0,0,0,188,275,1,0,0,0,189,204,3,14,7,0,
+  	190,192,5,26,0,0,191,190,1,0,0,0,192,195,1,0,0,0,193,191,1,0,0,0,193,
+  	194,1,0,0,0,194,196,1,0,0,0,195,193,1,0,0,0,196,200,5,15,0,0,197,199,
+  	5,26,0,0,198,197,1,0,0,0,199,202,1,0,0,0,200,198,1,0,0,0,200,201,1,0,
+  	0,0,201,203,1,0,0,0,202,200,1,0,0,0,203,205,3,24,12,0,204,193,1,0,0,0,
+  	204,205,1,0,0,0,205,275,1,0,0,0,206,221,3,10,5,0,207,209,5,26,0,0,208,
+  	207,1,0,0,0,209,212,1,0,0,0,210,208,1,0,0,0,210,211,1,0,0,0,211,213,1,
+  	0,0,0,212,210,1,0,0,0,213,217,5,15,0,0,214,216,5,26,0,0,215,214,1,0,0,
+  	0,216,219,1,0,0,0,217,215,1,0,0,0,217,218,1,0,0,0,218,220,1,0,0,0,219,
+  	217,1,0,0,0,220,222,3,24,12,0,221,210,1,0,0,0,221,222,1,0,0,0,222,275,
+  	1,0,0,0,223,238,3,16,8,0,224,226,5,26,0,0,225,224,1,0,0,0,226,229,1,0,
+  	0,0,227,225,1,0,0,0,227,228,1,0,0,0,228,230,1,0,0,0,229,227,1,0,0,0,230,
+  	234,5,15,0,0,231,233,5,26,0,0,232,231,1,0,0,0,233,236,1,0,0,0,234,232,
+  	1,0,0,0,234,235,1,0,0,0,235,237,1,0,0,0,236,234,1,0,0,0,237,239,3,24,
+  	12,0,238,227,1,0,0,0,238,239,1,0,0,0,239,275,1,0,0,0,240,255,3,20,10,
+  	0,241,243,5,26,0,0,242,241,1,0,0,0,243,246,1,0,0,0,244,242,1,0,0,0,244,
+  	245,1,0,0,0,245,247,1,0,0,0,246,244,1,0,0,0,247,251,5,15,0,0,248,250,
+  	5,26,0,0,249,248,1,0,0,0,250,253,1,0,0,0,251,249,1,0,0,0,251,252,1,0,
+  	0,0,252,254,1,0,0,0,253,251,1,0,0,0,254,256,3,24,12,0,255,244,1,0,0,0,
+  	255,256,1,0,0,0,256,275,1,0,0,0,257,272,3,22,11,0,258,260,5,26,0,0,259,
+  	258,1,0,0,0,260,263,1,0,0,0,261,259,1,0,0,0,261,262,1,0,0,0,262,264,1,
+  	0,0,0,263,261,1,0,0,0,264,268,5,15,0,0,265,267,5,26,0,0,266,265,1,0,0,
+  	0,267,270,1,0,0,0,268,266,1,0,0,0,268,269,1,0,0,0,269,271,1,0,0,0,270,
+  	268,1,0,0,0,271,273,3,24,12,0,272,261,1,0,0,0,272,273,1,0,0,0,273,275,
+  	1,0,0,0,274,154,1,0,0,0,274,155,1,0,0,0,274,172,1,0,0,0,274,189,1,0,0,
+  	0,274,206,1,0,0,0,274,223,1,0,0,0,274,240,1,0,0,0,274,257,1,0,0,0,275,
+  	25,1,0,0,0,276,277,5,12,0,0,277,278,5,22,0,0,278,279,5,18,0,0,279,280,
+  	5,25,0,0,280,281,5,18,0,0,281,27,1,0,0,0,282,286,5,25,0,0,283,285,5,26,
+  	0,0,284,283,1,0,0,0,285,288,1,0,0,0,286,284,1,0,0,0,286,287,1,0,0,0,287,
+  	289,1,0,0,0,288,286,1,0,0,0,289,293,5,1,0,0,290,292,5,26,0,0,291,290,
+  	1,0,0,0,292,295,1,0,0,0,293,291,1,0,0,0,293,294,1,0,0,0,294,296,1,0,0,
+  	0,295,293,1,0,0,0,296,300,5,4,0,0,297,299,5,26,0,0,298,297,1,0,0,0,299,
+  	302,1,0,0,0,300,298,1,0,0,0,300,301,1,0,0,0,301,303,1,0,0,0,302,300,1,
+  	0,0,0,303,307,3,24,12,0,304,306,5,26,0,0,305,304,1,0,0,0,306,309,1,0,
+  	0,0,307,305,1,0,0,0,307,308,1,0,0,0,308,310,1,0,0,0,309,307,1,0,0,0,310,
+  	311,5,5,0,0,311,29,1,0,0,0,312,314,3,26,13,0,313,312,1,0,0,0,314,317,
+  	1,0,0,0,315,313,1,0,0,0,315,316,1,0,0,0,316,321,1,0,0,0,317,315,1,0,0,
+  	0,318,320,5,26,0,0,319,318,1,0,0,0,320,323,1,0,0,0,321,319,1,0,0,0,321,
+  	322,1,0,0,0,322,327,1,0,0,0,323,321,1,0,0,0,324,326,3,28,14,0,325,324,
+  	1,0,0,0,326,329,1,0,0,0,327,325,1,0,0,0,327,328,1,0,0,0,328,31,1,0,0,
+  	0,329,327,1,0,0,0,48,41,47,53,55,62,67,74,79,82,90,95,101,108,114,120,
+  	127,134,140,147,159,166,170,176,183,187,193,200,204,210,217,221,227,234,
+  	238,244,251,255,261,268,272,274,286,293,300,307,315,321,327
   };
   staticData->serializedATN = antlr4::atn::SerializedATNView(serializedATNSegment, sizeof(serializedATNSegment) / sizeof(serializedATNSegment[0]));
 
@@ -273,7 +276,7 @@ fmcSGrammar::LitContext* fmcSGrammar::lit() {
   });
   try {
     enterOuterAlt(_localctx, 1);
-    setState(30);
+    setState(32);
     _la = _input->LA(1);
     if (!(_la == fmcSGrammar::INT
 
@@ -335,7 +338,7 @@ fmcSGrammar::VarContext* fmcSGrammar::var() {
   });
   try {
     enterOuterAlt(_localctx, 1);
-    setState(32);
+    setState(34);
     match(fmcSGrammar::ID);
    
   }
@@ -388,8 +391,279 @@ fmcSGrammar::LocContext* fmcSGrammar::loc() {
   });
   try {
     enterOuterAlt(_localctx, 1);
-    setState(34);
+    setState(36);
     match(fmcSGrammar::ID);
+   
+  }
+  catch (RecognitionException &e) {
+    _errHandler->reportError(this, e);
+    _localctx->exception = std::current_exception();
+    _errHandler->recover(this, _localctx->exception);
+  }
+
+  return _localctx;
+}
+
+//----------------- SeqVarContext ------------------------------------------------------------------
+
+fmcSGrammar::SeqVarContext::SeqVarContext(ParserRuleContext *parent, size_t invokingState)
+  : ParserRuleContext(parent, invokingState) {
+}
+
+tree::TerminalNode* fmcSGrammar::SeqVarContext::ID() {
+  return getToken(fmcSGrammar::ID, 0);
+}
+
+tree::TerminalNode* fmcSGrammar::SeqVarContext::EXCLAM() {
+  return getToken(fmcSGrammar::EXCLAM, 0);
+}
+
+
+size_t fmcSGrammar::SeqVarContext::getRuleIndex() const {
+  return fmcSGrammar::RuleSeqVar;
+}
+
+void fmcSGrammar::SeqVarContext::enterRule(tree::ParseTreeListener *listener) {
+  auto parserListener = dynamic_cast<fmcSGrammarListener *>(listener);
+  if (parserListener != nullptr)
+    parserListener->enterSeqVar(this);
+}
+
+void fmcSGrammar::SeqVarContext::exitRule(tree::ParseTreeListener *listener) {
+  auto parserListener = dynamic_cast<fmcSGrammarListener *>(listener);
+  if (parserListener != nullptr)
+    parserListener->exitSeqVar(this);
+}
+
+fmcSGrammar::SeqVarContext* fmcSGrammar::seqVar() {
+  SeqVarContext *_localctx = _tracker.createInstance<SeqVarContext>(_ctx, getState());
+  enterRule(_localctx, 6, fmcSGrammar::RuleSeqVar);
+
+#if __cplusplus > 201703L
+  auto onExit = finally([=, this] {
+#else
+  auto onExit = finally([=] {
+#endif
+    exitRule();
+  });
+  try {
+    setState(41);
+    _errHandler->sync(this);
+    switch (getInterpreter<atn::ParserATNSimulator>()->adaptivePredict(_input, 0, _ctx)) {
+    case 1: {
+      enterOuterAlt(_localctx, 1);
+      setState(38);
+      match(fmcSGrammar::ID);
+      break;
+    }
+
+    case 2: {
+      enterOuterAlt(_localctx, 2);
+      setState(39);
+      match(fmcSGrammar::ID);
+      setState(40);
+      match(fmcSGrammar::EXCLAM);
+      break;
+    }
+
+    default:
+      break;
+    }
+   
+  }
+  catch (RecognitionException &e) {
+    _errHandler->reportError(this, e);
+    _localctx->exception = std::current_exception();
+    _errHandler->recover(this, _localctx->exception);
+  }
+
+  return _localctx;
+}
+
+//----------------- SeqAppContext ------------------------------------------------------------------
+
+fmcSGrammar::SeqAppContext::SeqAppContext(ParserRuleContext *parent, size_t invokingState)
+  : ParserRuleContext(parent, invokingState) {
+}
+
+tree::TerminalNode* fmcSGrammar::SeqAppContext::LSQUARE() {
+  return getToken(fmcSGrammar::LSQUARE, 0);
+}
+
+fmcSGrammar::SeqTermContext* fmcSGrammar::SeqAppContext::seqTerm() {
+  return getRuleContext<fmcSGrammar::SeqTermContext>(0);
+}
+
+tree::TerminalNode* fmcSGrammar::SeqAppContext::RSQUARE() {
+  return getToken(fmcSGrammar::RSQUARE, 0);
+}
+
+fmcSGrammar::LocContext* fmcSGrammar::SeqAppContext::loc() {
+  return getRuleContext<fmcSGrammar::LocContext>(0);
+}
+
+fmcSGrammar::LitContext* fmcSGrammar::SeqAppContext::lit() {
+  return getRuleContext<fmcSGrammar::LitContext>(0);
+}
+
+
+size_t fmcSGrammar::SeqAppContext::getRuleIndex() const {
+  return fmcSGrammar::RuleSeqApp;
+}
+
+void fmcSGrammar::SeqAppContext::enterRule(tree::ParseTreeListener *listener) {
+  auto parserListener = dynamic_cast<fmcSGrammarListener *>(listener);
+  if (parserListener != nullptr)
+    parserListener->enterSeqApp(this);
+}
+
+void fmcSGrammar::SeqAppContext::exitRule(tree::ParseTreeListener *listener) {
+  auto parserListener = dynamic_cast<fmcSGrammarListener *>(listener);
+  if (parserListener != nullptr)
+    parserListener->exitSeqApp(this);
+}
+
+fmcSGrammar::SeqAppContext* fmcSGrammar::seqApp() {
+  SeqAppContext *_localctx = _tracker.createInstance<SeqAppContext>(_ctx, getState());
+  enterRule(_localctx, 8, fmcSGrammar::RuleSeqApp);
+  size_t _la = 0;
+
+#if __cplusplus > 201703L
+  auto onExit = finally([=, this] {
+#else
+  auto onExit = finally([=] {
+#endif
+    exitRule();
+  });
+  try {
+    setState(55);
+    _errHandler->sync(this);
+    switch (getInterpreter<atn::ParserATNSimulator>()->adaptivePredict(_input, 3, _ctx)) {
+    case 1: {
+      enterOuterAlt(_localctx, 1);
+      setState(43);
+      match(fmcSGrammar::LSQUARE);
+      setState(44);
+      seqTerm();
+      setState(45);
+      match(fmcSGrammar::RSQUARE);
+      setState(47);
+      _errHandler->sync(this);
+
+      _la = _input->LA(1);
+      if (_la == fmcSGrammar::ID) {
+        setState(46);
+        loc();
+      }
+      break;
+    }
+
+    case 2: {
+      enterOuterAlt(_localctx, 2);
+      setState(49);
+      match(fmcSGrammar::LSQUARE);
+      setState(50);
+      lit();
+      setState(51);
+      match(fmcSGrammar::RSQUARE);
+      setState(53);
+      _errHandler->sync(this);
+
+      _la = _input->LA(1);
+      if (_la == fmcSGrammar::ID) {
+        setState(52);
+        loc();
+      }
+      break;
+    }
+
+    default:
+      break;
+    }
+   
+  }
+  catch (RecognitionException &e) {
+    _errHandler->reportError(this, e);
+    _localctx->exception = std::current_exception();
+    _errHandler->recover(this, _localctx->exception);
+  }
+
+  return _localctx;
+}
+
+//----------------- SeqLocAppContext ------------------------------------------------------------------
+
+fmcSGrammar::SeqLocAppContext::SeqLocAppContext(ParserRuleContext *parent, size_t invokingState)
+  : ParserRuleContext(parent, invokingState) {
+}
+
+tree::TerminalNode* fmcSGrammar::SeqLocAppContext::LSQUARE() {
+  return getToken(fmcSGrammar::LSQUARE, 0);
+}
+
+tree::TerminalNode* fmcSGrammar::SeqLocAppContext::HASH() {
+  return getToken(fmcSGrammar::HASH, 0);
+}
+
+fmcSGrammar::VarContext* fmcSGrammar::SeqLocAppContext::var() {
+  return getRuleContext<fmcSGrammar::VarContext>(0);
+}
+
+tree::TerminalNode* fmcSGrammar::SeqLocAppContext::RSQUARE() {
+  return getToken(fmcSGrammar::RSQUARE, 0);
+}
+
+fmcSGrammar::LocContext* fmcSGrammar::SeqLocAppContext::loc() {
+  return getRuleContext<fmcSGrammar::LocContext>(0);
+}
+
+
+size_t fmcSGrammar::SeqLocAppContext::getRuleIndex() const {
+  return fmcSGrammar::RuleSeqLocApp;
+}
+
+void fmcSGrammar::SeqLocAppContext::enterRule(tree::ParseTreeListener *listener) {
+  auto parserListener = dynamic_cast<fmcSGrammarListener *>(listener);
+  if (parserListener != nullptr)
+    parserListener->enterSeqLocApp(this);
+}
+
+void fmcSGrammar::SeqLocAppContext::exitRule(tree::ParseTreeListener *listener) {
+  auto parserListener = dynamic_cast<fmcSGrammarListener *>(listener);
+  if (parserListener != nullptr)
+    parserListener->exitSeqLocApp(this);
+}
+
+fmcSGrammar::SeqLocAppContext* fmcSGrammar::seqLocApp() {
+  SeqLocAppContext *_localctx = _tracker.createInstance<SeqLocAppContext>(_ctx, getState());
+  enterRule(_localctx, 10, fmcSGrammar::RuleSeqLocApp);
+  size_t _la = 0;
+
+#if __cplusplus > 201703L
+  auto onExit = finally([=, this] {
+#else
+  auto onExit = finally([=] {
+#endif
+    exitRule();
+  });
+  try {
+    enterOuterAlt(_localctx, 1);
+    setState(57);
+    match(fmcSGrammar::LSQUARE);
+    setState(58);
+    match(fmcSGrammar::HASH);
+    setState(59);
+    var();
+    setState(60);
+    match(fmcSGrammar::RSQUARE);
+    setState(62);
+    _errHandler->sync(this);
+
+    _la = _input->LA(1);
+    if (_la == fmcSGrammar::ID) {
+      setState(61);
+      loc();
+    }
    
   }
   catch (RecognitionException &e) {
@@ -430,7 +704,7 @@ void fmcSGrammar::BinderContext::exitRule(tree::ParseTreeListener *listener) {
 
 fmcSGrammar::BinderContext* fmcSGrammar::binder() {
   BinderContext *_localctx = _tracker.createInstance<BinderContext>(_ctx, getState());
-  enterRule(_localctx, 6, fmcSGrammar::RuleBinder);
+  enterRule(_localctx, 12, fmcSGrammar::RuleBinder);
 
 #if __cplusplus > 201703L
   auto onExit = finally([=, this] {
@@ -441,7 +715,7 @@ fmcSGrammar::BinderContext* fmcSGrammar::binder() {
   });
   try {
     enterOuterAlt(_localctx, 1);
-    setState(36);
+    setState(64);
     match(fmcSGrammar::ID);
    
   }
@@ -454,163 +728,52 @@ fmcSGrammar::BinderContext* fmcSGrammar::binder() {
   return _localctx;
 }
 
-//----------------- AppContext ------------------------------------------------------------------
+//----------------- SeqAbsContext ------------------------------------------------------------------
 
-fmcSGrammar::AppContext::AppContext(ParserRuleContext *parent, size_t invokingState)
+fmcSGrammar::SeqAbsContext::SeqAbsContext(ParserRuleContext *parent, size_t invokingState)
   : ParserRuleContext(parent, invokingState) {
 }
 
-tree::TerminalNode* fmcSGrammar::AppContext::LSQUARE() {
-  return getToken(fmcSGrammar::LSQUARE, 0);
-}
-
-fmcSGrammar::TermContext* fmcSGrammar::AppContext::term() {
-  return getRuleContext<fmcSGrammar::TermContext>(0);
-}
-
-tree::TerminalNode* fmcSGrammar::AppContext::RSQUARE() {
-  return getToken(fmcSGrammar::RSQUARE, 0);
-}
-
-fmcSGrammar::LocContext* fmcSGrammar::AppContext::loc() {
-  return getRuleContext<fmcSGrammar::LocContext>(0);
-}
-
-fmcSGrammar::LitContext* fmcSGrammar::AppContext::lit() {
-  return getRuleContext<fmcSGrammar::LitContext>(0);
-}
-
-
-size_t fmcSGrammar::AppContext::getRuleIndex() const {
-  return fmcSGrammar::RuleApp;
-}
-
-void fmcSGrammar::AppContext::enterRule(tree::ParseTreeListener *listener) {
-  auto parserListener = dynamic_cast<fmcSGrammarListener *>(listener);
-  if (parserListener != nullptr)
-    parserListener->enterApp(this);
-}
-
-void fmcSGrammar::AppContext::exitRule(tree::ParseTreeListener *listener) {
-  auto parserListener = dynamic_cast<fmcSGrammarListener *>(listener);
-  if (parserListener != nullptr)
-    parserListener->exitApp(this);
-}
-
-fmcSGrammar::AppContext* fmcSGrammar::app() {
-  AppContext *_localctx = _tracker.createInstance<AppContext>(_ctx, getState());
-  enterRule(_localctx, 8, fmcSGrammar::RuleApp);
-  size_t _la = 0;
-
-#if __cplusplus > 201703L
-  auto onExit = finally([=, this] {
-#else
-  auto onExit = finally([=] {
-#endif
-    exitRule();
-  });
-  try {
-    setState(50);
-    _errHandler->sync(this);
-    switch (getInterpreter<atn::ParserATNSimulator>()->adaptivePredict(_input, 2, _ctx)) {
-    case 1: {
-      enterOuterAlt(_localctx, 1);
-      setState(38);
-      match(fmcSGrammar::LSQUARE);
-      setState(39);
-      term();
-      setState(40);
-      match(fmcSGrammar::RSQUARE);
-      setState(42);
-      _errHandler->sync(this);
-
-      _la = _input->LA(1);
-      if (_la == fmcSGrammar::ID) {
-        setState(41);
-        loc();
-      }
-      break;
-    }
-
-    case 2: {
-      enterOuterAlt(_localctx, 2);
-      setState(44);
-      match(fmcSGrammar::LSQUARE);
-      setState(45);
-      lit();
-      setState(46);
-      match(fmcSGrammar::RSQUARE);
-      setState(48);
-      _errHandler->sync(this);
-
-      _la = _input->LA(1);
-      if (_la == fmcSGrammar::ID) {
-        setState(47);
-        loc();
-      }
-      break;
-    }
-
-    default:
-      break;
-    }
-   
-  }
-  catch (RecognitionException &e) {
-    _errHandler->reportError(this, e);
-    _localctx->exception = std::current_exception();
-    _errHandler->recover(this, _localctx->exception);
-  }
-
-  return _localctx;
-}
-
-//----------------- AbsContext ------------------------------------------------------------------
-
-fmcSGrammar::AbsContext::AbsContext(ParserRuleContext *parent, size_t invokingState)
-  : ParserRuleContext(parent, invokingState) {
-}
-
-tree::TerminalNode* fmcSGrammar::AbsContext::LTRIAN() {
+tree::TerminalNode* fmcSGrammar::SeqAbsContext::LTRIAN() {
   return getToken(fmcSGrammar::LTRIAN, 0);
 }
 
-fmcSGrammar::BinderContext* fmcSGrammar::AbsContext::binder() {
+fmcSGrammar::BinderContext* fmcSGrammar::SeqAbsContext::binder() {
   return getRuleContext<fmcSGrammar::BinderContext>(0);
 }
 
-tree::TerminalNode* fmcSGrammar::AbsContext::RTRIAN() {
+tree::TerminalNode* fmcSGrammar::SeqAbsContext::RTRIAN() {
   return getToken(fmcSGrammar::RTRIAN, 0);
 }
 
-fmcSGrammar::LocContext* fmcSGrammar::AbsContext::loc() {
+fmcSGrammar::LocContext* fmcSGrammar::SeqAbsContext::loc() {
   return getRuleContext<fmcSGrammar::LocContext>(0);
 }
 
-tree::TerminalNode* fmcSGrammar::AbsContext::UNDERSCORE() {
+tree::TerminalNode* fmcSGrammar::SeqAbsContext::UNDERSCORE() {
   return getToken(fmcSGrammar::UNDERSCORE, 0);
 }
 
 
-size_t fmcSGrammar::AbsContext::getRuleIndex() const {
-  return fmcSGrammar::RuleAbs;
+size_t fmcSGrammar::SeqAbsContext::getRuleIndex() const {
+  return fmcSGrammar::RuleSeqAbs;
 }
 
-void fmcSGrammar::AbsContext::enterRule(tree::ParseTreeListener *listener) {
+void fmcSGrammar::SeqAbsContext::enterRule(tree::ParseTreeListener *listener) {
   auto parserListener = dynamic_cast<fmcSGrammarListener *>(listener);
   if (parserListener != nullptr)
-    parserListener->enterAbs(this);
+    parserListener->enterSeqAbs(this);
 }
 
-void fmcSGrammar::AbsContext::exitRule(tree::ParseTreeListener *listener) {
+void fmcSGrammar::SeqAbsContext::exitRule(tree::ParseTreeListener *listener) {
   auto parserListener = dynamic_cast<fmcSGrammarListener *>(listener);
   if (parserListener != nullptr)
-    parserListener->exitAbs(this);
+    parserListener->exitSeqAbs(this);
 }
 
-fmcSGrammar::AbsContext* fmcSGrammar::abs() {
-  AbsContext *_localctx = _tracker.createInstance<AbsContext>(_ctx, getState());
-  enterRule(_localctx, 10, fmcSGrammar::RuleAbs);
+fmcSGrammar::SeqAbsContext* fmcSGrammar::seqAbs() {
+  SeqAbsContext *_localctx = _tracker.createInstance<SeqAbsContext>(_ctx, getState());
+  enterRule(_localctx, 14, fmcSGrammar::RuleSeqAbs);
   size_t _la = 0;
 
 #if __cplusplus > 201703L
@@ -621,43 +784,43 @@ fmcSGrammar::AbsContext* fmcSGrammar::abs() {
     exitRule();
   });
   try {
-    setState(65);
+    setState(79);
     _errHandler->sync(this);
-    switch (getInterpreter<atn::ParserATNSimulator>()->adaptivePredict(_input, 5, _ctx)) {
+    switch (getInterpreter<atn::ParserATNSimulator>()->adaptivePredict(_input, 7, _ctx)) {
     case 1: {
       enterOuterAlt(_localctx, 1);
-      setState(53);
+      setState(67);
       _errHandler->sync(this);
 
       _la = _input->LA(1);
       if (_la == fmcSGrammar::ID) {
-        setState(52);
+        setState(66);
         loc();
       }
-      setState(55);
+      setState(69);
       match(fmcSGrammar::LTRIAN);
-      setState(56);
+      setState(70);
       binder();
-      setState(57);
+      setState(71);
       match(fmcSGrammar::RTRIAN);
       break;
     }
 
     case 2: {
       enterOuterAlt(_localctx, 2);
-      setState(60);
+      setState(74);
       _errHandler->sync(this);
 
       _la = _input->LA(1);
       if (_la == fmcSGrammar::ID) {
-        setState(59);
+        setState(73);
         loc();
       }
-      setState(62);
+      setState(76);
       match(fmcSGrammar::LTRIAN);
-      setState(63);
+      setState(77);
       match(fmcSGrammar::UNDERSCORE);
-      setState(64);
+      setState(78);
       match(fmcSGrammar::RTRIAN);
       break;
     }
@@ -676,140 +839,56 @@ fmcSGrammar::AbsContext* fmcSGrammar::abs() {
   return _localctx;
 }
 
-//----------------- LocAppContext ------------------------------------------------------------------
+//----------------- SeqLocAbsContext ------------------------------------------------------------------
 
-fmcSGrammar::LocAppContext::LocAppContext(ParserRuleContext *parent, size_t invokingState)
+fmcSGrammar::SeqLocAbsContext::SeqLocAbsContext(ParserRuleContext *parent, size_t invokingState)
   : ParserRuleContext(parent, invokingState) {
 }
 
-tree::TerminalNode* fmcSGrammar::LocAppContext::LSQUARE() {
-  return getToken(fmcSGrammar::LSQUARE, 0);
-}
-
-tree::TerminalNode* fmcSGrammar::LocAppContext::HASH() {
-  return getToken(fmcSGrammar::HASH, 0);
-}
-
-fmcSGrammar::VarContext* fmcSGrammar::LocAppContext::var() {
-  return getRuleContext<fmcSGrammar::VarContext>(0);
-}
-
-tree::TerminalNode* fmcSGrammar::LocAppContext::RSQUARE() {
-  return getToken(fmcSGrammar::RSQUARE, 0);
-}
-
-fmcSGrammar::LocContext* fmcSGrammar::LocAppContext::loc() {
-  return getRuleContext<fmcSGrammar::LocContext>(0);
-}
-
-
-size_t fmcSGrammar::LocAppContext::getRuleIndex() const {
-  return fmcSGrammar::RuleLocApp;
-}
-
-void fmcSGrammar::LocAppContext::enterRule(tree::ParseTreeListener *listener) {
-  auto parserListener = dynamic_cast<fmcSGrammarListener *>(listener);
-  if (parserListener != nullptr)
-    parserListener->enterLocApp(this);
-}
-
-void fmcSGrammar::LocAppContext::exitRule(tree::ParseTreeListener *listener) {
-  auto parserListener = dynamic_cast<fmcSGrammarListener *>(listener);
-  if (parserListener != nullptr)
-    parserListener->exitLocApp(this);
-}
-
-fmcSGrammar::LocAppContext* fmcSGrammar::locApp() {
-  LocAppContext *_localctx = _tracker.createInstance<LocAppContext>(_ctx, getState());
-  enterRule(_localctx, 12, fmcSGrammar::RuleLocApp);
-  size_t _la = 0;
-
-#if __cplusplus > 201703L
-  auto onExit = finally([=, this] {
-#else
-  auto onExit = finally([=] {
-#endif
-    exitRule();
-  });
-  try {
-    enterOuterAlt(_localctx, 1);
-    setState(67);
-    match(fmcSGrammar::LSQUARE);
-    setState(68);
-    match(fmcSGrammar::HASH);
-    setState(69);
-    var();
-    setState(70);
-    match(fmcSGrammar::RSQUARE);
-    setState(72);
-    _errHandler->sync(this);
-
-    _la = _input->LA(1);
-    if (_la == fmcSGrammar::ID) {
-      setState(71);
-      loc();
-    }
-   
-  }
-  catch (RecognitionException &e) {
-    _errHandler->reportError(this, e);
-    _localctx->exception = std::current_exception();
-    _errHandler->recover(this, _localctx->exception);
-  }
-
-  return _localctx;
-}
-
-//----------------- LocAbsContext ------------------------------------------------------------------
-
-fmcSGrammar::LocAbsContext::LocAbsContext(ParserRuleContext *parent, size_t invokingState)
-  : ParserRuleContext(parent, invokingState) {
-}
-
-tree::TerminalNode* fmcSGrammar::LocAbsContext::LTRIAN() {
+tree::TerminalNode* fmcSGrammar::SeqLocAbsContext::LTRIAN() {
   return getToken(fmcSGrammar::LTRIAN, 0);
 }
 
-tree::TerminalNode* fmcSGrammar::LocAbsContext::AT() {
+tree::TerminalNode* fmcSGrammar::SeqLocAbsContext::AT() {
   return getToken(fmcSGrammar::AT, 0);
 }
 
-fmcSGrammar::BinderContext* fmcSGrammar::LocAbsContext::binder() {
+fmcSGrammar::BinderContext* fmcSGrammar::SeqLocAbsContext::binder() {
   return getRuleContext<fmcSGrammar::BinderContext>(0);
 }
 
-tree::TerminalNode* fmcSGrammar::LocAbsContext::RTRIAN() {
+tree::TerminalNode* fmcSGrammar::SeqLocAbsContext::RTRIAN() {
   return getToken(fmcSGrammar::RTRIAN, 0);
 }
 
-fmcSGrammar::LocContext* fmcSGrammar::LocAbsContext::loc() {
+fmcSGrammar::LocContext* fmcSGrammar::SeqLocAbsContext::loc() {
   return getRuleContext<fmcSGrammar::LocContext>(0);
 }
 
-tree::TerminalNode* fmcSGrammar::LocAbsContext::UNDERSCORE() {
+tree::TerminalNode* fmcSGrammar::SeqLocAbsContext::UNDERSCORE() {
   return getToken(fmcSGrammar::UNDERSCORE, 0);
 }
 
 
-size_t fmcSGrammar::LocAbsContext::getRuleIndex() const {
-  return fmcSGrammar::RuleLocAbs;
+size_t fmcSGrammar::SeqLocAbsContext::getRuleIndex() const {
+  return fmcSGrammar::RuleSeqLocAbs;
 }
 
-void fmcSGrammar::LocAbsContext::enterRule(tree::ParseTreeListener *listener) {
+void fmcSGrammar::SeqLocAbsContext::enterRule(tree::ParseTreeListener *listener) {
   auto parserListener = dynamic_cast<fmcSGrammarListener *>(listener);
   if (parserListener != nullptr)
-    parserListener->enterLocAbs(this);
+    parserListener->enterSeqLocAbs(this);
 }
 
-void fmcSGrammar::LocAbsContext::exitRule(tree::ParseTreeListener *listener) {
+void fmcSGrammar::SeqLocAbsContext::exitRule(tree::ParseTreeListener *listener) {
   auto parserListener = dynamic_cast<fmcSGrammarListener *>(listener);
   if (parserListener != nullptr)
-    parserListener->exitLocAbs(this);
+    parserListener->exitSeqLocAbs(this);
 }
 
-fmcSGrammar::LocAbsContext* fmcSGrammar::locAbs() {
-  LocAbsContext *_localctx = _tracker.createInstance<LocAbsContext>(_ctx, getState());
-  enterRule(_localctx, 14, fmcSGrammar::RuleLocAbs);
+fmcSGrammar::SeqLocAbsContext* fmcSGrammar::seqLocAbs() {
+  SeqLocAbsContext *_localctx = _tracker.createInstance<SeqLocAbsContext>(_ctx, getState());
+  enterRule(_localctx, 16, fmcSGrammar::RuleSeqLocAbs);
   size_t _la = 0;
 
 #if __cplusplus > 201703L
@@ -820,45 +899,45 @@ fmcSGrammar::LocAbsContext* fmcSGrammar::locAbs() {
     exitRule();
   });
   try {
-    setState(88);
+    setState(95);
     _errHandler->sync(this);
-    switch (getInterpreter<atn::ParserATNSimulator>()->adaptivePredict(_input, 9, _ctx)) {
+    switch (getInterpreter<atn::ParserATNSimulator>()->adaptivePredict(_input, 10, _ctx)) {
     case 1: {
       enterOuterAlt(_localctx, 1);
-      setState(75);
+      setState(82);
       _errHandler->sync(this);
 
       _la = _input->LA(1);
       if (_la == fmcSGrammar::ID) {
-        setState(74);
+        setState(81);
         loc();
       }
-      setState(77);
+      setState(84);
       match(fmcSGrammar::LTRIAN);
-      setState(78);
+      setState(85);
       match(fmcSGrammar::AT);
-      setState(79);
+      setState(86);
       binder();
-      setState(80);
+      setState(87);
       match(fmcSGrammar::RTRIAN);
       break;
     }
 
     case 2: {
       enterOuterAlt(_localctx, 2);
-      setState(83);
+      setState(90);
       _errHandler->sync(this);
 
       _la = _input->LA(1);
       if (_la == fmcSGrammar::ID) {
-        setState(82);
+        setState(89);
         loc();
       }
-      setState(85);
+      setState(92);
       match(fmcSGrammar::LTRIAN);
-      setState(86);
+      setState(93);
       match(fmcSGrammar::UNDERSCORE);
-      setState(87);
+      setState(94);
       match(fmcSGrammar::RTRIAN);
       break;
     }
@@ -891,8 +970,8 @@ tree::TerminalNode* fmcSGrammar::CondContext::ARROW() {
   return getToken(fmcSGrammar::ARROW, 0);
 }
 
-fmcSGrammar::TermContext* fmcSGrammar::CondContext::term() {
-  return getRuleContext<fmcSGrammar::TermContext>(0);
+fmcSGrammar::SeqTermContext* fmcSGrammar::CondContext::seqTerm() {
+  return getRuleContext<fmcSGrammar::SeqTermContext>(0);
 }
 
 std::vector<tree::TerminalNode *> fmcSGrammar::CondContext::WS() {
@@ -922,7 +1001,7 @@ void fmcSGrammar::CondContext::exitRule(tree::ParseTreeListener *listener) {
 
 fmcSGrammar::CondContext* fmcSGrammar::cond() {
   CondContext *_localctx = _tracker.createInstance<CondContext>(_ctx, getState());
-  enterRule(_localctx, 16, fmcSGrammar::RuleCond);
+  enterRule(_localctx, 18, fmcSGrammar::RuleCond);
   size_t _la = 0;
 
 #if __cplusplus > 201703L
@@ -934,20 +1013,8 @@ fmcSGrammar::CondContext* fmcSGrammar::cond() {
   });
   try {
     enterOuterAlt(_localctx, 1);
-    setState(90);
-    lit();
-    setState(94);
-    _errHandler->sync(this);
-    _la = _input->LA(1);
-    while (_la == fmcSGrammar::WS) {
-      setState(91);
-      match(fmcSGrammar::WS);
-      setState(96);
-      _errHandler->sync(this);
-      _la = _input->LA(1);
-    }
     setState(97);
-    match(fmcSGrammar::ARROW);
+    lit();
     setState(101);
     _errHandler->sync(this);
     _la = _input->LA(1);
@@ -959,7 +1026,19 @@ fmcSGrammar::CondContext* fmcSGrammar::cond() {
       _la = _input->LA(1);
     }
     setState(104);
-    term();
+    match(fmcSGrammar::ARROW);
+    setState(108);
+    _errHandler->sync(this);
+    _la = _input->LA(1);
+    while (_la == fmcSGrammar::WS) {
+      setState(105);
+      match(fmcSGrammar::WS);
+      setState(110);
+      _errHandler->sync(this);
+      _la = _input->LA(1);
+    }
+    setState(111);
+    seqTerm();
    
   }
   catch (RecognitionException &e) {
@@ -971,72 +1050,72 @@ fmcSGrammar::CondContext* fmcSGrammar::cond() {
   return _localctx;
 }
 
-//----------------- CondsContext ------------------------------------------------------------------
+//----------------- SeqCondsContext ------------------------------------------------------------------
 
-fmcSGrammar::CondsContext::CondsContext(ParserRuleContext *parent, size_t invokingState)
+fmcSGrammar::SeqCondsContext::SeqCondsContext(ParserRuleContext *parent, size_t invokingState)
   : ParserRuleContext(parent, invokingState) {
 }
 
-tree::TerminalNode* fmcSGrammar::CondsContext::LCURLY() {
+tree::TerminalNode* fmcSGrammar::SeqCondsContext::LCURLY() {
   return getToken(fmcSGrammar::LCURLY, 0);
 }
 
-fmcSGrammar::TermContext* fmcSGrammar::CondsContext::term() {
-  return getRuleContext<fmcSGrammar::TermContext>(0);
+fmcSGrammar::SeqTermContext* fmcSGrammar::SeqCondsContext::seqTerm() {
+  return getRuleContext<fmcSGrammar::SeqTermContext>(0);
 }
 
-tree::TerminalNode* fmcSGrammar::CondsContext::RCURLY() {
+tree::TerminalNode* fmcSGrammar::SeqCondsContext::RCURLY() {
   return getToken(fmcSGrammar::RCURLY, 0);
 }
 
-fmcSGrammar::LocContext* fmcSGrammar::CondsContext::loc() {
+fmcSGrammar::LocContext* fmcSGrammar::SeqCondsContext::loc() {
   return getRuleContext<fmcSGrammar::LocContext>(0);
 }
 
-std::vector<fmcSGrammar::CondContext *> fmcSGrammar::CondsContext::cond() {
+std::vector<fmcSGrammar::CondContext *> fmcSGrammar::SeqCondsContext::cond() {
   return getRuleContexts<fmcSGrammar::CondContext>();
 }
 
-fmcSGrammar::CondContext* fmcSGrammar::CondsContext::cond(size_t i) {
+fmcSGrammar::CondContext* fmcSGrammar::SeqCondsContext::cond(size_t i) {
   return getRuleContext<fmcSGrammar::CondContext>(i);
 }
 
-std::vector<tree::TerminalNode *> fmcSGrammar::CondsContext::COMMA() {
+std::vector<tree::TerminalNode *> fmcSGrammar::SeqCondsContext::COMMA() {
   return getTokens(fmcSGrammar::COMMA);
 }
 
-tree::TerminalNode* fmcSGrammar::CondsContext::COMMA(size_t i) {
+tree::TerminalNode* fmcSGrammar::SeqCondsContext::COMMA(size_t i) {
   return getToken(fmcSGrammar::COMMA, i);
 }
 
-std::vector<tree::TerminalNode *> fmcSGrammar::CondsContext::WS() {
+std::vector<tree::TerminalNode *> fmcSGrammar::SeqCondsContext::WS() {
   return getTokens(fmcSGrammar::WS);
 }
 
-tree::TerminalNode* fmcSGrammar::CondsContext::WS(size_t i) {
+tree::TerminalNode* fmcSGrammar::SeqCondsContext::WS(size_t i) {
   return getToken(fmcSGrammar::WS, i);
 }
 
 
-size_t fmcSGrammar::CondsContext::getRuleIndex() const {
-  return fmcSGrammar::RuleConds;
+size_t fmcSGrammar::SeqCondsContext::getRuleIndex() const {
+  return fmcSGrammar::RuleSeqConds;
 }
 
-void fmcSGrammar::CondsContext::enterRule(tree::ParseTreeListener *listener) {
+void fmcSGrammar::SeqCondsContext::enterRule(tree::ParseTreeListener *listener) {
   auto parserListener = dynamic_cast<fmcSGrammarListener *>(listener);
   if (parserListener != nullptr)
-    parserListener->enterConds(this);
+    parserListener->enterSeqConds(this);
 }
 
-void fmcSGrammar::CondsContext::exitRule(tree::ParseTreeListener *listener) {
+void fmcSGrammar::SeqCondsContext::exitRule(tree::ParseTreeListener *listener) {
   auto parserListener = dynamic_cast<fmcSGrammarListener *>(listener);
   if (parserListener != nullptr)
-    parserListener->exitConds(this);
+    parserListener->exitSeqConds(this);
 }
 
-fmcSGrammar::CondsContext* fmcSGrammar::conds() {
-  CondsContext *_localctx = _tracker.createInstance<CondsContext>(_ctx, getState());
-  enterRule(_localctx, 18, fmcSGrammar::RuleConds);
+fmcSGrammar::SeqCondsContext* fmcSGrammar::seqConds() {
+  SeqCondsContext *_localctx = _tracker.createInstance<SeqCondsContext>(_ctx, getState());
+  enterRule(_localctx, 20, fmcSGrammar::RuleSeqConds);
   size_t _la = 0;
 
 #if __cplusplus > 201703L
@@ -1049,33 +1128,21 @@ fmcSGrammar::CondsContext* fmcSGrammar::conds() {
   try {
     size_t alt;
     enterOuterAlt(_localctx, 1);
-    setState(107);
+    setState(114);
     _errHandler->sync(this);
 
     _la = _input->LA(1);
     if (_la == fmcSGrammar::ID) {
-      setState(106);
+      setState(113);
       loc();
     }
-    setState(109);
+    setState(116);
     match(fmcSGrammar::LCURLY);
-    setState(127);
+    setState(134);
     _errHandler->sync(this);
-    alt = getInterpreter<atn::ParserATNSimulator>()->adaptivePredict(_input, 15, _ctx);
+    alt = getInterpreter<atn::ParserATNSimulator>()->adaptivePredict(_input, 16, _ctx);
     while (alt != 2 && alt != atn::ATN::INVALID_ALT_NUMBER) {
       if (alt == 1) {
-        setState(113);
-        _errHandler->sync(this);
-        _la = _input->LA(1);
-        while (_la == fmcSGrammar::WS) {
-          setState(110);
-          match(fmcSGrammar::WS);
-          setState(115);
-          _errHandler->sync(this);
-          _la = _input->LA(1);
-        }
-        setState(116);
-        cond();
         setState(120);
         _errHandler->sync(this);
         _la = _input->LA(1);
@@ -1087,24 +1154,24 @@ fmcSGrammar::CondsContext* fmcSGrammar::conds() {
           _la = _input->LA(1);
         }
         setState(123);
+        cond();
+        setState(127);
+        _errHandler->sync(this);
+        _la = _input->LA(1);
+        while (_la == fmcSGrammar::WS) {
+          setState(124);
+          match(fmcSGrammar::WS);
+          setState(129);
+          _errHandler->sync(this);
+          _la = _input->LA(1);
+        }
+        setState(130);
         match(fmcSGrammar::COMMA); 
       }
-      setState(129);
+      setState(136);
       _errHandler->sync(this);
-      alt = getInterpreter<atn::ParserATNSimulator>()->adaptivePredict(_input, 15, _ctx);
+      alt = getInterpreter<atn::ParserATNSimulator>()->adaptivePredict(_input, 16, _ctx);
     }
-    setState(133);
-    _errHandler->sync(this);
-    _la = _input->LA(1);
-    while (_la == fmcSGrammar::WS) {
-      setState(130);
-      match(fmcSGrammar::WS);
-      setState(135);
-      _errHandler->sync(this);
-      _la = _input->LA(1);
-    }
-    setState(136);
-    term();
     setState(140);
     _errHandler->sync(this);
     _la = _input->LA(1);
@@ -1116,6 +1183,18 @@ fmcSGrammar::CondsContext* fmcSGrammar::conds() {
       _la = _input->LA(1);
     }
     setState(143);
+    seqTerm();
+    setState(147);
+    _errHandler->sync(this);
+    _la = _input->LA(1);
+    while (_la == fmcSGrammar::WS) {
+      setState(144);
+      match(fmcSGrammar::WS);
+      setState(149);
+      _errHandler->sync(this);
+      _la = _input->LA(1);
+    }
+    setState(150);
     match(fmcSGrammar::RCURLY);
    
   }
@@ -1128,40 +1207,40 @@ fmcSGrammar::CondsContext* fmcSGrammar::conds() {
   return _localctx;
 }
 
-//----------------- OpContext ------------------------------------------------------------------
+//----------------- SeqOpContext ------------------------------------------------------------------
 
-fmcSGrammar::OpContext::OpContext(ParserRuleContext *parent, size_t invokingState)
+fmcSGrammar::SeqOpContext::SeqOpContext(ParserRuleContext *parent, size_t invokingState)
   : ParserRuleContext(parent, invokingState) {
 }
 
-tree::TerminalNode* fmcSGrammar::OpContext::PLUS() {
+tree::TerminalNode* fmcSGrammar::SeqOpContext::PLUS() {
   return getToken(fmcSGrammar::PLUS, 0);
 }
 
-tree::TerminalNode* fmcSGrammar::OpContext::LTRIAN() {
+tree::TerminalNode* fmcSGrammar::SeqOpContext::LTRIAN() {
   return getToken(fmcSGrammar::LTRIAN, 0);
 }
 
 
-size_t fmcSGrammar::OpContext::getRuleIndex() const {
-  return fmcSGrammar::RuleOp;
+size_t fmcSGrammar::SeqOpContext::getRuleIndex() const {
+  return fmcSGrammar::RuleSeqOp;
 }
 
-void fmcSGrammar::OpContext::enterRule(tree::ParseTreeListener *listener) {
+void fmcSGrammar::SeqOpContext::enterRule(tree::ParseTreeListener *listener) {
   auto parserListener = dynamic_cast<fmcSGrammarListener *>(listener);
   if (parserListener != nullptr)
-    parserListener->enterOp(this);
+    parserListener->enterSeqOp(this);
 }
 
-void fmcSGrammar::OpContext::exitRule(tree::ParseTreeListener *listener) {
+void fmcSGrammar::SeqOpContext::exitRule(tree::ParseTreeListener *listener) {
   auto parserListener = dynamic_cast<fmcSGrammarListener *>(listener);
   if (parserListener != nullptr)
-    parserListener->exitOp(this);
+    parserListener->exitSeqOp(this);
 }
 
-fmcSGrammar::OpContext* fmcSGrammar::op() {
-  OpContext *_localctx = _tracker.createInstance<OpContext>(_ctx, getState());
-  enterRule(_localctx, 20, fmcSGrammar::RuleOp);
+fmcSGrammar::SeqOpContext* fmcSGrammar::seqOp() {
+  SeqOpContext *_localctx = _tracker.createInstance<SeqOpContext>(_ctx, getState());
+  enterRule(_localctx, 22, fmcSGrammar::RuleSeqOp);
   size_t _la = 0;
 
 #if __cplusplus > 201703L
@@ -1173,7 +1252,7 @@ fmcSGrammar::OpContext* fmcSGrammar::op() {
   });
   try {
     enterOuterAlt(_localctx, 1);
-    setState(145);
+    setState(152);
     _la = _input->LA(1);
     if (!(_la == fmcSGrammar::LTRIAN
 
@@ -1195,80 +1274,80 @@ fmcSGrammar::OpContext* fmcSGrammar::op() {
   return _localctx;
 }
 
-//----------------- TermContext ------------------------------------------------------------------
+//----------------- SeqTermContext ------------------------------------------------------------------
 
-fmcSGrammar::TermContext::TermContext(ParserRuleContext *parent, size_t invokingState)
+fmcSGrammar::SeqTermContext::SeqTermContext(ParserRuleContext *parent, size_t invokingState)
   : ParserRuleContext(parent, invokingState) {
 }
 
-tree::TerminalNode* fmcSGrammar::TermContext::STAR() {
+tree::TerminalNode* fmcSGrammar::SeqTermContext::STAR() {
   return getToken(fmcSGrammar::STAR, 0);
 }
 
-fmcSGrammar::VarContext* fmcSGrammar::TermContext::var() {
-  return getRuleContext<fmcSGrammar::VarContext>(0);
+fmcSGrammar::SeqVarContext* fmcSGrammar::SeqTermContext::seqVar() {
+  return getRuleContext<fmcSGrammar::SeqVarContext>(0);
 }
 
-tree::TerminalNode* fmcSGrammar::TermContext::DOT() {
+tree::TerminalNode* fmcSGrammar::SeqTermContext::DOT() {
   return getToken(fmcSGrammar::DOT, 0);
 }
 
-fmcSGrammar::TermContext* fmcSGrammar::TermContext::term() {
-  return getRuleContext<fmcSGrammar::TermContext>(0);
+fmcSGrammar::SeqTermContext* fmcSGrammar::SeqTermContext::seqTerm() {
+  return getRuleContext<fmcSGrammar::SeqTermContext>(0);
 }
 
-std::vector<tree::TerminalNode *> fmcSGrammar::TermContext::WS() {
+std::vector<tree::TerminalNode *> fmcSGrammar::SeqTermContext::WS() {
   return getTokens(fmcSGrammar::WS);
 }
 
-tree::TerminalNode* fmcSGrammar::TermContext::WS(size_t i) {
+tree::TerminalNode* fmcSGrammar::SeqTermContext::WS(size_t i) {
   return getToken(fmcSGrammar::WS, i);
 }
 
-fmcSGrammar::AppContext* fmcSGrammar::TermContext::app() {
-  return getRuleContext<fmcSGrammar::AppContext>(0);
+fmcSGrammar::SeqAppContext* fmcSGrammar::SeqTermContext::seqApp() {
+  return getRuleContext<fmcSGrammar::SeqAppContext>(0);
 }
 
-fmcSGrammar::AbsContext* fmcSGrammar::TermContext::abs() {
-  return getRuleContext<fmcSGrammar::AbsContext>(0);
+fmcSGrammar::SeqAbsContext* fmcSGrammar::SeqTermContext::seqAbs() {
+  return getRuleContext<fmcSGrammar::SeqAbsContext>(0);
 }
 
-fmcSGrammar::LocAppContext* fmcSGrammar::TermContext::locApp() {
-  return getRuleContext<fmcSGrammar::LocAppContext>(0);
+fmcSGrammar::SeqLocAppContext* fmcSGrammar::SeqTermContext::seqLocApp() {
+  return getRuleContext<fmcSGrammar::SeqLocAppContext>(0);
 }
 
-fmcSGrammar::LocAbsContext* fmcSGrammar::TermContext::locAbs() {
-  return getRuleContext<fmcSGrammar::LocAbsContext>(0);
+fmcSGrammar::SeqLocAbsContext* fmcSGrammar::SeqTermContext::seqLocAbs() {
+  return getRuleContext<fmcSGrammar::SeqLocAbsContext>(0);
 }
 
-fmcSGrammar::CondsContext* fmcSGrammar::TermContext::conds() {
-  return getRuleContext<fmcSGrammar::CondsContext>(0);
+fmcSGrammar::SeqCondsContext* fmcSGrammar::SeqTermContext::seqConds() {
+  return getRuleContext<fmcSGrammar::SeqCondsContext>(0);
 }
 
-fmcSGrammar::OpContext* fmcSGrammar::TermContext::op() {
-  return getRuleContext<fmcSGrammar::OpContext>(0);
+fmcSGrammar::SeqOpContext* fmcSGrammar::SeqTermContext::seqOp() {
+  return getRuleContext<fmcSGrammar::SeqOpContext>(0);
 }
 
 
-size_t fmcSGrammar::TermContext::getRuleIndex() const {
-  return fmcSGrammar::RuleTerm;
+size_t fmcSGrammar::SeqTermContext::getRuleIndex() const {
+  return fmcSGrammar::RuleSeqTerm;
 }
 
-void fmcSGrammar::TermContext::enterRule(tree::ParseTreeListener *listener) {
+void fmcSGrammar::SeqTermContext::enterRule(tree::ParseTreeListener *listener) {
   auto parserListener = dynamic_cast<fmcSGrammarListener *>(listener);
   if (parserListener != nullptr)
-    parserListener->enterTerm(this);
+    parserListener->enterSeqTerm(this);
 }
 
-void fmcSGrammar::TermContext::exitRule(tree::ParseTreeListener *listener) {
+void fmcSGrammar::SeqTermContext::exitRule(tree::ParseTreeListener *listener) {
   auto parserListener = dynamic_cast<fmcSGrammarListener *>(listener);
   if (parserListener != nullptr)
-    parserListener->exitTerm(this);
+    parserListener->exitSeqTerm(this);
 }
 
-fmcSGrammar::TermContext* fmcSGrammar::term() {
-  TermContext *_localctx = _tracker.createInstance<TermContext>(_ctx, getState());
-  enterRule(_localctx, 22, fmcSGrammar::RuleTerm);
+fmcSGrammar::SeqTermContext* fmcSGrammar::seqTerm() {
+  SeqTermContext *_localctx = _tracker.createInstance<SeqTermContext>(_ctx, getState());
+  enterRule(_localctx, 24, fmcSGrammar::RuleSeqTerm);
   size_t _la = 0;
 
 #if __cplusplus > 201703L
@@ -1279,37 +1358,25 @@ fmcSGrammar::TermContext* fmcSGrammar::term() {
     exitRule();
   });
   try {
-    setState(267);
+    setState(274);
     _errHandler->sync(this);
-    switch (getInterpreter<atn::ParserATNSimulator>()->adaptivePredict(_input, 39, _ctx)) {
+    switch (getInterpreter<atn::ParserATNSimulator>()->adaptivePredict(_input, 40, _ctx)) {
     case 1: {
       enterOuterAlt(_localctx, 1);
-      setState(147);
+      setState(154);
       match(fmcSGrammar::STAR);
       break;
     }
 
     case 2: {
       enterOuterAlt(_localctx, 2);
-      setState(148);
-      var();
-      setState(163);
+      setState(155);
+      seqVar();
+      setState(170);
       _errHandler->sync(this);
 
-      switch (getInterpreter<atn::ParserATNSimulator>()->adaptivePredict(_input, 20, _ctx)) {
+      switch (getInterpreter<atn::ParserATNSimulator>()->adaptivePredict(_input, 21, _ctx)) {
       case 1: {
-        setState(152);
-        _errHandler->sync(this);
-        _la = _input->LA(1);
-        while (_la == fmcSGrammar::WS) {
-          setState(149);
-          match(fmcSGrammar::WS);
-          setState(154);
-          _errHandler->sync(this);
-          _la = _input->LA(1);
-        }
-        setState(155);
-        match(fmcSGrammar::DOT);
         setState(159);
         _errHandler->sync(this);
         _la = _input->LA(1);
@@ -1321,7 +1388,19 @@ fmcSGrammar::TermContext* fmcSGrammar::term() {
           _la = _input->LA(1);
         }
         setState(162);
-        term();
+        match(fmcSGrammar::DOT);
+        setState(166);
+        _errHandler->sync(this);
+        _la = _input->LA(1);
+        while (_la == fmcSGrammar::WS) {
+          setState(163);
+          match(fmcSGrammar::WS);
+          setState(168);
+          _errHandler->sync(this);
+          _la = _input->LA(1);
+        }
+        setState(169);
+        seqTerm();
         break;
       }
 
@@ -1333,25 +1412,13 @@ fmcSGrammar::TermContext* fmcSGrammar::term() {
 
     case 3: {
       enterOuterAlt(_localctx, 3);
-      setState(165);
-      app();
-      setState(180);
+      setState(172);
+      seqApp();
+      setState(187);
       _errHandler->sync(this);
 
-      switch (getInterpreter<atn::ParserATNSimulator>()->adaptivePredict(_input, 23, _ctx)) {
+      switch (getInterpreter<atn::ParserATNSimulator>()->adaptivePredict(_input, 24, _ctx)) {
       case 1: {
-        setState(169);
-        _errHandler->sync(this);
-        _la = _input->LA(1);
-        while (_la == fmcSGrammar::WS) {
-          setState(166);
-          match(fmcSGrammar::WS);
-          setState(171);
-          _errHandler->sync(this);
-          _la = _input->LA(1);
-        }
-        setState(172);
-        match(fmcSGrammar::DOT);
         setState(176);
         _errHandler->sync(this);
         _la = _input->LA(1);
@@ -1363,7 +1430,19 @@ fmcSGrammar::TermContext* fmcSGrammar::term() {
           _la = _input->LA(1);
         }
         setState(179);
-        term();
+        match(fmcSGrammar::DOT);
+        setState(183);
+        _errHandler->sync(this);
+        _la = _input->LA(1);
+        while (_la == fmcSGrammar::WS) {
+          setState(180);
+          match(fmcSGrammar::WS);
+          setState(185);
+          _errHandler->sync(this);
+          _la = _input->LA(1);
+        }
+        setState(186);
+        seqTerm();
         break;
       }
 
@@ -1375,25 +1454,13 @@ fmcSGrammar::TermContext* fmcSGrammar::term() {
 
     case 4: {
       enterOuterAlt(_localctx, 4);
-      setState(182);
-      abs();
-      setState(197);
+      setState(189);
+      seqAbs();
+      setState(204);
       _errHandler->sync(this);
 
-      switch (getInterpreter<atn::ParserATNSimulator>()->adaptivePredict(_input, 26, _ctx)) {
+      switch (getInterpreter<atn::ParserATNSimulator>()->adaptivePredict(_input, 27, _ctx)) {
       case 1: {
-        setState(186);
-        _errHandler->sync(this);
-        _la = _input->LA(1);
-        while (_la == fmcSGrammar::WS) {
-          setState(183);
-          match(fmcSGrammar::WS);
-          setState(188);
-          _errHandler->sync(this);
-          _la = _input->LA(1);
-        }
-        setState(189);
-        match(fmcSGrammar::DOT);
         setState(193);
         _errHandler->sync(this);
         _la = _input->LA(1);
@@ -1405,7 +1472,19 @@ fmcSGrammar::TermContext* fmcSGrammar::term() {
           _la = _input->LA(1);
         }
         setState(196);
-        term();
+        match(fmcSGrammar::DOT);
+        setState(200);
+        _errHandler->sync(this);
+        _la = _input->LA(1);
+        while (_la == fmcSGrammar::WS) {
+          setState(197);
+          match(fmcSGrammar::WS);
+          setState(202);
+          _errHandler->sync(this);
+          _la = _input->LA(1);
+        }
+        setState(203);
+        seqTerm();
         break;
       }
 
@@ -1417,25 +1496,13 @@ fmcSGrammar::TermContext* fmcSGrammar::term() {
 
     case 5: {
       enterOuterAlt(_localctx, 5);
-      setState(199);
-      locApp();
-      setState(214);
+      setState(206);
+      seqLocApp();
+      setState(221);
       _errHandler->sync(this);
 
-      switch (getInterpreter<atn::ParserATNSimulator>()->adaptivePredict(_input, 29, _ctx)) {
+      switch (getInterpreter<atn::ParserATNSimulator>()->adaptivePredict(_input, 30, _ctx)) {
       case 1: {
-        setState(203);
-        _errHandler->sync(this);
-        _la = _input->LA(1);
-        while (_la == fmcSGrammar::WS) {
-          setState(200);
-          match(fmcSGrammar::WS);
-          setState(205);
-          _errHandler->sync(this);
-          _la = _input->LA(1);
-        }
-        setState(206);
-        match(fmcSGrammar::DOT);
         setState(210);
         _errHandler->sync(this);
         _la = _input->LA(1);
@@ -1447,7 +1514,19 @@ fmcSGrammar::TermContext* fmcSGrammar::term() {
           _la = _input->LA(1);
         }
         setState(213);
-        term();
+        match(fmcSGrammar::DOT);
+        setState(217);
+        _errHandler->sync(this);
+        _la = _input->LA(1);
+        while (_la == fmcSGrammar::WS) {
+          setState(214);
+          match(fmcSGrammar::WS);
+          setState(219);
+          _errHandler->sync(this);
+          _la = _input->LA(1);
+        }
+        setState(220);
+        seqTerm();
         break;
       }
 
@@ -1459,25 +1538,13 @@ fmcSGrammar::TermContext* fmcSGrammar::term() {
 
     case 6: {
       enterOuterAlt(_localctx, 6);
-      setState(216);
-      locAbs();
-      setState(231);
+      setState(223);
+      seqLocAbs();
+      setState(238);
       _errHandler->sync(this);
 
-      switch (getInterpreter<atn::ParserATNSimulator>()->adaptivePredict(_input, 32, _ctx)) {
+      switch (getInterpreter<atn::ParserATNSimulator>()->adaptivePredict(_input, 33, _ctx)) {
       case 1: {
-        setState(220);
-        _errHandler->sync(this);
-        _la = _input->LA(1);
-        while (_la == fmcSGrammar::WS) {
-          setState(217);
-          match(fmcSGrammar::WS);
-          setState(222);
-          _errHandler->sync(this);
-          _la = _input->LA(1);
-        }
-        setState(223);
-        match(fmcSGrammar::DOT);
         setState(227);
         _errHandler->sync(this);
         _la = _input->LA(1);
@@ -1489,7 +1556,19 @@ fmcSGrammar::TermContext* fmcSGrammar::term() {
           _la = _input->LA(1);
         }
         setState(230);
-        term();
+        match(fmcSGrammar::DOT);
+        setState(234);
+        _errHandler->sync(this);
+        _la = _input->LA(1);
+        while (_la == fmcSGrammar::WS) {
+          setState(231);
+          match(fmcSGrammar::WS);
+          setState(236);
+          _errHandler->sync(this);
+          _la = _input->LA(1);
+        }
+        setState(237);
+        seqTerm();
         break;
       }
 
@@ -1501,25 +1580,13 @@ fmcSGrammar::TermContext* fmcSGrammar::term() {
 
     case 7: {
       enterOuterAlt(_localctx, 7);
-      setState(233);
-      conds();
-      setState(248);
+      setState(240);
+      seqConds();
+      setState(255);
       _errHandler->sync(this);
 
-      switch (getInterpreter<atn::ParserATNSimulator>()->adaptivePredict(_input, 35, _ctx)) {
+      switch (getInterpreter<atn::ParserATNSimulator>()->adaptivePredict(_input, 36, _ctx)) {
       case 1: {
-        setState(237);
-        _errHandler->sync(this);
-        _la = _input->LA(1);
-        while (_la == fmcSGrammar::WS) {
-          setState(234);
-          match(fmcSGrammar::WS);
-          setState(239);
-          _errHandler->sync(this);
-          _la = _input->LA(1);
-        }
-        setState(240);
-        match(fmcSGrammar::DOT);
         setState(244);
         _errHandler->sync(this);
         _la = _input->LA(1);
@@ -1531,7 +1598,19 @@ fmcSGrammar::TermContext* fmcSGrammar::term() {
           _la = _input->LA(1);
         }
         setState(247);
-        term();
+        match(fmcSGrammar::DOT);
+        setState(251);
+        _errHandler->sync(this);
+        _la = _input->LA(1);
+        while (_la == fmcSGrammar::WS) {
+          setState(248);
+          match(fmcSGrammar::WS);
+          setState(253);
+          _errHandler->sync(this);
+          _la = _input->LA(1);
+        }
+        setState(254);
+        seqTerm();
         break;
       }
 
@@ -1543,25 +1622,13 @@ fmcSGrammar::TermContext* fmcSGrammar::term() {
 
     case 8: {
       enterOuterAlt(_localctx, 8);
-      setState(250);
-      op();
-      setState(265);
+      setState(257);
+      seqOp();
+      setState(272);
       _errHandler->sync(this);
 
-      switch (getInterpreter<atn::ParserATNSimulator>()->adaptivePredict(_input, 38, _ctx)) {
+      switch (getInterpreter<atn::ParserATNSimulator>()->adaptivePredict(_input, 39, _ctx)) {
       case 1: {
-        setState(254);
-        _errHandler->sync(this);
-        _la = _input->LA(1);
-        while (_la == fmcSGrammar::WS) {
-          setState(251);
-          match(fmcSGrammar::WS);
-          setState(256);
-          _errHandler->sync(this);
-          _la = _input->LA(1);
-        }
-        setState(257);
-        match(fmcSGrammar::DOT);
         setState(261);
         _errHandler->sync(this);
         _la = _input->LA(1);
@@ -1573,7 +1640,19 @@ fmcSGrammar::TermContext* fmcSGrammar::term() {
           _la = _input->LA(1);
         }
         setState(264);
-        term();
+        match(fmcSGrammar::DOT);
+        setState(268);
+        _errHandler->sync(this);
+        _la = _input->LA(1);
+        while (_la == fmcSGrammar::WS) {
+          setState(265);
+          match(fmcSGrammar::WS);
+          setState(270);
+          _errHandler->sync(this);
+          _la = _input->LA(1);
+        }
+        setState(271);
+        seqTerm();
         break;
       }
 
@@ -1642,7 +1721,7 @@ void fmcSGrammar::IncludeContext::exitRule(tree::ParseTreeListener *listener) {
 
 fmcSGrammar::IncludeContext* fmcSGrammar::include() {
   IncludeContext *_localctx = _tracker.createInstance<IncludeContext>(_ctx, getState());
-  enterRule(_localctx, 24, fmcSGrammar::RuleInclude);
+  enterRule(_localctx, 26, fmcSGrammar::RuleInclude);
 
 #if __cplusplus > 201703L
   auto onExit = finally([=, this] {
@@ -1653,15 +1732,15 @@ fmcSGrammar::IncludeContext* fmcSGrammar::include() {
   });
   try {
     enterOuterAlt(_localctx, 1);
-    setState(269);
+    setState(276);
     match(fmcSGrammar::HASH);
-    setState(270);
+    setState(277);
     match(fmcSGrammar::INCLUDE);
-    setState(271);
+    setState(278);
     match(fmcSGrammar::QUOTE);
-    setState(272);
+    setState(279);
     match(fmcSGrammar::ID);
-    setState(273);
+    setState(280);
     match(fmcSGrammar::QUOTE);
    
   }
@@ -1692,8 +1771,8 @@ tree::TerminalNode* fmcSGrammar::FunctionContext::LPAREN() {
   return getToken(fmcSGrammar::LPAREN, 0);
 }
 
-fmcSGrammar::TermContext* fmcSGrammar::FunctionContext::term() {
-  return getRuleContext<fmcSGrammar::TermContext>(0);
+fmcSGrammar::SeqTermContext* fmcSGrammar::FunctionContext::seqTerm() {
+  return getRuleContext<fmcSGrammar::SeqTermContext>(0);
 }
 
 tree::TerminalNode* fmcSGrammar::FunctionContext::RPAREN() {
@@ -1727,7 +1806,7 @@ void fmcSGrammar::FunctionContext::exitRule(tree::ParseTreeListener *listener) {
 
 fmcSGrammar::FunctionContext* fmcSGrammar::function() {
   FunctionContext *_localctx = _tracker.createInstance<FunctionContext>(_ctx, getState());
-  enterRule(_localctx, 26, fmcSGrammar::RuleFunction);
+  enterRule(_localctx, 28, fmcSGrammar::RuleFunction);
   size_t _la = 0;
 
 #if __cplusplus > 201703L
@@ -1739,20 +1818,8 @@ fmcSGrammar::FunctionContext* fmcSGrammar::function() {
   });
   try {
     enterOuterAlt(_localctx, 1);
-    setState(275);
-    match(fmcSGrammar::ID);
-    setState(279);
-    _errHandler->sync(this);
-    _la = _input->LA(1);
-    while (_la == fmcSGrammar::WS) {
-      setState(276);
-      match(fmcSGrammar::WS);
-      setState(281);
-      _errHandler->sync(this);
-      _la = _input->LA(1);
-    }
     setState(282);
-    match(fmcSGrammar::EQ);
+    match(fmcSGrammar::ID);
     setState(286);
     _errHandler->sync(this);
     _la = _input->LA(1);
@@ -1764,7 +1831,7 @@ fmcSGrammar::FunctionContext* fmcSGrammar::function() {
       _la = _input->LA(1);
     }
     setState(289);
-    match(fmcSGrammar::LPAREN);
+    match(fmcSGrammar::EQ);
     setState(293);
     _errHandler->sync(this);
     _la = _input->LA(1);
@@ -1776,7 +1843,7 @@ fmcSGrammar::FunctionContext* fmcSGrammar::function() {
       _la = _input->LA(1);
     }
     setState(296);
-    term();
+    match(fmcSGrammar::LPAREN);
     setState(300);
     _errHandler->sync(this);
     _la = _input->LA(1);
@@ -1788,6 +1855,18 @@ fmcSGrammar::FunctionContext* fmcSGrammar::function() {
       _la = _input->LA(1);
     }
     setState(303);
+    seqTerm();
+    setState(307);
+    _errHandler->sync(this);
+    _la = _input->LA(1);
+    while (_la == fmcSGrammar::WS) {
+      setState(304);
+      match(fmcSGrammar::WS);
+      setState(309);
+      _errHandler->sync(this);
+      _la = _input->LA(1);
+    }
+    setState(310);
     match(fmcSGrammar::RPAREN);
    
   }
@@ -1849,7 +1928,7 @@ void fmcSGrammar::ProgramContext::exitRule(tree::ParseTreeListener *listener) {
 
 fmcSGrammar::ProgramContext* fmcSGrammar::program() {
   ProgramContext *_localctx = _tracker.createInstance<ProgramContext>(_ctx, getState());
-  enterRule(_localctx, 28, fmcSGrammar::RuleProgram);
+  enterRule(_localctx, 30, fmcSGrammar::RuleProgram);
   size_t _la = 0;
 
 #if __cplusplus > 201703L
@@ -1861,33 +1940,33 @@ fmcSGrammar::ProgramContext* fmcSGrammar::program() {
   });
   try {
     enterOuterAlt(_localctx, 1);
-    setState(308);
+    setState(315);
     _errHandler->sync(this);
     _la = _input->LA(1);
     while (_la == fmcSGrammar::HASH) {
-      setState(305);
+      setState(312);
       include();
-      setState(310);
+      setState(317);
       _errHandler->sync(this);
       _la = _input->LA(1);
     }
-    setState(314);
+    setState(321);
     _errHandler->sync(this);
     _la = _input->LA(1);
     while (_la == fmcSGrammar::WS) {
-      setState(311);
+      setState(318);
       match(fmcSGrammar::WS);
-      setState(316);
+      setState(323);
       _errHandler->sync(this);
       _la = _input->LA(1);
     }
-    setState(320);
+    setState(327);
     _errHandler->sync(this);
     _la = _input->LA(1);
     while (_la == fmcSGrammar::ID) {
-      setState(317);
+      setState(324);
       function();
-      setState(322);
+      setState(329);
       _errHandler->sync(this);
       _la = _input->LA(1);
     }

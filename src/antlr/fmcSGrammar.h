@@ -15,13 +15,15 @@ public:
     EQ = 1, COMMA = 2, SEMI = 3, LPAREN = 4, RPAREN = 5, LCURLY = 6, RCURLY = 7, 
     LSQUARE = 8, RSQUARE = 9, LTRIAN = 10, RTRIAN = 11, HASH = 12, AT = 13, 
     STAR = 14, DOT = 15, ARROW = 16, UNDERSCORE = 17, QUOTE = 18, PLUS = 19, 
-    DEFAULT = 20, INCLUDE = 21, INT = 22, STR = 23, ID = 24, WS = 25
+    EXCLAM = 20, DEFAULT = 21, INCLUDE = 22, INT = 23, STR = 24, ID = 25, 
+    WS = 26
   };
 
   enum {
-    RuleLit = 0, RuleVar = 1, RuleLoc = 2, RuleBinder = 3, RuleApp = 4, 
-    RuleAbs = 5, RuleLocApp = 6, RuleLocAbs = 7, RuleCond = 8, RuleConds = 9, 
-    RuleOp = 10, RuleTerm = 11, RuleInclude = 12, RuleFunction = 13, RuleProgram = 14
+    RuleLit = 0, RuleVar = 1, RuleLoc = 2, RuleSeqVar = 3, RuleSeqApp = 4, 
+    RuleSeqLocApp = 5, RuleBinder = 6, RuleSeqAbs = 7, RuleSeqLocAbs = 8, 
+    RuleCond = 9, RuleSeqConds = 10, RuleSeqOp = 11, RuleSeqTerm = 12, RuleInclude = 13, 
+    RuleFunction = 14, RuleProgram = 15
   };
 
   explicit fmcSGrammar(antlr4::TokenStream *input);
@@ -44,15 +46,16 @@ public:
   class LitContext;
   class VarContext;
   class LocContext;
+  class SeqVarContext;
+  class SeqAppContext;
+  class SeqLocAppContext;
   class BinderContext;
-  class AppContext;
-  class AbsContext;
-  class LocAppContext;
-  class LocAbsContext;
+  class SeqAbsContext;
+  class SeqLocAbsContext;
   class CondContext;
-  class CondsContext;
-  class OpContext;
-  class TermContext;
+  class SeqCondsContext;
+  class SeqOpContext;
+  class SeqTermContext;
   class IncludeContext;
   class FunctionContext;
   class ProgramContext; 
@@ -97,6 +100,54 @@ public:
 
   LocContext* loc();
 
+  class  SeqVarContext : public antlr4::ParserRuleContext {
+  public:
+    SeqVarContext(antlr4::ParserRuleContext *parent, size_t invokingState);
+    virtual size_t getRuleIndex() const override;
+    antlr4::tree::TerminalNode *ID();
+    antlr4::tree::TerminalNode *EXCLAM();
+
+    virtual void enterRule(antlr4::tree::ParseTreeListener *listener) override;
+    virtual void exitRule(antlr4::tree::ParseTreeListener *listener) override;
+   
+  };
+
+  SeqVarContext* seqVar();
+
+  class  SeqAppContext : public antlr4::ParserRuleContext {
+  public:
+    SeqAppContext(antlr4::ParserRuleContext *parent, size_t invokingState);
+    virtual size_t getRuleIndex() const override;
+    antlr4::tree::TerminalNode *LSQUARE();
+    SeqTermContext *seqTerm();
+    antlr4::tree::TerminalNode *RSQUARE();
+    LocContext *loc();
+    LitContext *lit();
+
+    virtual void enterRule(antlr4::tree::ParseTreeListener *listener) override;
+    virtual void exitRule(antlr4::tree::ParseTreeListener *listener) override;
+   
+  };
+
+  SeqAppContext* seqApp();
+
+  class  SeqLocAppContext : public antlr4::ParserRuleContext {
+  public:
+    SeqLocAppContext(antlr4::ParserRuleContext *parent, size_t invokingState);
+    virtual size_t getRuleIndex() const override;
+    antlr4::tree::TerminalNode *LSQUARE();
+    antlr4::tree::TerminalNode *HASH();
+    VarContext *var();
+    antlr4::tree::TerminalNode *RSQUARE();
+    LocContext *loc();
+
+    virtual void enterRule(antlr4::tree::ParseTreeListener *listener) override;
+    virtual void exitRule(antlr4::tree::ParseTreeListener *listener) override;
+   
+  };
+
+  SeqLocAppContext* seqLocApp();
+
   class  BinderContext : public antlr4::ParserRuleContext {
   public:
     BinderContext(antlr4::ParserRuleContext *parent, size_t invokingState);
@@ -110,26 +161,9 @@ public:
 
   BinderContext* binder();
 
-  class  AppContext : public antlr4::ParserRuleContext {
+  class  SeqAbsContext : public antlr4::ParserRuleContext {
   public:
-    AppContext(antlr4::ParserRuleContext *parent, size_t invokingState);
-    virtual size_t getRuleIndex() const override;
-    antlr4::tree::TerminalNode *LSQUARE();
-    TermContext *term();
-    antlr4::tree::TerminalNode *RSQUARE();
-    LocContext *loc();
-    LitContext *lit();
-
-    virtual void enterRule(antlr4::tree::ParseTreeListener *listener) override;
-    virtual void exitRule(antlr4::tree::ParseTreeListener *listener) override;
-   
-  };
-
-  AppContext* app();
-
-  class  AbsContext : public antlr4::ParserRuleContext {
-  public:
-    AbsContext(antlr4::ParserRuleContext *parent, size_t invokingState);
+    SeqAbsContext(antlr4::ParserRuleContext *parent, size_t invokingState);
     virtual size_t getRuleIndex() const override;
     antlr4::tree::TerminalNode *LTRIAN();
     BinderContext *binder();
@@ -142,28 +176,11 @@ public:
    
   };
 
-  AbsContext* abs();
+  SeqAbsContext* seqAbs();
 
-  class  LocAppContext : public antlr4::ParserRuleContext {
+  class  SeqLocAbsContext : public antlr4::ParserRuleContext {
   public:
-    LocAppContext(antlr4::ParserRuleContext *parent, size_t invokingState);
-    virtual size_t getRuleIndex() const override;
-    antlr4::tree::TerminalNode *LSQUARE();
-    antlr4::tree::TerminalNode *HASH();
-    VarContext *var();
-    antlr4::tree::TerminalNode *RSQUARE();
-    LocContext *loc();
-
-    virtual void enterRule(antlr4::tree::ParseTreeListener *listener) override;
-    virtual void exitRule(antlr4::tree::ParseTreeListener *listener) override;
-   
-  };
-
-  LocAppContext* locApp();
-
-  class  LocAbsContext : public antlr4::ParserRuleContext {
-  public:
-    LocAbsContext(antlr4::ParserRuleContext *parent, size_t invokingState);
+    SeqLocAbsContext(antlr4::ParserRuleContext *parent, size_t invokingState);
     virtual size_t getRuleIndex() const override;
     antlr4::tree::TerminalNode *LTRIAN();
     antlr4::tree::TerminalNode *AT();
@@ -177,7 +194,7 @@ public:
    
   };
 
-  LocAbsContext* locAbs();
+  SeqLocAbsContext* seqLocAbs();
 
   class  CondContext : public antlr4::ParserRuleContext {
   public:
@@ -185,7 +202,7 @@ public:
     virtual size_t getRuleIndex() const override;
     LitContext *lit();
     antlr4::tree::TerminalNode *ARROW();
-    TermContext *term();
+    SeqTermContext *seqTerm();
     std::vector<antlr4::tree::TerminalNode *> WS();
     antlr4::tree::TerminalNode* WS(size_t i);
 
@@ -196,12 +213,12 @@ public:
 
   CondContext* cond();
 
-  class  CondsContext : public antlr4::ParserRuleContext {
+  class  SeqCondsContext : public antlr4::ParserRuleContext {
   public:
-    CondsContext(antlr4::ParserRuleContext *parent, size_t invokingState);
+    SeqCondsContext(antlr4::ParserRuleContext *parent, size_t invokingState);
     virtual size_t getRuleIndex() const override;
     antlr4::tree::TerminalNode *LCURLY();
-    TermContext *term();
+    SeqTermContext *seqTerm();
     antlr4::tree::TerminalNode *RCURLY();
     LocContext *loc();
     std::vector<CondContext *> cond();
@@ -216,11 +233,11 @@ public:
    
   };
 
-  CondsContext* conds();
+  SeqCondsContext* seqConds();
 
-  class  OpContext : public antlr4::ParserRuleContext {
+  class  SeqOpContext : public antlr4::ParserRuleContext {
   public:
-    OpContext(antlr4::ParserRuleContext *parent, size_t invokingState);
+    SeqOpContext(antlr4::ParserRuleContext *parent, size_t invokingState);
     virtual size_t getRuleIndex() const override;
     antlr4::tree::TerminalNode *PLUS();
     antlr4::tree::TerminalNode *LTRIAN();
@@ -230,31 +247,31 @@ public:
    
   };
 
-  OpContext* op();
+  SeqOpContext* seqOp();
 
-  class  TermContext : public antlr4::ParserRuleContext {
+  class  SeqTermContext : public antlr4::ParserRuleContext {
   public:
-    TermContext(antlr4::ParserRuleContext *parent, size_t invokingState);
+    SeqTermContext(antlr4::ParserRuleContext *parent, size_t invokingState);
     virtual size_t getRuleIndex() const override;
     antlr4::tree::TerminalNode *STAR();
-    VarContext *var();
+    SeqVarContext *seqVar();
     antlr4::tree::TerminalNode *DOT();
-    TermContext *term();
+    SeqTermContext *seqTerm();
     std::vector<antlr4::tree::TerminalNode *> WS();
     antlr4::tree::TerminalNode* WS(size_t i);
-    AppContext *app();
-    AbsContext *abs();
-    LocAppContext *locApp();
-    LocAbsContext *locAbs();
-    CondsContext *conds();
-    OpContext *op();
+    SeqAppContext *seqApp();
+    SeqAbsContext *seqAbs();
+    SeqLocAppContext *seqLocApp();
+    SeqLocAbsContext *seqLocAbs();
+    SeqCondsContext *seqConds();
+    SeqOpContext *seqOp();
 
     virtual void enterRule(antlr4::tree::ParseTreeListener *listener) override;
     virtual void exitRule(antlr4::tree::ParseTreeListener *listener) override;
    
   };
 
-  TermContext* term();
+  SeqTermContext* seqTerm();
 
   class  IncludeContext : public antlr4::ParserRuleContext {
   public:
@@ -280,7 +297,7 @@ public:
     antlr4::tree::TerminalNode *ID();
     antlr4::tree::TerminalNode *EQ();
     antlr4::tree::TerminalNode *LPAREN();
-    TermContext *term();
+    SeqTermContext *seqTerm();
     antlr4::tree::TerminalNode *RPAREN();
     std::vector<antlr4::tree::TerminalNode *> WS();
     antlr4::tree::TerminalNode* WS(size_t i);

@@ -69,3 +69,17 @@ print  : ~Char# -> Nil
 f      = s++(x : 0 -> *, [x]out . f)
 print  = <~@s> . f
 
+----------------------------------------------------
+Notes on pattern matching
+----------------------------------------------------
+
+nil = [<_> . <x> . [x]];
+cons = [<h> . <t> . <f> . [t] . [h] . f];
+head = <l> . [nil] . [<h> . <t> . [h]] . l;
+list = [[nil] . [1] . cons] . [2] . cons;
+
+The matching looks like
+[[nil] . [1] . cons] . [2] . cons
+
+head cons . [h] . [t] = [h];
+head nil = [nil];

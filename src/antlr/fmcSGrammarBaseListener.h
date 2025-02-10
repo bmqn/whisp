@@ -25,32 +25,35 @@ public:
   virtual void enterLoc(fmcSGrammar::LocContext * /*ctx*/) override { }
   virtual void exitLoc(fmcSGrammar::LocContext * /*ctx*/) override { }
 
+  virtual void enterSeqVar(fmcSGrammar::SeqVarContext * /*ctx*/) override { }
+  virtual void exitSeqVar(fmcSGrammar::SeqVarContext * /*ctx*/) override { }
+
+  virtual void enterSeqApp(fmcSGrammar::SeqAppContext * /*ctx*/) override { }
+  virtual void exitSeqApp(fmcSGrammar::SeqAppContext * /*ctx*/) override { }
+
+  virtual void enterSeqLocApp(fmcSGrammar::SeqLocAppContext * /*ctx*/) override { }
+  virtual void exitSeqLocApp(fmcSGrammar::SeqLocAppContext * /*ctx*/) override { }
+
   virtual void enterBinder(fmcSGrammar::BinderContext * /*ctx*/) override { }
   virtual void exitBinder(fmcSGrammar::BinderContext * /*ctx*/) override { }
 
-  virtual void enterApp(fmcSGrammar::AppContext * /*ctx*/) override { }
-  virtual void exitApp(fmcSGrammar::AppContext * /*ctx*/) override { }
+  virtual void enterSeqAbs(fmcSGrammar::SeqAbsContext * /*ctx*/) override { }
+  virtual void exitSeqAbs(fmcSGrammar::SeqAbsContext * /*ctx*/) override { }
 
-  virtual void enterAbs(fmcSGrammar::AbsContext * /*ctx*/) override { }
-  virtual void exitAbs(fmcSGrammar::AbsContext * /*ctx*/) override { }
-
-  virtual void enterLocApp(fmcSGrammar::LocAppContext * /*ctx*/) override { }
-  virtual void exitLocApp(fmcSGrammar::LocAppContext * /*ctx*/) override { }
-
-  virtual void enterLocAbs(fmcSGrammar::LocAbsContext * /*ctx*/) override { }
-  virtual void exitLocAbs(fmcSGrammar::LocAbsContext * /*ctx*/) override { }
+  virtual void enterSeqLocAbs(fmcSGrammar::SeqLocAbsContext * /*ctx*/) override { }
+  virtual void exitSeqLocAbs(fmcSGrammar::SeqLocAbsContext * /*ctx*/) override { }
 
   virtual void enterCond(fmcSGrammar::CondContext * /*ctx*/) override { }
   virtual void exitCond(fmcSGrammar::CondContext * /*ctx*/) override { }
 
-  virtual void enterConds(fmcSGrammar::CondsContext * /*ctx*/) override { }
-  virtual void exitConds(fmcSGrammar::CondsContext * /*ctx*/) override { }
+  virtual void enterSeqConds(fmcSGrammar::SeqCondsContext * /*ctx*/) override { }
+  virtual void exitSeqConds(fmcSGrammar::SeqCondsContext * /*ctx*/) override { }
 
-  virtual void enterOp(fmcSGrammar::OpContext * /*ctx*/) override { }
-  virtual void exitOp(fmcSGrammar::OpContext * /*ctx*/) override { }
+  virtual void enterSeqOp(fmcSGrammar::SeqOpContext * /*ctx*/) override { }
+  virtual void exitSeqOp(fmcSGrammar::SeqOpContext * /*ctx*/) override { }
 
-  virtual void enterTerm(fmcSGrammar::TermContext * /*ctx*/) override { }
-  virtual void exitTerm(fmcSGrammar::TermContext * /*ctx*/) override { }
+  virtual void enterSeqTerm(fmcSGrammar::SeqTermContext * /*ctx*/) override { }
+  virtual void exitSeqTerm(fmcSGrammar::SeqTermContext * /*ctx*/) override { }
 
   virtual void enterInclude(fmcSGrammar::IncludeContext * /*ctx*/) override { }
   virtual void exitInclude(fmcSGrammar::IncludeContext * /*ctx*/) override { }

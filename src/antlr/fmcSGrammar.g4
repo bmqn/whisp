@@ -11,48 +11,52 @@ var         : ID
 loc         : ID
             ;
 
-binder      : ID
+seqVar      : ID
+            | ID EXCLAM
             ;
 
-app         : LSQUARE term RSQUARE loc?
+seqApp      : LSQUARE seqTerm RSQUARE loc?
             | LSQUARE lit RSQUARE loc?
             ;
 
-abs         : loc? LTRIAN binder RTRIAN
+seqLocApp   : LSQUARE HASH var RSQUARE loc?
+            ;
+
+binder      : ID
+            ;
+
+seqAbs      : loc? LTRIAN binder RTRIAN
             | loc? LTRIAN UNDERSCORE RTRIAN
             ;
 
-locApp      : LSQUARE HASH var RSQUARE loc?
-            ;
-
-locAbs      : loc? LTRIAN AT binder RTRIAN
+seqLocAbs   : loc? LTRIAN AT binder RTRIAN
             | loc? LTRIAN UNDERSCORE RTRIAN
             ;
 
-cond        : lit WS* ARROW WS* term
-            ;
-        
-conds       : loc? LCURLY (WS* cond WS* COMMA)* WS* term WS* RCURLY
+cond        : lit WS* ARROW WS* seqTerm
             ;
 
-op          : PLUS
+seqConds    : loc? LCURLY (WS* cond WS* COMMA)* WS* seqTerm WS* RCURLY
+            ;
+
+seqOp       : PLUS
             | LTRIAN
             ;
 
-term        : STAR
-            | var (WS* DOT WS* term)?
-            | app (WS* DOT WS* term)?
-            | abs (WS* DOT WS* term)?
-            | locApp (WS* DOT WS* term)?
-            | locAbs (WS* DOT WS* term)?
-            | conds (WS* DOT WS* term)?
-            | op (WS* DOT WS* term)?
+seqTerm     : STAR
+            | seqVar (WS* DOT WS* seqTerm)?
+            | seqApp (WS* DOT WS* seqTerm)?
+            | seqAbs (WS* DOT WS* seqTerm)?
+            | seqLocApp (WS* DOT WS* seqTerm)?
+            | seqLocAbs (WS* DOT WS* seqTerm)?
+            | seqConds (WS* DOT WS* seqTerm)?
+            | seqOp (WS* DOT WS* seqTerm)?
             ;
 
 include     : HASH INCLUDE QUOTE ID QUOTE
             ;
 
-function    : ID WS* EQ WS* LPAREN WS* term WS* RPAREN
+function    : ID WS* EQ WS* LPAREN WS* seqTerm WS* RPAREN
             ;
 
 program     : include* WS* function*

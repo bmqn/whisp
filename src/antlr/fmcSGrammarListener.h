@@ -23,32 +23,35 @@ public:
   virtual void enterLoc(fmcSGrammar::LocContext *ctx) = 0;
   virtual void exitLoc(fmcSGrammar::LocContext *ctx) = 0;
 
+  virtual void enterSeqVar(fmcSGrammar::SeqVarContext *ctx) = 0;
+  virtual void exitSeqVar(fmcSGrammar::SeqVarContext *ctx) = 0;
+
+  virtual void enterSeqApp(fmcSGrammar::SeqAppContext *ctx) = 0;
+  virtual void exitSeqApp(fmcSGrammar::SeqAppContext *ctx) = 0;
+
+  virtual void enterSeqLocApp(fmcSGrammar::SeqLocAppContext *ctx) = 0;
+  virtual void exitSeqLocApp(fmcSGrammar::SeqLocAppContext *ctx) = 0;
+
   virtual void enterBinder(fmcSGrammar::BinderContext *ctx) = 0;
   virtual void exitBinder(fmcSGrammar::BinderContext *ctx) = 0;
 
-  virtual void enterApp(fmcSGrammar::AppContext *ctx) = 0;
-  virtual void exitApp(fmcSGrammar::AppContext *ctx) = 0;
+  virtual void enterSeqAbs(fmcSGrammar::SeqAbsContext *ctx) = 0;
+  virtual void exitSeqAbs(fmcSGrammar::SeqAbsContext *ctx) = 0;
 
-  virtual void enterAbs(fmcSGrammar::AbsContext *ctx) = 0;
-  virtual void exitAbs(fmcSGrammar::AbsContext *ctx) = 0;
-
-  virtual void enterLocApp(fmcSGrammar::LocAppContext *ctx) = 0;
-  virtual void exitLocApp(fmcSGrammar::LocAppContext *ctx) = 0;
-
-  virtual void enterLocAbs(fmcSGrammar::LocAbsContext *ctx) = 0;
-  virtual void exitLocAbs(fmcSGrammar::LocAbsContext *ctx) = 0;
+  virtual void enterSeqLocAbs(fmcSGrammar::SeqLocAbsContext *ctx) = 0;
+  virtual void exitSeqLocAbs(fmcSGrammar::SeqLocAbsContext *ctx) = 0;
 
   virtual void enterCond(fmcSGrammar::CondContext *ctx) = 0;
   virtual void exitCond(fmcSGrammar::CondContext *ctx) = 0;
 
-  virtual void enterConds(fmcSGrammar::CondsContext *ctx) = 0;
-  virtual void exitConds(fmcSGrammar::CondsContext *ctx) = 0;
+  virtual void enterSeqConds(fmcSGrammar::SeqCondsContext *ctx) = 0;
+  virtual void exitSeqConds(fmcSGrammar::SeqCondsContext *ctx) = 0;
 
-  virtual void enterOp(fmcSGrammar::OpContext *ctx) = 0;
-  virtual void exitOp(fmcSGrammar::OpContext *ctx) = 0;
+  virtual void enterSeqOp(fmcSGrammar::SeqOpContext *ctx) = 0;
+  virtual void exitSeqOp(fmcSGrammar::SeqOpContext *ctx) = 0;
 
-  virtual void enterTerm(fmcSGrammar::TermContext *ctx) = 0;
-  virtual void exitTerm(fmcSGrammar::TermContext *ctx) = 0;
+  virtual void enterSeqTerm(fmcSGrammar::SeqTermContext *ctx) = 0;
+  virtual void exitSeqTerm(fmcSGrammar::SeqTermContext *ctx) = 0;
 
   virtual void enterInclude(fmcSGrammar::IncludeContext *ctx) = 0;
   virtual void exitInclude(fmcSGrammar::IncludeContext *ctx) = 0;

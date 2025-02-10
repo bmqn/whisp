@@ -126,11 +126,13 @@ struct SeqVarNode : public SeqTermNode
 {
 	explicit SeqVarNode(std::string_view name)
 		: Name(name)
+		, Strict(false)
 	{}
 
 	virtual void Accept(Visitor& visitor) const override;
 
 	std::string Name;
+	bool Strict;
 };
 
 struct SeqAppNode : public SeqTermNode

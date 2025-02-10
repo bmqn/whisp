@@ -15,7 +15,8 @@ public:
     EQ = 1, COMMA = 2, SEMI = 3, LPAREN = 4, RPAREN = 5, LCURLY = 6, RCURLY = 7, 
     LSQUARE = 8, RSQUARE = 9, LTRIAN = 10, RTRIAN = 11, HASH = 12, AT = 13, 
     STAR = 14, DOT = 15, ARROW = 16, UNDERSCORE = 17, QUOTE = 18, PLUS = 19, 
-    DEFAULT = 20, INCLUDE = 21, INT = 22, STR = 23, ID = 24, WS = 25
+    EXCLAM = 20, DEFAULT = 21, INCLUDE = 22, INT = 23, STR = 24, ID = 25, 
+    WS = 26
   };
 
   explicit fmcSLexer(antlr4::CharStream *input);

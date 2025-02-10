@@ -20,10 +20,10 @@ public:
 		antlr4::CommonTokenStream tokens(&lexer);
 		fmcSGrammar parser(&tokens);
 
-		fmcSGrammar::TermContext* term = parser.term();
+		fmcSGrammar::SeqTermContext* seqTerm = parser.seqTerm();
 
 		fmcs::ast::TreeBuilder builder;
-		antlr4::tree::ParseTreeWalker::DEFAULT.walk(&builder, term);
+		antlr4::tree::ParseTreeWalker::DEFAULT.walk(&builder, seqTerm);
 
 		return builder.Get();
 	}
@@ -34,7 +34,7 @@ private:
 		return std::move(m_Terms.top());
 	}
 
-	virtual void exitTerm(fmcSGrammar::TermContext* ctx) override
+	virtual void exitSeqTerm(fmcSGrammar::SeqTermContext* ctx) override
 	{
 		if (ctx->STAR())
 		{
@@ -42,137 +42,142 @@ private:
 
 			PushNextTerm(std::move(seqNil));
 		}
-		else if (ctx->var())
+		else if (ctx->seqVar())
 		{
 			auto seqVar = MakeOwner<SeqVarNode>(
-				ctx->var()->ID()->getText());
+				ctx->seqVar()->ID()->getText());
 
-			seqVar->Snippet = ctx->var()->getText();
+			seqVar->Snippet = ctx->seqVar()->getText();
 
-			if (ctx->term())
+			if (ctx->seqVar()->EXCLAM())
+			{
+				seqVar->Strict = true;
+			}
+
+			if (ctx->seqTerm())
 			{
 				seqVar->Next = PopNextTerm();
 			}
 
 			PushNextTerm(std::move(seqVar));
 		}
-		else if (ctx->abs())
+		else if (ctx->seqAbs())
 		{
 			auto seqAbs = MakeOwner<SeqAbsNode>();
 
-			seqAbs->Snippet = ctx->abs()->getText();
+			seqAbs->Snippet = ctx->seqAbs()->getText();
 
-			if (ctx->term())
+			if (ctx->seqTerm())
 			{
 				seqAbs->Next = PopNextTerm();
 			}
 
-			if (ctx->abs()->binder())
+			if (ctx->seqAbs()->binder())
 			{
 				seqAbs->Binder = MakeOwner<VarNode>(
-					ctx->abs()->binder()->ID()->getText());
+					ctx->seqAbs()->binder()->ID()->getText());
 
-				seqAbs->Binder->Snippet = ctx->abs()->binder()->ID()->getText();
+				seqAbs->Binder->Snippet = ctx->seqAbs()->binder()->ID()->getText();
 			}
 
-			if (ctx->abs()->loc())
+			if (ctx->seqAbs()->loc())
 			{
 				seqAbs->Loc = MakeOwner<VarNode>(
-					ctx->abs()->loc()->ID()->getText());
+					ctx->seqAbs()->loc()->ID()->getText());
 
-				seqAbs->Loc->Snippet = ctx->abs()->loc()->ID()->getText();
+				seqAbs->Loc->Snippet = ctx->seqAbs()->loc()->ID()->getText();
 			}
 
 			PushNextTerm(std::move(seqAbs));
 		}
-		else if (ctx->app())
+		else if (ctx->seqApp())
 		{
-			if (ctx->app()->lit())
+			if (ctx->seqApp()->lit())
 			{
 				auto seqAppLit = MakeOwner<SeqAppLitNode>();
 
-				seqAppLit->Snippet = ctx->app()->getText();
+				seqAppLit->Snippet = ctx->seqApp()->getText();
 
-				if (ctx->term())
+				if (ctx->seqTerm())
 				{
 					seqAppLit->Next = PopNextTerm();
 				}
 
-				if (ctx->app()->lit()->INT())
+				if (ctx->seqApp()->lit()->INT())
 				{
 					seqAppLit->Lit = MakeOwner<Int32LitNode>(
-						std::stoi(ctx->app()->lit()->INT()->getText()));
+						std::stoi(ctx->seqApp()->lit()->INT()->getText()));
 
-					seqAppLit->Lit->Snippet = ctx->app()->lit()->INT()->getText();
+					seqAppLit->Lit->Snippet = ctx->seqApp()->lit()->INT()->getText();
 				}
-				else if (ctx->app()->lit()->STR())
+				else if (ctx->seqApp()->lit()->STR())
 				{
-					std::string litStr = ctx->app()->lit()->STR()->getText();
+					std::string litStr = ctx->seqApp()->lit()->STR()->getText();
 					litStr.erase(litStr.begin());
 					litStr.erase(litStr.end() - 1);
 
 					seqAppLit->Lit = MakeOwner<StrLitNode>(
 						litStr);
 
-					seqAppLit->Lit->Snippet = ctx->app()->lit()->STR()->getText();
+					seqAppLit->Lit->Snippet = ctx->seqApp()->lit()->STR()->getText();
 				}
 
-				if (ctx->app()->loc())
+				if (ctx->seqApp()->loc())
 				{
 					seqAppLit->Loc = MakeOwner<VarNode>(
-						ctx->app()->loc()->ID()->getText());
+						ctx->seqApp()->loc()->ID()->getText());
 
-					seqAppLit->Loc->Snippet = ctx->app()->loc()->ID()->getText();
+					seqAppLit->Loc->Snippet = ctx->seqApp()->loc()->ID()->getText();
 				}
 
 				PushNextTerm(std::move(seqAppLit));
 			}
-			else if (ctx->app()->term())
+			else if (ctx->seqApp()->seqTerm())
 			{
 				auto seqApp = MakeOwner<SeqAppNode>();
 
-				seqApp->Snippet = ctx->app()->getText();
+				seqApp->Snippet = ctx->seqApp()->getText();
 
-				if (ctx->term())
+				if (ctx->seqTerm())
 				{
 					seqApp->Next = PopNextTerm();
 				}
 
-				if (ctx->app()->term())
+				if (ctx->seqApp()->seqTerm())
 				{
 					seqApp->Arg = PopNextTerm();
 				}
 
-				if (ctx->app()->loc())
+				if (ctx->seqApp()->loc())
 				{
 					seqApp->Loc = MakeOwner<VarNode>(
-						ctx->app()->loc()->ID()->getText());
+						ctx->seqApp()->loc()->ID()->getText());
 
-					seqApp->Loc->Snippet = ctx->app()->loc()->ID()->getText();
+					seqApp->Loc->Snippet = ctx->seqApp()->loc()->ID()->getText();
 				}
 
 				PushNextTerm(std::move(seqApp));
 			}
 		}
-		else if (ctx->conds())
+		else if (ctx->seqConds())
 		{
 			auto seqConds = MakeOwner<SeqCondsNode>();
 
-			seqConds->Snippet = ctx->conds()->getText();
+			seqConds->Snippet = ctx->seqConds()->getText();
 
-			if (ctx->term())
+			if (ctx->seqTerm())
 			{
 				seqConds->Next = PopNextTerm();
 			}
 
-			if (ctx->conds()->term())
+			if (ctx->seqConds()->seqTerm())
 			{
 				seqConds->Cond = PopNextTerm();
 			}
 
-			if (!ctx->conds()->cond().empty())
+			if (!ctx->seqConds()->cond().empty())
 			{
-				auto condCtxs = ctx->conds()->cond();
+				auto condCtxs = ctx->seqConds()->cond();
 
 				seqConds->Conds = MakeOwner<CondNode>();
 
@@ -182,7 +187,7 @@ private:
 				{
 					auto condCtx = condCtxs[i];
 
-					if (condCtx->term())
+					if (condCtx->seqTerm())
 					{
 						currentCond->Arg = PopNextTerm();
 					}
@@ -218,32 +223,32 @@ private:
 				}
 			}
 
-			if (ctx->conds()->loc())
+			if (ctx->seqConds()->loc())
 			{
 				seqConds->Loc = MakeOwner<VarNode>(
-					ctx->conds()->loc()->ID()->getText());
+					ctx->seqConds()->loc()->ID()->getText());
 
-				seqConds->Loc->Snippet = ctx->conds()->loc()->ID()->getText();
+				seqConds->Loc->Snippet = ctx->seqConds()->loc()->ID()->getText();
 			}
 
 			PushNextTerm(std::move(seqConds));
 		}
-		else if (ctx->op())
+		else if (ctx->seqOp())
 		{
 			auto seqOp = MakeOwner<SeqOpNode>();
 
-			seqOp->Snippet = ctx->op()->getText();
+			seqOp->Snippet = ctx->seqOp()->getText();
 
-			if (ctx->op()->PLUS())
+			if (ctx->seqOp()->PLUS())
 			{
 				seqOp->Op = Operation::Plus;
 			}
-			else if (ctx->op()->LTRIAN())
+			else if (ctx->seqOp()->LTRIAN())
 			{
 				seqOp->Op = Operation::Less;
 			}
 
-			if (ctx->term())
+			if (ctx->seqTerm())
 			{
 				seqOp->Next = PopNextTerm();
 			}

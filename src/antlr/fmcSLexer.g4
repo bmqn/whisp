@@ -19,6 +19,7 @@ ARROW : '->' ;
 UNDERSCORE : '_' ;
 QUOTE : '"' ;
 PLUS : '+' ;
+EXCLAM : '!' ;
 
 DEFAULT : 'default' ;
 INCLUDE : 'include' ;

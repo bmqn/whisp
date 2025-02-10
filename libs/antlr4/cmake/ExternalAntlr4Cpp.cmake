@@ -98,7 +98,10 @@ if(ANTLR4_ZIP_REPOSITORY)
           -DWITH_STATIC_CRT:BOOL=${ANTLR4_WITH_STATIC_CRT}
           -DDISABLE_WARNINGS:BOOL=ON
           # -DCMAKE_CXX_STANDARD:STRING=17 # if desired, compile the runtime with a different C++ standard
-          # -DCMAKE_CXX_STANDARD:STRING=${CMAKE_CXX_STANDARD} # alternatively, compile the runtime with the same C++ standard as the outer project
+          -DCMAKE_CXX_STANDARD:STRING=${CMAKE_CXX_STANDARD} # alternatively, compile the runtime with the same C++ standard as the outer project
+          -DCMAKE_CXX_FLAGS:STRING=${CMAKE_CXX_FLAGS}
+          -CMAKE_EXE_LINKER_FLAGS:STRING=${CMAKE_EXE_LINKER_FLAGS}
+          -DCMAKE_CXX_COMPILER:STRING=${CMAKE_CXX_COMPILER}
       INSTALL_COMMAND ""
       EXCLUDE_FROM_ALL 1)
 else()
@@ -117,7 +120,10 @@ else()
           -DWITH_STATIC_CRT:BOOL=${ANTLR4_WITH_STATIC_CRT}
           -DDISABLE_WARNINGS:BOOL=ON
           # -DCMAKE_CXX_STANDARD:STRING=17 # if desired, compile the runtime with a different C++ standard
-          # -DCMAKE_CXX_STANDARD:STRING=${CMAKE_CXX_STANDARD} # alternatively, compile the runtime with the same C++ standard as the outer project
+          -DCMAKE_CXX_STANDARD:STRING=${CMAKE_CXX_STANDARD} # alternatively, compile the runtime with the same C++ standard as the outer project
+          -DCMAKE_CXX_FLAGS:STRING=${CMAKE_CXX_FLAGS}
+          -CMAKE_EXE_LINKER_FLAGS:STRING=${CMAKE_EXE_LINKER}
+          -DCMAKE_CXX_COMPILER:STRING=${CMAKE_CXX_COMPILER}
       INSTALL_COMMAND ""
       EXCLUDE_FROM_ALL 1)
 endif()

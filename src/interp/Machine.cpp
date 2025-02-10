@@ -114,6 +114,9 @@ void Evaluator::Visit(const ast::SeqVarNode& node)
 	const Env_t &currentEnv = *m_Env;
 	const LocalEnv_t &currentLocalEnv = *m_LocalEnv;
 
+	Closee closee;
+	LocalEnv_t localEnv;
+
 	// Look in the current env for bindings
 	if (auto it = currentEnv.find(node.Name); it != currentEnv.end())
 	{
@@ -128,41 +131,43 @@ void Evaluator::Visit(const ast::SeqVarNode& node)
 
 		const Closure &closure = it->second;
 		// Use the bound closee
-		const Closee &closee = closure.closee;
+		closee = closure.closee;
 		// Use the bound local env
-		LocalEnv_t localEnv = closure.localEnv;
-
-		// Add additional bindings from the current local env
-		for (const auto &[existingBinder, existingClosee] : currentLocalEnv)
-		{
-			localEnv.emplace(existingBinder, existingClosee);
-		}
-
-		// Push the bound closure as a new frame
-		m_Frames.emplace_back(closee, localEnv);
+		localEnv = closure.localEnv;
 	}
 	// Look in the current local env for bindings
 	else if (auto it = currentLocalEnv.find(node.Name); it != currentLocalEnv.end())
 	{
 		// Use the bound closee
-		const Closee &closee = it->second;
+		closee = it->second;
 		// Use the bound local env
-		LocalEnv_t localEnv = currentLocalEnv;
-
-		// Push the bound closure as a new frame
-		m_Frames.emplace_back(closee, localEnv);
+		localEnv = currentLocalEnv;
 	}
 	else
 	{
 		Error("Unbound variable", node);
+	}
+
+	// Push the bound term and env as a new frame
+	m_Frames.emplace_back(closee, localEnv);
+
+	// Push an eval term as a new frame if strict
+	if (node.Strict)
+	{
+		static auto s_Term = ast::TreeBuilder::Parse("<x>.x");
+
+		ast::TermPtr_t term = s_Term.get();
+
+		m_Frames.emplace_back(term, LocalEnv_t{});
 	}
 }
 
 class ArgResolver : public ast::Visitor
 {
 public:
-	ArgResolver(Stack_t *stack, const LocalEnv_t *localEnv)
+	ArgResolver(Stack_t *stack, const Env_t *env, const LocalEnv_t *localEnv)
 		: m_Stack(stack)
+		, m_Env(env)
 		, m_LocalEnv(localEnv)
 	{
 	}
@@ -175,33 +180,52 @@ public:
 private:
 	virtual void Visit(const ast::SeqVarNode& node) override
 	{
-		const LocalEnv_t &localEnv = *m_LocalEnv;
+		const Env_t &currentEnv = *m_Env;
+		const LocalEnv_t &currentLocalEnv = *m_LocalEnv;
 
-		if (auto it = localEnv.find(node.Name); it != localEnv.end())
+		Closee closee;
+		LocalEnv_t localEnv;
+
+		if (auto it = currentEnv.find(node.Name); it != currentEnv.end())
 		{
-			const Closee &closee = it->second;
-			
-			if (closee.Is<ast::TermPtr_t>())
+			const Closure &closure = it->second;
+			closee = closure.closee;
+			localEnv = closure.localEnv;
+
+			// Add additional bindings from the current local env
+			for (const auto &[existingBinder, existingClosee] : currentLocalEnv)
 			{
-				ast::TermPtr_t term = closee.As<ast::TermPtr_t>();
-
-				m_Stack->emplace_back(term, localEnv);
-
-				m_DidResolve = true;
+				// localEnv[existingBinder] = existingClosee;
+				localEnv.emplace(existingBinder, existingClosee);
 			}
-			else if (closee.Is<int32_t>())
-			{
-				int32_t val = closee.As<int32_t>();
+		}
+		else if (auto it = currentLocalEnv.find(node.Name); it != currentLocalEnv.end())
+		{
+			closee = it->second;
+			localEnv = currentLocalEnv;
+		}
 
-				m_Stack->emplace_back(val, localEnv);
+		if (closee.Is<ast::TermPtr_t>())
+		{
+			ast::TermPtr_t term = closee.As<ast::TermPtr_t>();
 
-				m_DidResolve = true;
-			}
+			m_Stack->emplace_back(term, localEnv);
+
+			m_DidResolve = true;
+		}
+		else if (closee.Is<int32_t>())
+		{
+			int32_t val = closee.As<int32_t>();
+
+			m_Stack->emplace_back(val, localEnv);
+
+			m_DidResolve = true;
 		}
 	}
 
 private:
 	Stack_t *m_Stack;
+	const Env_t *m_Env;
 	const LocalEnv_t *m_LocalEnv;
 
 	bool m_DidResolve = false;
@@ -235,9 +259,10 @@ void Evaluator::Visit(const ast::SeqAppNode& node)
 		stack = &(*m_Mem)[0];
 	}
 
+	const Env_t &currentEnv = *m_Env;
 	const LocalEnv_t &currentLocalEnv = *m_LocalEnv;
 
-	ArgResolver argResolver(stack, &currentLocalEnv);
+	ArgResolver argResolver(stack, &currentEnv, &currentLocalEnv);
 
 	node.Arg->Accept(argResolver);
 
@@ -383,6 +408,18 @@ void Evaluator::Visit(const ast::SeqAbsNode& node)
 	Closee &closee = closure.closee;
 	LocalEnv_t localEnv = closure.localEnv;
 
+	Env_t &env = *m_Env;
+
+	// // Add additional bindings from the current local env
+	// for (const auto &[existingBinder, existingClosee] : currentLocalEnv)
+	// {
+	// 	// localEnv[existingBinder] = existingClosee;
+	// 	localEnv.emplace(existingBinder, existingClosee);
+	// }
+
+	// Add binding for binder in the env
+	env[node.Binder->Name] = Closure(closee, localEnv);
+
 	// // Add additional bindings from the closure local env
 	// for (const auto &[existingBinder, existingClosee] : localEnv)
 	// {
@@ -392,18 +429,6 @@ void Evaluator::Visit(const ast::SeqAbsNode& node)
 
 	// Add binding for binder in the local env
 	currentLocalEnv[node.Binder->Name] = closee;
-
-	Env_t &env = *m_Env;
-
-	// Add additional bindings from the current local env
-	for (const auto &[existingBinder, existingClosee] : currentLocalEnv)
-	{
-		// localEnv[existingBinder] = existingClosee;
-		localEnv.emplace(existingBinder, existingClosee);
-	}
-
-	// Add binding for binder in the env
-	env[node.Binder->Name] = Closure(closee, localEnv);
 }
 
 void Evaluator::Visit(const ast::SeqCondsNode& node)
@@ -566,6 +591,8 @@ void Evaluator::Visit(const ast::SeqOpNode& node)
 
 void Machine::Execute(const ast::TermPtr_t term, Env_t env)
 {
+	m_Mem.clear();
+
 	m_Control.emplace_back(term, env);
 
 	while (!m_Control.empty())

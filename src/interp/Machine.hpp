@@ -75,7 +75,7 @@ struct Closee
 };
 
 // This env maps local terms within a closure!
-using LocalEnv_t = std::unordered_map<std::string, Closee>;
+using LocalEnv_t = std::map<std::string, Closee>;
 
 struct Closure
 {
@@ -98,11 +98,11 @@ struct Closure
 };
 
 using Stack_t = std::vector<Closure>;
-using Mem_t = std::unordered_map<Loc_t, Stack_t>;
+using Mem_t = std::map<Loc_t, Stack_t>;
 
 // This env maps variables to closures (functions)
 // It MUST refer to the stuff bound when that variable was first bound!
-using Env_t = std::unordered_map<std::string, Closure>;
+using Env_t = std::map<std::string, Closure>;
 using Control_t = std::vector<std::pair<Closure, Env_t>>;
 
 class Resolver : public ast::Visitor
