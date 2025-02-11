@@ -135,15 +135,7 @@ public:
 	}
 
 private:
-	virtual void Visit(const ast::Int32LitNode& node) override;
-	virtual void Visit(const ast::StrLitNode& node) override;
-
-	virtual void Visit(const ast::VarNode& node) override;
-
-	virtual void Visit(const ast::CondNode& node) override;
-
 	virtual void Visit(const ast::SeqTermNode& node) override;
-	virtual void Visit(const ast::SeqNilNode& node) override;
 	virtual void Visit(const ast::SeqVarNode& node) override;
 	virtual void Visit(const ast::SeqAppNode& node) override;
 	virtual void Visit(const ast::SeqAppLitNode& node) override;

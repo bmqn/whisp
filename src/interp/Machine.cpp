@@ -71,24 +71,6 @@ Evaluator::Evaluator(Env_t *env, Mem_t *mem, ast::NodePtr_t node, LocalEnv_t *lo
 {
 }
 
-void Evaluator::Visit(const ast::Int32LitNode& node)
-{
-	Error("Cannot evaluate int32 literal", node);
-}
-
-void Evaluator::Visit(const ast::StrLitNode& node)
-{
-	Error("Cannot evaluate string literal", node);
-}
-
-void Evaluator::Visit(const ast::VarNode& node)
-{
-}
-
-void Evaluator::Visit(const ast::CondNode& node)
-{
-}
-
 void Evaluator::Visit(const ast::SeqTermNode& node)
 {
 	if (auto term = node.Next.get())
@@ -105,10 +87,6 @@ void Evaluator::Visit(const ast::SeqTermNode& node)
 	}
 }
 
-void Evaluator::Visit(const ast::SeqNilNode& node)
-{
-}
-
 void Evaluator::Visit(const ast::SeqVarNode& node)
 {
 	const Env_t &currentEnv = *m_Env;
@@ -120,15 +98,6 @@ void Evaluator::Visit(const ast::SeqVarNode& node)
 	// Look in the current env for bindings
 	if (auto it = currentEnv.find(node.Name); it != currentEnv.end())
 	{
-		// TODO
-		//
-		// I'm not sure if using the same env here is corect?
-		// It can cause infinite recursion if you write a term like
-		//   [["Hello"] . x] . <x> . x
-		// I think the correct solution is to find the env for the env's term.
-		// This would mean we need to track the env for every term.
-		// We could have a sparse map from term to env, then lookup envs that way.
-
 		const Closure &closure = it->second;
 		// Use the bound closee
 		closee = closure.closee;
@@ -140,7 +109,7 @@ void Evaluator::Visit(const ast::SeqVarNode& node)
 	{
 		// Use the bound closee
 		closee = it->second;
-		// Use the bound local env
+		// Use the current local env
 		localEnv = currentLocalEnv;
 	}
 	else
@@ -180,6 +149,12 @@ public:
 private:
 	virtual void Visit(const ast::SeqVarNode& node) override
 	{
+		// Don't substitute if the argument has a next term
+		if (node.Next)
+		{
+			return;
+		}
+
 		const Env_t &currentEnv = *m_Env;
 		const LocalEnv_t &currentLocalEnv = *m_LocalEnv;
 
@@ -233,7 +208,7 @@ private:
 
 void Evaluator::Visit(const ast::SeqAppNode& node)
 {
-	Stack_t *stack;
+	Stack_t *stack = nullptr;
 
 	if (node.Loc)
 	{
@@ -315,7 +290,7 @@ private:
 
 void Evaluator::Visit(const ast::SeqAppLitNode& node)
 {
-	Stack_t* stack;
+	Stack_t* stack = nullptr;
 
 	if (node.Loc)
 	{
@@ -353,7 +328,7 @@ void Evaluator::Visit(const ast::SeqAppLitNode& node)
 
 void Evaluator::Visit(const ast::SeqAbsNode& node)
 {
-	Stack_t *stack;
+	Stack_t *stack = nullptr;
 
 	if (node.Loc)
 	{
@@ -410,22 +385,8 @@ void Evaluator::Visit(const ast::SeqAbsNode& node)
 
 	Env_t &env = *m_Env;
 
-	// // Add additional bindings from the current local env
-	// for (const auto &[existingBinder, existingClosee] : currentLocalEnv)
-	// {
-	// 	// localEnv[existingBinder] = existingClosee;
-	// 	localEnv.emplace(existingBinder, existingClosee);
-	// }
-
 	// Add binding for binder in the env
 	env[node.Binder->Name] = Closure(closee, localEnv);
-
-	// // Add additional bindings from the closure local env
-	// for (const auto &[existingBinder, existingClosee] : localEnv)
-	// {
-	// 	currentLocalEnv[existingBinder] = existingClosee;
-	// 	// currentLocalEnv.emplace(existingBinder, existingClosee);
-	// }
 
 	// Add binding for binder in the local env
 	currentLocalEnv[node.Binder->Name] = closee;
@@ -433,7 +394,7 @@ void Evaluator::Visit(const ast::SeqAbsNode& node)
 
 void Evaluator::Visit(const ast::SeqCondsNode& node)
 {
-	Stack_t *stack;
+	Stack_t *stack = nullptr;
 
 	if (node.Loc)
 	{
