@@ -63,6 +63,34 @@ void ErrorNoNode(std::format_string<Args...> fmt, Args&&... args)
 	exit(1);
 }
 
+static std::map<uint32_t, std::string> s_StrStore;
+
+StrHandle CreateString(const std::string &string)
+{
+	uint32_t index = static_cast<uint32_t>(s_StrStore.size());
+
+	s_StrStore.emplace(index, string);
+
+	StrHandle strHandle;
+	strHandle.index = index;
+	strHandle.length = string.length();
+
+	return strHandle;
+}
+
+std::optional<std::string_view> GetString(const StrHandle &strHandle)
+{
+	if (auto it = s_StrStore.find(strHandle.index);
+		it != s_StrStore.end())
+	{
+		return std::string_view(
+			it->second.begin(),
+			it->second.begin() + strHandle.length);
+	}
+
+	return std::nullopt;
+}
+
 Evaluator::Evaluator(Env_t *env, Mem_t *mem, ast::NodePtr_t node, LocalEnv_t *localEnv)
 	: m_Env(env)
 	, m_Mem(mem)
@@ -276,7 +304,7 @@ private:
 
 	virtual void Visit(const ast::StrLitNode& node) override
 	{
-		Warn("Cannot push string literal to stack (at the moment)!", node);
+		m_Stack->emplace_back(CreateString(node.Val), *m_LocalEnv);
 
 		m_DidResolve = true;
 	}

@@ -9,6 +9,16 @@ namespace interp {
 using Var_t = std::string;
 using Loc_t = uintptr_t;
 
+struct StrHandle
+{
+	// 4 bytes for index in store
+	uint32_t index;
+	// 4 bytes for string length
+	uint32_t length;
+};
+
+std::optional<std::string_view> GetString(const StrHandle &strHandle);
+
 struct Closee
 {
 	enum Kind
@@ -16,6 +26,7 @@ struct Closee
 		Unknown,
 		TermPtr,	// This is an instruction
 		Data32,		// This is data
+		Str,		// This is a string, 4 byte index, 4 byte length
 	};
 
 	static constexpr size_t GetSize(Kind kind)
@@ -26,9 +37,11 @@ struct Closee
 				return sizeof(ast::TermPtr_t);
 			case Data32:
 				return 4;
+			case Str:
+				return sizeof(StrHandle);
+			default:
+				return 0;
 		}
-
-		return 0;
 	}
 
 	Closee() = default;
@@ -36,13 +49,28 @@ struct Closee
 	Closee(ast::TermPtr_t term)
 		: kind(TermPtr)
 	{
+		static_assert(sizeof(term) <= sizeof(Closee));
+
 		std::memcpy(data, &term, sizeof(ast::TermPtr_t));
 	}
 
 	Closee(int32_t val)
 		: kind(Data32)
 	{
+		static_assert(sizeof(val) <= sizeof(Closee));
+
 		std::memcpy(data, &val, sizeof(int32_t));
+	}
+
+	Closee(StrHandle strHandle)
+		: kind(Str)
+	{
+		static_assert(sizeof(strHandle) <= sizeof(Closee));
+
+		size_t offset = 0;
+		std::memcpy(data + offset, &strHandle.index, sizeof(strHandle.index));
+		offset += sizeof(uint32_t);
+		std::memcpy(data + offset, &strHandle.length, sizeof(strHandle.length));
 	}
 
 	template<typename T>
@@ -54,9 +82,11 @@ struct Closee
 		{
 			case TermPtr:
 				return std::is_same_v<T, ast::TermPtr_t>;
+			case Str:
+				return std::is_same_v<T, StrHandle>;
+			default:
+				return sizeof(T) == GetSize(kind);
 		}
-
-		return sizeof(T) == GetSize(kind);
 	}
 
 	template<typename T>

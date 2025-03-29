@@ -71,6 +71,13 @@ void Writer::Visit(const ast::SeqVarNode& node)
 			int32_t val = closee.As<int32_t>();
 			*m_Ss << val;
 		}
+		else if (closee.Is<StrHandle>())
+		{
+			if (auto string = GetString(closee.As<StrHandle>()))
+			{
+				*m_Ss << *string;
+			}
+		}
 	}
 	else
 	{
