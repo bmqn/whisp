@@ -45,7 +45,7 @@ include(ExternalAntlr4Cpp)
 #	Packages
 #--------------------------------------------------------------------------------------------------
 
-set(ANTLR_EXECUTABLE "${CMAKE_CURRENT_SOURCE_DIR}/bin/antlr-4.13.2-complete.jar")
+set(ANTLR_EXECUTABLE "${CMAKE_CURRENT_SOURCE_DIR}/bin/antlr4/antlr-4.13.2-complete.jar")
 
 find_package(ANTLR REQUIRED)
 
