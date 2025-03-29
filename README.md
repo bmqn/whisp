@@ -60,6 +60,22 @@ This program will print `"Hello"` if there is `0` at the top of the default stac
 
 Recusive functions will often use conditional cases in order to operate on the stack until some _base case_ is met.
 
+### Strings
+
+Strings consist of an `index` and a `length`, and are stored like a string view inside 8 bytes.
+- 4 bytes for the index in a string store.
+- 4 bytes for the length of the string.
+
+We can exploit this behaviour to _create_ a string from raw data, assuming it exists in the string store.
+
+```
+> ["Hello, World"] . [0 as u64] . [32 as u64] . [5 as u64] . << . | . <x as str> . [x]out
+
+Hello
+```
+
+Here we assume a string exists at index `0` with at least length `5`. In this case, the application `["Hello, World"]` will create a length `12` string at index `0`. We can then cast a `u64` that encodes index `0` and length `5` to a `str` to create a view onto the string `"Hello"`.
+
 ### Programs
 
 #### Printing
