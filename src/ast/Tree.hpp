@@ -181,7 +181,7 @@ struct SeqCondsNode : public SeqTermNode
 {
 	SeqCondsNode() = default;
 	SeqCondsNode(Owner_t<SeqTermNode> cond, Owner_t<CondNode> conds, Owner_t<VarNode> loc = nullptr)
-		: Cond(std::move(Cond))
+		: Cond(std::move(cond))
 		, Conds(std::move(conds))
 		, Loc(std::move(loc))
 	{}
