@@ -144,7 +144,9 @@ main = (
 [<lh> . [nil] . [<hh> . <th> . [hh]] . lh] . <head> .
 [<l> . [nil] . [<h> . <t> . [t]] . l] . <tail> .
 [<fm> . <lm> . [nil] . [<hm> . <tm> . [[[tm] . [fm] . map] . [[hm] . fm] . cons]] . lm] . <map> .
-[<x> . [x] . [x] . +] . <double> . [[[nil] . [1] . cons] . [2] . cons] . <list> . [list] .
+[<x> . [x] . [x] . +] . <double> .
+[[[nil] . [1] . cons] . [2] . cons] . <list> .
+[list] .
 [double] . map .
 tail .
 <x> . x .
