@@ -36,6 +36,17 @@ Owner_t<WrappedNode> MakeOwner(Args&&... args)
 	return std::make_unique<WrappedNode>(std::forward<Args>(args)...);
 }
 
+enum class Type
+{
+	U32,
+	S32,
+	U64,
+	S64,
+	Str
+};
+
+std::optional<Type> GetType(const std::string &name);
+
 struct Node
 {
 	virtual ~Node() = default;
@@ -135,18 +146,25 @@ struct SeqVarNode : public SeqTermNode
 	bool Strict;
 };
 
+struct AppCast
+{
+	Type Dest;
+};
+
 struct SeqAppNode : public SeqTermNode
 {
 	SeqAppNode() = default;
 	SeqAppNode(Owner_t<SeqTermNode> arg, Owner_t<VarNode> loc = nullptr)
 		: Arg(std::move(arg))
 		, Loc(std::move(loc))
+		, Cast(std::nullopt)
 	{}
 
 	virtual void Accept(Visitor& visitor) const override;
 
 	Owner_t<SeqTermNode> Arg;
 	Owner_t<VarNode> Loc;
+	std::optional<AppCast> Cast;
 };
 
 struct SeqAppLitNode : public SeqTermNode
@@ -155,12 +173,19 @@ struct SeqAppLitNode : public SeqTermNode
 	SeqAppLitNode(Owner_t<LitNode> lit, Owner_t<VarNode> loc = nullptr)
 		: Lit(std::move(lit))
 		, Loc(std::move(loc))
+		, Cast(std::nullopt)
 	{}
 
 	virtual void Accept(Visitor& visitor) const override;
 
 	Owner_t<LitNode> Lit;
 	Owner_t<VarNode> Loc;
+	std::optional<AppCast> Cast;
+};
+
+struct AbsCast
+{
+	Type Dest;
 };
 
 struct SeqAbsNode : public SeqTermNode
@@ -169,12 +194,14 @@ struct SeqAbsNode : public SeqTermNode
 	SeqAbsNode(Owner_t<VarNode> binder, Owner_t<VarNode> loc = nullptr)
 		: Binder(std::move(binder))
 		, Loc(std::move(loc))
+		, Cast(std::nullopt)
 	{}
 
 	virtual void Accept(Visitor& visitor) const override;
 
 	Owner_t<VarNode> Binder;
 	Owner_t<VarNode> Loc;
+	std::optional<AbsCast> Cast;
 };
 
 struct SeqCondsNode : public SeqTermNode
@@ -197,6 +224,7 @@ enum class Operation
 {
 	Plus,
 	Less,
+	BitOr,
 	BitShiftLeft,
 	BitShiftRight
 };

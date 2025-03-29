@@ -100,11 +100,12 @@ void Interactive()
 		}
 		else
 		{
-			terms.emplace_back(ast::TreeBuilder::Parse(line));
-
-			ast::TermPtr_t term = terms.back().get();
-
-			machine.Execute(term);
+			if (auto term = ast::TreeBuilder::Parse(line))
+			{
+				terms.emplace_back(std::move(term));
+	
+				machine.Execute(terms.back().get());
+			}
 		}
 	}
 }

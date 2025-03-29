@@ -47,7 +47,7 @@ void Error(std::string_view message, const ast::Node& node, Args... args)
 
 	std::cerr << std::endl;
 
-	exit(1);
+	std::exit(1);
 }
 
 template<typename... Args>
@@ -60,7 +60,7 @@ void ErrorNoNode(std::format_string<Args...> fmt, Args&&... args)
 
 	std::cerr << std::endl;
 
-	exit(1);
+	std::exit(1);
 }
 
 static std::map<uint32_t, std::string> s_StrStore;
@@ -78,17 +78,25 @@ StrHandle CreateString(const std::string &string)
 	return strHandle;
 }
 
-std::optional<std::string_view> GetString(const StrHandle &strHandle)
+std::optional<std::string_view> GetString(uint32_t index, uint32_t length)
 {
-	if (auto it = s_StrStore.find(strHandle.index);
+	if (auto it = s_StrStore.find(index);
 		it != s_StrStore.end())
 	{
-		return std::string_view(
-			it->second.begin(),
-			it->second.begin() + strHandle.length);
+		if (length <= it->second.length())
+		{
+			return std::string_view(
+				it->second.begin(),
+				it->second.begin() + length);
+		}
 	}
 
 	return std::nullopt;
+}
+
+std::optional<std::string_view> GetString(const StrHandle &strHandle)
+{
+	return GetString(strHandle.index, strHandle.length);
 }
 
 Evaluator::Evaluator(Env_t *env, Mem_t *mem, ast::NodePtr_t node, LocalEnv_t *localEnv)
@@ -159,6 +167,65 @@ void Evaluator::Visit(const ast::SeqVarNode& node)
 	}
 }
 
+static std::optional<Closee> PerformCast(const StrHandle &strHandle, ast::Type dest)
+{
+	switch (dest)
+	{
+		case ast::Type::U64:
+			return Closee(*reinterpret_cast<const uint64_t*>(&strHandle));
+		case ast::Type::S64:
+			return Closee(*reinterpret_cast<const int64_t*>(&strHandle));
+	}
+
+	return std::nullopt;
+}
+
+static std::optional<Closee> PerformCast(std::integral auto val, ast::Type dest)
+{
+	switch (dest)
+	{
+		case ast::Type::U32:
+			return Closee(static_cast<uint32_t>(val));
+		case ast::Type::S32:
+			return Closee(static_cast<int32_t>(val));
+		case ast::Type::U64:
+			return Closee(static_cast<uint64_t>(val));
+		case ast::Type::S64:
+			return Closee(static_cast<int64_t>(val));
+		case ast::Type::Str:
+			uint32_t index = static_cast<uint64_t>(val) & 0xffff;
+			uint32_t length = (static_cast<uint64_t>(val) >> 32) & 0xffff;
+
+			if (!GetString(index, length))
+			{
+				ErrorNoNode("Cast to 'str' results in an invalid string");
+			}
+
+			return Closee(StrHandle{index, length});
+	}
+
+	return std::nullopt;
+}
+
+static std::optional<Closee> PerformCast(const Closee &closee, ast::Type dest)
+{
+	switch (closee.kind)
+	{
+		case Closee::Kind::U32:
+			return PerformCast(closee.As<uint32_t>(), dest);
+		case Closee::Kind::S32:
+			return PerformCast(closee.As<int32_t>(), dest);
+		case Closee::Kind::U64:
+			return PerformCast(closee.As<uint64_t>(), dest);
+		case Closee::Kind::S64:
+			return PerformCast(closee.As<int64_t>(), dest);
+		case Closee::Kind::Str:
+			return PerformCast(closee.As<StrHandle>(), dest);
+	}
+
+	return std::nullopt;
+}
+
 class ArgResolver : public ast::Visitor
 {
 public:
@@ -167,6 +234,11 @@ public:
 		, m_Env(env)
 		, m_LocalEnv(localEnv)
 	{
+	}
+
+	void SetDestCast(ast::Type type)
+	{
+		m_DestCast = type;
 	}
 
 	bool DidResolve() const
@@ -216,11 +288,113 @@ private:
 
 			m_DidResolve = true;
 		}
+		else if (closee.Is<uint32_t>())
+		{
+			uint32_t val = closee.As<uint32_t>();
+
+			if (m_DestCast)
+			{
+				if (auto closeeCasted = PerformCast(val, *m_DestCast))
+				{
+					m_Stack->emplace_back(*closeeCasted, localEnv);
+				}
+				else
+				{
+					Error("Bad cast", node);
+				}
+			}
+			else
+			{
+				m_Stack->emplace_back(val, localEnv);
+			}
+
+			m_DidResolve = true;
+		}
 		else if (closee.Is<int32_t>())
 		{
 			int32_t val = closee.As<int32_t>();
 
-			m_Stack->emplace_back(val, localEnv);
+			if (m_DestCast)
+			{
+				if (auto closeeCasted = PerformCast(val, *m_DestCast))
+				{
+					m_Stack->emplace_back(*closeeCasted, localEnv);
+				}
+				else
+				{
+					Error("Bad cast", node);
+				}
+			}
+			else
+			{
+				m_Stack->emplace_back(val, localEnv);
+			}
+
+			m_DidResolve = true;
+		}
+		else if (closee.Is<uint64_t>())
+		{
+			uint64_t val = closee.As<uint64_t>();
+
+			if (m_DestCast)
+			{
+				if (auto closeeCasted = PerformCast(val, *m_DestCast))
+				{
+					m_Stack->emplace_back(*closeeCasted, localEnv);
+				}
+				else
+				{
+					Error("Bad cast", node);
+				}
+			}
+			else
+			{
+				m_Stack->emplace_back(val, localEnv);
+			}
+
+			m_DidResolve = true;
+		}
+		else if (closee.Is<int64_t>())
+		{
+			int64_t val = closee.As<int64_t>();
+
+			if (m_DestCast)
+			{
+				if (auto closeeCasted = PerformCast(val, *m_DestCast))
+				{
+					m_Stack->emplace_back(*closeeCasted, localEnv);
+				}
+				else
+				{
+					Error("Bad cast", node);
+				}
+			}
+			else
+			{
+				m_Stack->emplace_back(val, localEnv);
+			}
+
+			m_DidResolve = true;
+		}
+		else if (closee.Is<StrHandle>())
+		{
+			StrHandle strHandle = closee.As<StrHandle>();
+
+			if (m_DestCast)
+			{
+				if (auto closeeCasted = PerformCast(strHandle, *m_DestCast))
+				{
+					m_Stack->emplace_back(*closeeCasted, localEnv);
+				}
+				else
+				{
+					Error("Bad cast", node);
+				}
+			}
+			else
+			{
+				m_Stack->emplace_back(strHandle, localEnv);
+			}
 
 			m_DidResolve = true;
 		}
@@ -230,6 +404,9 @@ private:
 	Stack_t *m_Stack;
 	const Env_t *m_Env;
 	const LocalEnv_t *m_LocalEnv;
+
+	// Cast for destination
+	std::optional<ast::Type> m_DestCast = std::nullopt;
 
 	bool m_DidResolve = false;
 };
@@ -267,8 +444,14 @@ void Evaluator::Visit(const ast::SeqAppNode& node)
 
 	ArgResolver argResolver(stack, &currentEnv, &currentLocalEnv);
 
+	if (node.Cast)
+	{
+		argResolver.SetDestCast(node.Cast->Dest);
+	}
+
 	node.Arg->Accept(argResolver);
 
+	// TODO: move me into ArgResolver
 	if (!argResolver.DidResolve())
 	{
 		// Use the arg term
@@ -289,6 +472,11 @@ public:
 	{
 	}
 
+	void SetDestCast(ast::Type type)
+	{
+		m_DestCast = type;
+	}
+
 	bool DidResolve() const
 	{
 		return m_DidResolve;
@@ -297,14 +485,42 @@ public:
 private:
 	virtual void Visit(const ast::Int32LitNode& node) override
 	{
-		m_Stack->emplace_back(node.Val, *m_LocalEnv);
+		if (m_DestCast)
+		{
+			if (auto closeeCasted = PerformCast(node.Val, *m_DestCast))
+			{
+				m_Stack->emplace_back(*closeeCasted, *m_LocalEnv);
+			}
+			else
+			{
+				Error("Bad cast", node);
+			}
+		}
+		else
+		{
+			m_Stack->emplace_back(node.Val, *m_LocalEnv);
+		}
 
 		m_DidResolve = true;
 	}
 
 	virtual void Visit(const ast::StrLitNode& node) override
 	{
-		m_Stack->emplace_back(CreateString(node.Val), *m_LocalEnv);
+		if (m_DestCast)
+		{
+			if (auto closeeCasted = PerformCast(CreateString(node.Val), *m_DestCast))
+			{
+				m_Stack->emplace_back(*closeeCasted, *m_LocalEnv);
+			}
+			else
+			{
+				Error("Bad cast", node);
+			}
+		}
+		else
+		{
+			m_Stack->emplace_back(CreateString(node.Val), *m_LocalEnv);
+		}
 
 		m_DidResolve = true;
 	}
@@ -312,6 +528,8 @@ private:
 private:
 	Stack_t *m_Stack;
 	const LocalEnv_t *m_LocalEnv;
+
+	std::optional<ast::Type> m_DestCast = std::nullopt;
 
 	bool m_DidResolve = false;
 };
@@ -345,6 +563,11 @@ void Evaluator::Visit(const ast::SeqAppLitNode& node)
 	const LocalEnv_t &currentLocalEnv = *m_LocalEnv;
 
 	LitResolver litResolver(stack, &currentLocalEnv);
+
+	if (node.Cast)
+	{
+		litResolver.SetDestCast(node.Cast->Dest);
+	}
 
 	node.Lit->Accept(litResolver);
 
@@ -408,8 +631,20 @@ void Evaluator::Visit(const ast::SeqAbsNode& node)
 	Closure closure = stack->back();
 	stack->pop_back();
 
-	Closee &closee = closure.closee;
+	Closee closee = closure.closee;
 	LocalEnv_t localEnv = closure.localEnv;
+
+	if (node.Cast)
+	{
+		if (auto closeeCasted = PerformCast(closee, node.Cast->Dest))
+		{
+			closee = *closeeCasted;
+		}
+		else
+		{
+			Error("Bad cast", node);
+		}
+	}
 
 	Env_t &env = *m_Env;
 
@@ -532,50 +767,61 @@ void Evaluator::Visit(const ast::SeqOpNode& node)
 	Closure closure1 = stack->back();
 	stack->pop_back();
 
-	int32_t val1;
-
-	if (closure1.closee.Is<int32_t>())
-	{
-		val1 = closure1.closee.As<int32_t>();
-	}
-	else
-	{
-		Error("Non literal on stack for op", node);
-	}
-
 	Closure closure2 = stack->back();
 	stack->pop_back();
-
-	int32_t val2;
-
-	if (closure2.closee.Is<int32_t>())
-	{
-		val2 = closure2.closee.As<int32_t>();
-	}
-	else
-	{
-		Error("Non literal on stack for op", node);
-	}
 
 	const LocalEnv_t &currentLocalEnv = *m_LocalEnv;
 
 	Closee closee;
 
-	// Use the op result
-	switch (node.Op)
+	bool val1Found = false;
+	bool val2Found = false;
+
+#define DO_FOR_TYPE(_type) \
+if (!val1Found && !val2Found) \
+{ \
+_type val1; \
+if (closure1.closee.Is<_type>()) \
+{ \
+	val1 = closure1.closee.As<_type>(); \
+	val1Found = true; \
+} \
+_type val2; \
+if (closure2.closee.Is<_type>()) \
+{ \
+	val2 = closure2.closee.As<_type>(); \
+	val2Found = true; \
+} \
+switch (node.Op) \
+{ \
+	case ast::Operation::Plus: \
+		closee = val1 + val2; \
+		break; \
+	case ast::Operation::Less: \
+		closee = val1 < val2; \
+		break; \
+	case ast::Operation::BitOr: \
+		closee = val1 | val2; \
+		break; \
+	case ast::Operation::BitShiftLeft: \
+		closee = val1 << val2; \
+		break; \
+	case ast::Operation::BitShiftRight: \
+		closee = val1 >> val2; \
+		break; \
+} \
+}
+
+	DO_FOR_TYPE(uint32_t)
+	DO_FOR_TYPE(int32_t)
+	DO_FOR_TYPE(uint64_t)
+	DO_FOR_TYPE(int64_t)
+
+#undef DO_FOR_TYPE
+
+	if (!(val1Found && val2Found))
 	{
-		case ast::Operation::Plus:
-			closee = val1 + val2;
-			break;
-		case ast::Operation::Less:
-			closee = val1 < val2;
-			break;
-		case ast::Operation::BitShiftLeft:
-			closee = val1 << val2;
-			break;
-		case ast::Operation::BitShiftRight:
-			closee = val1 >> val2;
-			break;
+		Error("Invalid binary operation", node);
 	}
 
 	// Use the current local env
@@ -599,28 +845,6 @@ void Machine::Execute(const ast::TermPtr_t term, Env_t env)
 		auto &closee = closure.closee;
 		auto &localEnv = closure.localEnv;
 
-		// if (closee.Is<ast::TermPtr_t>())
-		// {
-		// 	Writer writer(&std::cout, closee.As<ast::TermPtr_t>(), &env);
-		// 	std::cout << " :" << std::endl;
-		// }
-
-		// std::cout << std::endl;
-		// for (const auto& [binder, closee] : env)
-		// {
-		// 	std::cout << std::format("{} -> ", binder);
-		// 	if (closee.Is<ast::TermPtr_t>())
-		// 	{
-		// 		Writer writer(&std::cout, closee.As<ast::TermPtr_t>(), &env);
-		// 	}
-		// 	else if (closee.Is<int32_t>())
-		// 	{
-		// 		std::cout << closee.As<int32_t>();
-		// 	}
-		// 	std::cout << std::endl;
-		// }
-		// std::cout << std::endl;
-
 		// TODO: Max
 		// We need the env to be shared for all terms but index it using the variable!
 		// The env shouldn't be stored entirely for a closure, instead it should map
@@ -641,11 +865,42 @@ void Machine::Execute(const ast::TermPtr_t term, Env_t env)
 		}
 		else
 		{
-			if (closee.Is<int32_t>())
+			if (closee.Is<uint32_t>())
+			{
+				uint32_t val = closee.As<uint32_t>();
+			
+				ErrorNoNode("'u32' encountered in control: {}", val);
+			}
+			else if (closee.Is<int32_t>())
 			{
 				int32_t val = closee.As<int32_t>();
 			
-				ErrorNoNode("Int32 literal encountered in control: {}", val);
+				ErrorNoNode("'s32 encountered in control: {}", val);
+			}
+			if (closee.Is<uint64_t>())
+			{
+				uint64_t val = closee.As<uint64_t>();
+			
+				ErrorNoNode("'u64' encountered in control: {}", val);
+			}
+			else if (closee.Is<int64_t>())
+			{
+				int64_t val = closee.As<int64_t>();
+			
+				ErrorNoNode("'s64 encountered in control: {}", val);
+			}
+			else if (closee.Is<StrHandle>())
+			{
+				StrHandle strHandle = closee.As<StrHandle>();
+			
+				if (auto string = GetString(strHandle))
+				{
+					ErrorNoNode("'str' encountered in control: {}", *string);
+				}
+				else
+				{
+					ErrorNoNode("'str' encountered in control: (undeterminable)!");
+				}
 			}
 			else
 			{

@@ -15,8 +15,11 @@ seqVar      : ID
             | ID EXCLAM
             ;
 
-seqApp      : LSQUARE seqTerm RSQUARE loc?
-            | LSQUARE lit RSQUARE loc?
+appCast     : CAST WS* ID
+            ;
+
+seqApp      : LSQUARE seqTerm appCast? RSQUARE loc?
+            | LSQUARE lit appCast? RSQUARE loc?
             ;
 
 seqLocApp   : LSQUARE HASH var RSQUARE loc?
@@ -25,7 +28,10 @@ seqLocApp   : LSQUARE HASH var RSQUARE loc?
 binder      : ID
             ;
 
-seqAbs      : loc? LTRIAN binder RTRIAN
+absCast     : CAST WS* ID
+            ;
+
+seqAbs      : loc? LTRIAN binder absCast? RTRIAN
             | loc? LTRIAN UNDERSCORE RTRIAN
             ;
 
@@ -47,6 +53,7 @@ bitSftR     : RTRIAN RTRIAN
 
 seqOp       : PLUS
             | LTRIAN
+            | VERTBAR
             | bitSftL
             | bitSftR
             ;

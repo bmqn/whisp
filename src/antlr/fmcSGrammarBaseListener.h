@@ -28,6 +28,9 @@ public:
   virtual void enterSeqVar(fmcSGrammar::SeqVarContext * /*ctx*/) override { }
   virtual void exitSeqVar(fmcSGrammar::SeqVarContext * /*ctx*/) override { }
 
+  virtual void enterAppCast(fmcSGrammar::AppCastContext * /*ctx*/) override { }
+  virtual void exitAppCast(fmcSGrammar::AppCastContext * /*ctx*/) override { }
+
   virtual void enterSeqApp(fmcSGrammar::SeqAppContext * /*ctx*/) override { }
   virtual void exitSeqApp(fmcSGrammar::SeqAppContext * /*ctx*/) override { }
 
@@ -36,6 +39,9 @@ public:
 
   virtual void enterBinder(fmcSGrammar::BinderContext * /*ctx*/) override { }
   virtual void exitBinder(fmcSGrammar::BinderContext * /*ctx*/) override { }
+
+  virtual void enterAbsCast(fmcSGrammar::AbsCastContext * /*ctx*/) override { }
+  virtual void exitAbsCast(fmcSGrammar::AbsCastContext * /*ctx*/) override { }
 
   virtual void enterSeqAbs(fmcSGrammar::SeqAbsContext * /*ctx*/) override { }
   virtual void exitSeqAbs(fmcSGrammar::SeqAbsContext * /*ctx*/) override { }

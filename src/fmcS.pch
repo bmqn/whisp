@@ -1,6 +1,8 @@
 #ifndef PCH_FMCS_PCH
 #define PCH_FMCS_PCH
 
+#include <concepts>
+
 #include <format>
 #include <utility>
 

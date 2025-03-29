@@ -25,7 +25,10 @@ struct Closee
 	{
 		Unknown,
 		TermPtr,	// This is an instruction
-		Data32,		// This is data
+		U32,		// This is an unsigned 4 byte integer
+		S32,		// This is a signed 4 byte integer
+		U64,		// This is an unsigned 8 byte integer
+		S64,		// This is a signed 8 byte integer
 		Str,		// This is a string, 4 byte index, 4 byte length
 	};
 
@@ -35,8 +38,12 @@ struct Closee
 		{
 			case TermPtr:
 				return sizeof(ast::TermPtr_t);
-			case Data32:
+			case U32:
+			case S32:
 				return 4;
+			case U64:
+			case S64:
+				return 8;
 			case Str:
 				return sizeof(StrHandle);
 			default:
@@ -51,15 +58,39 @@ struct Closee
 	{
 		static_assert(sizeof(term) <= sizeof(Closee));
 
-		std::memcpy(data, &term, sizeof(ast::TermPtr_t));
+		std::memcpy(data, &term, sizeof(term));
 	}
 
-	Closee(int32_t val)
-		: kind(Data32)
+	Closee(uint32_t val)
+		: kind(U32)
 	{
 		static_assert(sizeof(val) <= sizeof(Closee));
 
-		std::memcpy(data, &val, sizeof(int32_t));
+		std::memcpy(data, &val, sizeof(val));
+	}
+
+	Closee(int32_t val)
+		: kind(S32)
+	{
+		static_assert(sizeof(val) <= sizeof(Closee));
+
+		std::memcpy(data, &val, sizeof(val));
+	}
+
+	Closee(uint64_t val)
+		: kind(U64)
+	{
+		static_assert(sizeof(val) <= sizeof(Closee));
+
+		std::memcpy(data, &val, sizeof(val));
+	}
+
+	Closee(int64_t val)
+		: kind(S64)
+	{
+		static_assert(sizeof(val) <= sizeof(Closee));
+
+		std::memcpy(data, &val, sizeof(val));
 	}
 
 	Closee(StrHandle strHandle)
@@ -84,8 +115,14 @@ struct Closee
 				return std::is_same_v<T, ast::TermPtr_t>;
 			case Str:
 				return std::is_same_v<T, StrHandle>;
+			case U32:
+			case U64:
+				return sizeof(T) == GetSize(kind) && std::is_unsigned_v<T>;
+			case S32:
+			case S64:
+				return sizeof(T) == GetSize(kind) && std::is_signed_v<T>;
 			default:
-				return sizeof(T) == GetSize(kind);
+				return false;
 		}
 	}
 

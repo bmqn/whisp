@@ -22,13 +22,26 @@ public:
 
 		fmcSGrammar::SeqTermContext* seqTerm = parser.seqTerm();
 
-		fmcs::ast::TreeBuilder builder;
-		antlr4::tree::ParseTreeWalker::DEFAULT.walk(&builder, seqTerm);
+		try
+		{
+			fmcs::ast::TreeBuilder builder(parser);
+			antlr4::tree::ParseTreeWalker::DEFAULT.walk(&builder, seqTerm);
+			return builder.Get();
+		}
+		catch (const antlr4::RuntimeException &e)
+		{
+			return nullptr;
+		}
 
-		return builder.Get();
+		return nullptr;
 	}
 
 private:
+	TreeBuilder(fmcSGrammar &parser)
+		: m_Parser(parser)
+	{
+	}
+
 	Owner_t<SeqTermNode> Get()
 	{
 		return std::move(m_Terms.top());
@@ -80,6 +93,30 @@ private:
 				seqAbs->Binder->Snippet = ctx->seqAbs()->binder()->ID()->getText();
 			}
 
+			if (ctx->seqAbs()->absCast())
+			{
+				AbsCast cast;
+
+				if (auto type = GetType(ctx->seqAbs()->absCast()->ID()->getText()))
+				{
+					cast.Dest = *type;
+				}
+				else
+				{
+					std::string errorMessage = std::format("Invalid cast to type '{}'",
+						ctx->seqAbs()->absCast()->ID()->getText());
+					
+					m_Parser.notifyErrorListeners(
+						ctx->seqAbs()->absCast()->ID()->getSymbol(),
+						errorMessage,
+						nullptr);
+
+					throw antlr4::ParseCancellationException(errorMessage);
+				}
+
+				seqAbs->Cast = cast;
+			}
+
 			if (ctx->seqAbs()->loc())
 			{
 				seqAbs->Loc = MakeOwner<VarNode>(
@@ -122,6 +159,30 @@ private:
 					seqAppLit->Lit->Snippet = ctx->seqApp()->lit()->STR()->getText();
 				}
 
+				if (ctx->seqApp()->appCast())
+				{
+					AppCast cast;
+
+					if (auto type = GetType(ctx->seqApp()->appCast()->ID()->getText()))
+					{
+						cast.Dest = *type;
+					}
+					else
+					{
+						std::string errorMessage = std::format("Invalid cast to type '{}'",
+							ctx->seqApp()->appCast()->ID()->getText());
+						
+						m_Parser.notifyErrorListeners(
+							ctx->seqApp()->appCast()->ID()->getSymbol(),
+							errorMessage,
+							nullptr);
+
+						throw antlr4::ParseCancellationException(errorMessage);
+					}
+
+					seqAppLit->Cast = cast;
+				}
+
 				if (ctx->seqApp()->loc())
 				{
 					seqAppLit->Loc = MakeOwner<VarNode>(
@@ -141,6 +202,30 @@ private:
 				if (ctx->seqTerm())
 				{
 					seqApp->Next = PopNextTerm();
+				}
+
+				if (ctx->seqApp()->appCast())
+				{
+					AppCast cast;
+
+					if (auto type = GetType(ctx->seqApp()->appCast()->ID()->getText()))
+					{
+						cast.Dest = *type;
+					}
+					else
+					{
+						std::string errorMessage = std::format("Invalid cast to type '{}'",
+							ctx->seqApp()->appCast()->ID()->getText());
+						
+						m_Parser.notifyErrorListeners(
+							ctx->seqApp()->appCast()->ID()->getSymbol(),
+							errorMessage,
+							nullptr);
+
+						throw antlr4::ParseCancellationException(errorMessage);
+					}
+					
+					seqApp->Cast = cast;
 				}
 
 				if (ctx->seqApp()->seqTerm())
@@ -247,6 +332,10 @@ private:
 			{
 				seqOp->Op = Operation::Less;
 			}
+			else if (ctx->seqOp()->VERTBAR())
+			{
+				seqOp->Op = Operation::BitOr;
+			}
 			else if (ctx->seqOp()->bitSftL())
 			{
 				seqOp->Op = Operation::BitShiftLeft;
@@ -283,6 +372,8 @@ private:
 	}
 
 private:
+	fmcSGrammar &m_Parser;
+
 	std::stack<Owner_t<SeqTermNode>> m_Terms;
 };
 

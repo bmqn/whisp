@@ -5,6 +5,32 @@
 namespace fmcs {
 namespace ast {
 
+std::optional<Type> GetType(const std::string &name)
+{
+	if (name == "u32")
+	{
+		return Type::U32;
+	}
+	else if (name == "s32")
+	{
+		return Type::S32;
+	}
+	else if (name == "u64")
+	{
+		return Type::U64;
+	}
+	else if (name == "s64")
+	{
+		return Type::S64;
+	}
+	else if (name == "str")
+	{
+		return Type::Str;
+	}
+
+	return std::nullopt;
+}
+
 void LitNode::Accept(Visitor& visitor) const
 {
 	Visit(*this, visitor);

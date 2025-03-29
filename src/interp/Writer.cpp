@@ -66,9 +66,24 @@ void Writer::Visit(const ast::SeqVarNode& node)
 			Writer subWriter(m_Ss, &subEnv);
 			term->Accept(subWriter);
 		}
+		else if (closee.Is<uint32_t>())
+		{
+			uint32_t val = closee.As<uint32_t>();
+			*m_Ss << val;
+		}
 		else if (closee.Is<int32_t>())
 		{
 			int32_t val = closee.As<int32_t>();
+			*m_Ss << val;
+		}
+		else if (closee.Is<uint64_t>())
+		{
+			uint64_t val = closee.As<uint64_t>();
+			*m_Ss << val;
+		}
+		else if (closee.Is<int64_t>())
+		{
+			int64_t val = closee.As<int64_t>();
 			*m_Ss << val;
 		}
 		else if (closee.Is<StrHandle>())

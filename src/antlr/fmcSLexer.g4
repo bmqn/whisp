@@ -20,9 +20,11 @@ UNDERSCORE : '_' ;
 QUOTE : '"' ;
 PLUS : '+' ;
 EXCLAM : '!' ;
+VERTBAR : '|' ;
 
 DEFAULT : 'default' ;
 INCLUDE : 'include' ;
+CAST : 'as' ;
 
 INT : [-]?[0-9]+ ;
 STR : '"' ~["]* '"';
