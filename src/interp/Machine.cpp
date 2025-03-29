@@ -570,6 +570,12 @@ void Evaluator::Visit(const ast::SeqOpNode& node)
 		case ast::Operation::Less:
 			closee = val1 < val2;
 			break;
+		case ast::Operation::BitShiftLeft:
+			closee = val1 << val2;
+			break;
+		case ast::Operation::BitShiftRight:
+			closee = val1 >> val2;
+			break;
 	}
 
 	// Use the current local env

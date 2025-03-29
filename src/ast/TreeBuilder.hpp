@@ -247,6 +247,14 @@ private:
 			{
 				seqOp->Op = Operation::Less;
 			}
+			else if (ctx->seqOp()->bitSftL())
+			{
+				seqOp->Op = Operation::BitShiftLeft;
+			}
+			else if (ctx->seqOp()->bitSftR())
+			{
+				seqOp->Op = Operation::BitShiftRight;
+			}
 
 			if (ctx->seqTerm())
 			{

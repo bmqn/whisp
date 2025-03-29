@@ -47,6 +47,12 @@ public:
   virtual void enterSeqConds(fmcSGrammar::SeqCondsContext *ctx) = 0;
   virtual void exitSeqConds(fmcSGrammar::SeqCondsContext *ctx) = 0;
 
+  virtual void enterBitSftL(fmcSGrammar::BitSftLContext *ctx) = 0;
+  virtual void exitBitSftL(fmcSGrammar::BitSftLContext *ctx) = 0;
+
+  virtual void enterBitSftR(fmcSGrammar::BitSftRContext *ctx) = 0;
+  virtual void exitBitSftR(fmcSGrammar::BitSftRContext *ctx) = 0;
+
   virtual void enterSeqOp(fmcSGrammar::SeqOpContext *ctx) = 0;
   virtual void exitSeqOp(fmcSGrammar::SeqOpContext *ctx) = 0;
 

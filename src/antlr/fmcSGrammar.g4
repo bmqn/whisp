@@ -39,8 +39,16 @@ cond        : lit WS* ARROW WS* seqTerm
 seqConds    : loc? LCURLY (WS* cond WS* COMMA)* WS* seqTerm WS* RCURLY
             ;
 
+bitSftL     : LTRIAN LTRIAN
+            ;
+
+bitSftR     : RTRIAN RTRIAN
+            ;
+
 seqOp       : PLUS
             | LTRIAN
+            | bitSftL
+            | bitSftR
             ;
 
 seqTerm     : STAR

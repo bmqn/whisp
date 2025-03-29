@@ -49,6 +49,12 @@ public:
   virtual void enterSeqConds(fmcSGrammar::SeqCondsContext * /*ctx*/) override { }
   virtual void exitSeqConds(fmcSGrammar::SeqCondsContext * /*ctx*/) override { }
 
+  virtual void enterBitSftL(fmcSGrammar::BitSftLContext * /*ctx*/) override { }
+  virtual void exitBitSftL(fmcSGrammar::BitSftLContext * /*ctx*/) override { }
+
+  virtual void enterBitSftR(fmcSGrammar::BitSftRContext * /*ctx*/) override { }
+  virtual void exitBitSftR(fmcSGrammar::BitSftRContext * /*ctx*/) override { }
+
   virtual void enterSeqOp(fmcSGrammar::SeqOpContext * /*ctx*/) override { }
   virtual void exitSeqOp(fmcSGrammar::SeqOpContext * /*ctx*/) override { }
 

@@ -196,7 +196,9 @@ struct SeqCondsNode : public SeqTermNode
 enum class Operation
 {
 	Plus,
-	Less
+	Less,
+	BitShiftLeft,
+	BitShiftRight
 };
 
 struct SeqOpNode : public SeqTermNode

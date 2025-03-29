@@ -22,8 +22,9 @@ public:
   enum {
     RuleLit = 0, RuleVar = 1, RuleLoc = 2, RuleSeqVar = 3, RuleSeqApp = 4, 
     RuleSeqLocApp = 5, RuleBinder = 6, RuleSeqAbs = 7, RuleSeqLocAbs = 8, 
-    RuleCond = 9, RuleSeqConds = 10, RuleSeqOp = 11, RuleSeqTerm = 12, RuleInclude = 13, 
-    RuleFunction = 14, RuleProgram = 15
+    RuleCond = 9, RuleSeqConds = 10, RuleBitSftL = 11, RuleBitSftR = 12, 
+    RuleSeqOp = 13, RuleSeqTerm = 14, RuleInclude = 15, RuleFunction = 16, 
+    RuleProgram = 17
   };
 
   explicit fmcSGrammar(antlr4::TokenStream *input);
@@ -54,6 +55,8 @@ public:
   class SeqLocAbsContext;
   class CondContext;
   class SeqCondsContext;
+  class BitSftLContext;
+  class BitSftRContext;
   class SeqOpContext;
   class SeqTermContext;
   class IncludeContext;
@@ -235,12 +238,42 @@ public:
 
   SeqCondsContext* seqConds();
 
+  class  BitSftLContext : public antlr4::ParserRuleContext {
+  public:
+    BitSftLContext(antlr4::ParserRuleContext *parent, size_t invokingState);
+    virtual size_t getRuleIndex() const override;
+    std::vector<antlr4::tree::TerminalNode *> LTRIAN();
+    antlr4::tree::TerminalNode* LTRIAN(size_t i);
+
+    virtual void enterRule(antlr4::tree::ParseTreeListener *listener) override;
+    virtual void exitRule(antlr4::tree::ParseTreeListener *listener) override;
+   
+  };
+
+  BitSftLContext* bitSftL();
+
+  class  BitSftRContext : public antlr4::ParserRuleContext {
+  public:
+    BitSftRContext(antlr4::ParserRuleContext *parent, size_t invokingState);
+    virtual size_t getRuleIndex() const override;
+    std::vector<antlr4::tree::TerminalNode *> RTRIAN();
+    antlr4::tree::TerminalNode* RTRIAN(size_t i);
+
+    virtual void enterRule(antlr4::tree::ParseTreeListener *listener) override;
+    virtual void exitRule(antlr4::tree::ParseTreeListener *listener) override;
+   
+  };
+
+  BitSftRContext* bitSftR();
+
   class  SeqOpContext : public antlr4::ParserRuleContext {
   public:
     SeqOpContext(antlr4::ParserRuleContext *parent, size_t invokingState);
     virtual size_t getRuleIndex() const override;
     antlr4::tree::TerminalNode *PLUS();
     antlr4::tree::TerminalNode *LTRIAN();
+    BitSftLContext *bitSftL();
+    BitSftRContext *bitSftR();
 
     virtual void enterRule(antlr4::tree::ParseTreeListener *listener) override;
     virtual void exitRule(antlr4::tree::ParseTreeListener *listener) override;
