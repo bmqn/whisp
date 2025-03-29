@@ -11,12 +11,13 @@ using Loc_t = uintptr_t;
 
 struct StrHandle
 {
-	// 4 bytes for index in store
-	uint32_t index;
+	// 4 bytes for offset in store
+	uint32_t offset;
 	// 4 bytes for string length
 	uint32_t length;
 };
 
+std::optional<std::string_view> GetString(uint32_t offset, uint32_t length);
 std::optional<std::string_view> GetString(const StrHandle &strHandle);
 
 struct Closee
@@ -29,7 +30,7 @@ struct Closee
 		S32,		// This is a signed 4 byte integer
 		U64,		// This is an unsigned 8 byte integer
 		S64,		// This is a signed 8 byte integer
-		Str,		// This is a string, 4 byte index, 4 byte length
+		Str,		// This is a string, 4 byte offset, 4 byte length
 	};
 
 	static constexpr size_t GetSize(Kind kind)
@@ -99,7 +100,7 @@ struct Closee
 		static_assert(sizeof(strHandle) <= sizeof(Closee));
 
 		size_t offset = 0;
-		std::memcpy(data + offset, &strHandle.index, sizeof(strHandle.index));
+		std::memcpy(data + offset, &strHandle.offset, sizeof(strHandle.offset));
 		offset += sizeof(uint32_t);
 		std::memcpy(data + offset, &strHandle.length, sizeof(strHandle.length));
 	}

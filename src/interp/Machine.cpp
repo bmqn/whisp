@@ -63,32 +63,28 @@ void ErrorNoNode(std::format_string<Args...> fmt, Args&&... args)
 	std::exit(1);
 }
 
-static std::map<uint32_t, std::string> s_StrStore;
+static std::vector<char> s_StrStore;
 
 StrHandle CreateString(const std::string &string)
 {
-	uint32_t index = static_cast<uint32_t>(s_StrStore.size());
+	uint32_t offset = static_cast<uint32_t>(s_StrStore.size());
+	uint32_t length = string.length();
 
-	s_StrStore.emplace(index, string);
+	s_StrStore.resize(offset + length);
+	std::memcpy(&s_StrStore[offset], string.data(), length);
 
 	StrHandle strHandle;
-	strHandle.index = index;
-	strHandle.length = string.length();
+	strHandle.offset = offset;
+	strHandle.length = length;
 
 	return strHandle;
 }
 
-std::optional<std::string_view> GetString(uint32_t index, uint32_t length)
+std::optional<std::string_view> GetString(uint32_t offset, uint32_t length)
 {
-	if (auto it = s_StrStore.find(index);
-		it != s_StrStore.end())
+	if (offset + length <= s_StrStore.size())
 	{
-		if (length <= it->second.length())
-		{
-			return std::string_view(
-				it->second.begin(),
-				it->second.begin() + length);
-		}
+		return std::string_view(&s_StrStore[offset], length);
 	}
 
 	return std::nullopt;
@@ -96,7 +92,7 @@ std::optional<std::string_view> GetString(uint32_t index, uint32_t length)
 
 std::optional<std::string_view> GetString(const StrHandle &strHandle)
 {
-	return GetString(strHandle.index, strHandle.length);
+	return GetString(strHandle.offset, strHandle.length);
 }
 
 Evaluator::Evaluator(Env_t *env, Mem_t *mem, ast::NodePtr_t node, LocalEnv_t *localEnv)
@@ -193,15 +189,15 @@ static std::optional<Closee> PerformCast(std::integral auto val, ast::Type dest)
 		case ast::Type::S64:
 			return Closee(static_cast<int64_t>(val));
 		case ast::Type::Str:
-			uint32_t index = static_cast<uint64_t>(val) & 0xffff;
+			uint32_t offset = static_cast<uint64_t>(val) & 0xffff;
 			uint32_t length = (static_cast<uint64_t>(val) >> 32) & 0xffff;
 
-			if (!GetString(index, length))
+			if (!GetString(offset, length))
 			{
 				ErrorNoNode("Cast to 'str' results in an invalid string");
 			}
 
-			return Closee(StrHandle{index, length});
+			return Closee(StrHandle{offset, length});
 	}
 
 	return std::nullopt;

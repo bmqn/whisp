@@ -62,8 +62,8 @@ Recusive functions will often use conditional cases in order to operate on the s
 
 ### Strings
 
-Strings consist of an `index` and a `length`, and are stored like a string view inside 8 bytes.
-- 4 bytes for the index in a string store.
+Strings consist of an `offset` and a `length`, and are stored like a string view inside 8 bytes.
+- 4 bytes for the offset into a string store.
 - 4 bytes for the length of the string.
 
 We can exploit this behaviour to _create_ a string from raw data, assuming it exists in the string store.
@@ -74,7 +74,7 @@ We can exploit this behaviour to _create_ a string from raw data, assuming it ex
 Hello
 ```
 
-Here we assume a string exists at index `0` with at least length `5`. In this case, the application `["Hello, World"]` will create a length `12` string at index `0`. We can then cast a `u64` that encodes index `0` and length `5` to a `str` to create a view onto the string `"Hello"`.
+Here we assume a string exists at offset `0` with at least length `5`. In this case, the application `["Hello, World"]` will create a length `12` string at offset `0`. We can then cast a `u64` that encodes index `0` and length `5` to a `str` to create a view onto the string `"Hello"`.
 
 ### Programs
 
