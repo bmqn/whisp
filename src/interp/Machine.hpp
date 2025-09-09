@@ -6,7 +6,6 @@
 namespace fmcs {
 namespace interp {
 
-using Var_t = std::string;
 using Loc_t = uintptr_t;
 
 struct StrHandle
@@ -26,6 +25,7 @@ struct Closee
 	{
 		Unknown,
 		TermPtr,	// This is an instruction
+		Loc,		// This is a location
 		U32,		// This is an unsigned 4 byte integer
 		S32,		// This is a signed 4 byte integer
 		U64,		// This is an unsigned 8 byte integer
@@ -39,6 +39,8 @@ struct Closee
 		{
 			case TermPtr:
 				return sizeof(ast::TermPtr_t);
+			case Loc:
+				return 8;
 			case U32:
 			case S32:
 				return 4;
@@ -60,6 +62,18 @@ struct Closee
 		static_assert(sizeof(term) <= sizeof(Closee));
 
 		std::memcpy(data, &term, sizeof(term));
+	}
+
+	// TOD: Use factory functions to avoid type ambiguity
+	static Closee FromLoc(Loc_t loc)
+	{
+		static_assert(sizeof(loc) <= sizeof(Closee));
+
+		Closee closee;
+		closee.kind = Loc;
+		std::memcpy(closee.data, &loc, sizeof(loc));
+
+		return closee;
 	}
 
 	Closee(uint32_t val)
@@ -114,14 +128,16 @@ struct Closee
 		{
 			case TermPtr:
 				return std::is_same_v<T, ast::TermPtr_t>;
-			case Str:
-				return std::is_same_v<T, StrHandle>;
+			case Loc:
+				return std::is_same_v<T, Loc_t>;
 			case U32:
 			case U64:
 				return sizeof(T) == GetSize(kind) && std::is_unsigned_v<T>;
 			case S32:
 			case S64:
 				return sizeof(T) == GetSize(kind) && std::is_signed_v<T>;
+			case Str:
+				return kind == Str && std::is_same_v<T, StrHandle>;
 			default:
 				return false;
 		}
@@ -188,7 +204,7 @@ private:
 class Evaluator : public ast::Visitor
 {
 public:
-	Evaluator(Env_t *env, Mem_t *mem, ast::NodePtr_t node, LocalEnv_t *localEnv);
+	Evaluator(ast::NodePtr_t node, Mem_t *mem, Env_t *env, LocalEnv_t *localEnv);
 
 	inline bool HasFrame()
 	{
@@ -208,14 +224,15 @@ private:
 	virtual void Visit(const ast::SeqAppNode& node) override;
 	virtual void Visit(const ast::SeqAppLitNode& node) override;
 	virtual void Visit(const ast::SeqAbsNode& node) override;
+	virtual void Visit(const ast::SeqLocAppNode& node) override;
+	virtual void Visit(const ast::SeqLocAbsNode& node) override;
 	virtual void Visit(const ast::SeqCondsNode& node) override;
 	virtual void Visit(const ast::SeqOpNode& node) override;
 
 private:
-	Env_t *m_Env;
-	Mem_t *m_Mem;
-
 	ast::NodePtr_t m_Node;
+	Mem_t *m_Mem;
+	Env_t *m_Env;
 	LocalEnv_t *m_LocalEnv;
 
 	Stack_t *m_Control;

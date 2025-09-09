@@ -22,9 +22,6 @@ seqApp      : LSQUARE seqTerm appCast? RSQUARE loc?
             | LSQUARE lit appCast? RSQUARE loc?
             ;
 
-seqLocApp   : LSQUARE HASH var RSQUARE loc?
-            ;
-
 binder      : ID
             ;
 
@@ -33,6 +30,9 @@ absCast     : CAST WS* ID
 
 seqAbs      : loc? LTRIAN binder absCast? RTRIAN
             | loc? LTRIAN UNDERSCORE RTRIAN
+            ;
+
+seqLocApp   : LSQUARE HASH var RSQUARE loc?
             ;
 
 seqLocAbs   : loc? LTRIAN AT binder RTRIAN

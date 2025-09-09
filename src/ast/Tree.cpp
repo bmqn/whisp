@@ -95,6 +95,20 @@ void SeqAbsNode::Accept(Visitor& visitor) const
 	SeqTermNode::Accept(visitor);
 }
 
+void SeqLocAppNode::Accept(Visitor& visitor) const
+{
+	Visit(*this, visitor);
+
+	SeqTermNode::Accept(visitor);
+}
+
+void SeqLocAbsNode::Accept(Visitor& visitor) const
+{
+	Visit(*this, visitor);
+
+	SeqTermNode::Accept(visitor);
+}
+
 void CondNode::Accept(Visitor& visitor) const
 {
 	Visit(*this, visitor);

@@ -57,8 +57,7 @@ private:
 		}
 		else if (ctx->seqVar())
 		{
-			auto seqVar = MakeOwner<SeqVarNode>(
-				ctx->seqVar()->ID()->getText());
+			auto seqVar = MakeOwner<SeqVarNode>(ctx->seqVar()->ID()->getText());
 
 			seqVar->Snippet = ctx->seqVar()->getText();
 
@@ -73,59 +72,6 @@ private:
 			}
 
 			PushNextTerm(std::move(seqVar));
-		}
-		else if (ctx->seqAbs())
-		{
-			auto seqAbs = MakeOwner<SeqAbsNode>();
-
-			seqAbs->Snippet = ctx->seqAbs()->getText();
-
-			if (ctx->seqTerm())
-			{
-				seqAbs->Next = PopNextTerm();
-			}
-
-			if (ctx->seqAbs()->binder())
-			{
-				seqAbs->Binder = MakeOwner<VarNode>(
-					ctx->seqAbs()->binder()->ID()->getText());
-
-				seqAbs->Binder->Snippet = ctx->seqAbs()->binder()->ID()->getText();
-			}
-
-			if (ctx->seqAbs()->absCast())
-			{
-				AbsCast cast;
-
-				if (auto type = GetType(ctx->seqAbs()->absCast()->ID()->getText()))
-				{
-					cast.Dest = *type;
-				}
-				else
-				{
-					std::string errorMessage = std::format("Invalid cast to type '{}'",
-						ctx->seqAbs()->absCast()->ID()->getText());
-					
-					m_Parser.notifyErrorListeners(
-						ctx->seqAbs()->absCast()->ID()->getSymbol(),
-						errorMessage,
-						nullptr);
-
-					throw antlr4::ParseCancellationException(errorMessage);
-				}
-
-				seqAbs->Cast = cast;
-			}
-
-			if (ctx->seqAbs()->loc())
-			{
-				seqAbs->Loc = MakeOwner<VarNode>(
-					ctx->seqAbs()->loc()->ID()->getText());
-
-				seqAbs->Loc->Snippet = ctx->seqAbs()->loc()->ID()->getText();
-			}
-
-			PushNextTerm(std::move(seqAbs));
 		}
 		else if (ctx->seqApp())
 		{
@@ -142,19 +88,21 @@ private:
 
 				if (ctx->seqApp()->lit()->INT())
 				{
-					seqAppLit->Lit = MakeOwner<Int32LitNode>(
-						std::stoi(ctx->seqApp()->lit()->INT()->getText()));
+					int32_t val = std::stoi(ctx->seqApp()->lit()->INT()->getText());
+
+					seqAppLit->Lit = MakeOwner<Int32LitNode>(val);
 
 					seqAppLit->Lit->Snippet = ctx->seqApp()->lit()->INT()->getText();
 				}
 				else if (ctx->seqApp()->lit()->STR())
 				{
 					std::string litStr = ctx->seqApp()->lit()->STR()->getText();
+
+					// Remove the quotes
 					litStr.erase(litStr.begin());
 					litStr.erase(litStr.end() - 1);
 
-					seqAppLit->Lit = MakeOwner<StrLitNode>(
-						litStr);
+					seqAppLit->Lit = MakeOwner<StrLitNode>(litStr);
 
 					seqAppLit->Lit->Snippet = ctx->seqApp()->lit()->STR()->getText();
 				}
@@ -169,7 +117,8 @@ private:
 					}
 					else
 					{
-						std::string errorMessage = std::format("Invalid cast to type '{}'",
+						std::string errorMessage = std::format(
+							"Invalid cast to type '{}'",
 							ctx->seqApp()->appCast()->ID()->getText());
 						
 						m_Parser.notifyErrorListeners(
@@ -185,8 +134,7 @@ private:
 
 				if (ctx->seqApp()->loc())
 				{
-					seqAppLit->Loc = MakeOwner<VarNode>(
-						ctx->seqApp()->loc()->ID()->getText());
+					seqAppLit->Loc = MakeOwner<VarNode>(ctx->seqApp()->loc()->ID()->getText());
 
 					seqAppLit->Loc->Snippet = ctx->seqApp()->loc()->ID()->getText();
 				}
@@ -214,7 +162,8 @@ private:
 					}
 					else
 					{
-						std::string errorMessage = std::format("Invalid cast to type '{}'",
+						std::string errorMessage = std::format(
+							"Invalid cast to type '{}'",
 							ctx->seqApp()->appCast()->ID()->getText());
 						
 						m_Parser.notifyErrorListeners(
@@ -235,14 +184,118 @@ private:
 
 				if (ctx->seqApp()->loc())
 				{
-					seqApp->Loc = MakeOwner<VarNode>(
-						ctx->seqApp()->loc()->ID()->getText());
+					seqApp->Loc = MakeOwner<VarNode>(ctx->seqApp()->loc()->ID()->getText());
 
 					seqApp->Loc->Snippet = ctx->seqApp()->loc()->ID()->getText();
 				}
 
 				PushNextTerm(std::move(seqApp));
 			}
+		}
+		else if (ctx->seqAbs())
+		{
+			auto seqAbs = MakeOwner<SeqAbsNode>();
+
+			seqAbs->Snippet = ctx->seqAbs()->getText();
+
+			if (ctx->seqTerm())
+			{
+				seqAbs->Next = PopNextTerm();
+			}
+
+			if (ctx->seqAbs()->binder())
+			{
+				seqAbs->Binder = MakeOwner<VarNode>(ctx->seqAbs()->binder()->ID()->getText());
+
+				seqAbs->Binder->Snippet = ctx->seqAbs()->binder()->ID()->getText();
+			}
+
+			if (ctx->seqAbs()->absCast())
+			{
+				AbsCast cast;
+
+				if (auto type = GetType(ctx->seqAbs()->absCast()->ID()->getText()))
+				{
+					cast.Dest = *type;
+				}
+				else
+				{
+					std::string errorMessage = std::format(
+						"Invalid cast to type '{}'",
+						ctx->seqAbs()->absCast()->ID()->getText());
+					
+					m_Parser.notifyErrorListeners(
+						ctx->seqAbs()->absCast()->ID()->getSymbol(),
+						errorMessage,
+						nullptr);
+
+					throw antlr4::ParseCancellationException(errorMessage);
+				}
+
+				seqAbs->Cast = cast;
+			}
+
+			if (ctx->seqAbs()->loc())
+			{
+				seqAbs->Loc = MakeOwner<VarNode>(ctx->seqAbs()->loc()->ID()->getText());
+
+				seqAbs->Loc->Snippet = ctx->seqAbs()->loc()->ID()->getText();
+			}
+
+			PushNextTerm(std::move(seqAbs));
+		
+		}
+		else if (ctx->seqLocApp())
+		{
+			auto seqLocApp = MakeOwner<SeqLocAppNode>();
+
+			seqLocApp->Snippet = ctx->seqLocApp()->getText();
+
+			if (ctx->seqTerm())
+			{
+				seqLocApp->Next = PopNextTerm();
+			}
+
+			if (ctx->seqLocApp()->var())
+			{
+				seqLocApp->Arg = MakeOwner<VarNode>(ctx->seqLocApp()->var()->ID()->getText());
+			}
+
+			if (ctx->seqLocApp()->loc())
+			{
+				seqLocApp->Loc = MakeOwner<VarNode>(ctx->seqLocApp()->loc()->ID()->getText());
+
+				seqLocApp->Loc->Snippet = ctx->seqApp()->loc()->ID()->getText();
+			}
+
+			PushNextTerm(std::move(seqLocApp));
+		}
+		else if (ctx->seqLocAbs())
+		{
+			auto seqLocAbs = MakeOwner<SeqLocAbsNode>();
+
+			seqLocAbs->Snippet = ctx->seqLocAbs()->getText();
+
+			if (ctx->seqTerm())
+			{
+				seqLocAbs->Next = PopNextTerm();
+			}
+
+			if (ctx->seqLocAbs()->binder())
+			{
+				seqLocAbs->Binder = MakeOwner<VarNode>(ctx->seqLocAbs()->binder()->ID()->getText());
+
+				seqLocAbs->Binder->Snippet = ctx->seqLocAbs()->binder()->ID()->getText();
+			}
+
+			if (ctx->seqLocAbs()->loc())
+			{
+				seqLocAbs->Loc = MakeOwner<VarNode>(ctx->seqLocAbs()->loc()->ID()->getText());
+
+				seqLocAbs->Loc->Snippet = ctx->seqLocAbs()->loc()->ID()->getText();
+			}
+
+			PushNextTerm(std::move(seqLocAbs));
 		}
 		else if (ctx->seqConds())
 		{
@@ -281,19 +334,21 @@ private:
 					{
 						if (condCtx->lit()->INT())
 						{
-							currentCond->Matcher = MakeOwner<Int32LitNode>(
-								std::stoi(condCtx->lit()->INT()->getText()));
+							int32_t val = std::stoi(condCtx->lit()->INT()->getText());
+
+							currentCond->Matcher = MakeOwner<Int32LitNode>(val);
 
 							currentCond->Matcher->Snippet = condCtx->lit()->INT()->getText();
 						}
 						else if (condCtx->lit()->STR())
 						{
 							std::string litStr = condCtx->lit()->STR()->getText();
+
+							// Remove the quotes
 							litStr.erase(litStr.begin());
 							litStr.erase(litStr.end() - 1);
 
-							currentCond->Matcher = MakeOwner<StrLitNode>(
-								litStr);
+							currentCond->Matcher = MakeOwner<StrLitNode>(litStr);
 
 							currentCond->Matcher->Snippet = condCtx->lit()->STR()->getText();
 						}
@@ -310,8 +365,7 @@ private:
 
 			if (ctx->seqConds()->loc())
 			{
-				seqConds->Loc = MakeOwner<VarNode>(
-					ctx->seqConds()->loc()->ID()->getText());
+				seqConds->Loc = MakeOwner<VarNode>(ctx->seqConds()->loc()->ID()->getText());
 
 				seqConds->Loc->Snippet = ctx->seqConds()->loc()->ID()->getText();
 			}

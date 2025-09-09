@@ -74,10 +74,10 @@ add_link_options(
 else()
 
 add_compile_options(
-	-fstandalone-debug
 	$<$<CONFIG:Debug>:-O0>
 	$<$<CONFIG:Debug>:-g>
 	$<$<CONFIG:Release>:-O3>
+	$<$<CONFIG:Release>:-g>
 	$<$<CONFIG:Distribution>:-O3>
 )
 add_link_options(

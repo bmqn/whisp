@@ -1,5 +1,5 @@
 
-// Generated from fmcSGrammar.g4 by ANTLR 4.13.2
+// Generated from src/antlr/fmcSGrammar.g4 by ANTLR 4.13.2
 
 #pragma once
 
@@ -32,9 +32,6 @@ public:
   virtual void enterSeqApp(fmcSGrammar::SeqAppContext *ctx) = 0;
   virtual void exitSeqApp(fmcSGrammar::SeqAppContext *ctx) = 0;
 
-  virtual void enterSeqLocApp(fmcSGrammar::SeqLocAppContext *ctx) = 0;
-  virtual void exitSeqLocApp(fmcSGrammar::SeqLocAppContext *ctx) = 0;
-
   virtual void enterBinder(fmcSGrammar::BinderContext *ctx) = 0;
   virtual void exitBinder(fmcSGrammar::BinderContext *ctx) = 0;
 
@@ -43,6 +40,9 @@ public:
 
   virtual void enterSeqAbs(fmcSGrammar::SeqAbsContext *ctx) = 0;
   virtual void exitSeqAbs(fmcSGrammar::SeqAbsContext *ctx) = 0;
+
+  virtual void enterSeqLocApp(fmcSGrammar::SeqLocAppContext *ctx) = 0;
+  virtual void exitSeqLocApp(fmcSGrammar::SeqLocAppContext *ctx) = 0;
 
   virtual void enterSeqLocAbs(fmcSGrammar::SeqLocAbsContext *ctx) = 0;
   virtual void exitSeqLocAbs(fmcSGrammar::SeqLocAbsContext *ctx) = 0;

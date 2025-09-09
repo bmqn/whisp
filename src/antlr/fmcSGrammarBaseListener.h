@@ -1,5 +1,5 @@
 
-// Generated from fmcSGrammar.g4 by ANTLR 4.13.2
+// Generated from src/antlr/fmcSGrammar.g4 by ANTLR 4.13.2
 
 #pragma once
 
@@ -34,9 +34,6 @@ public:
   virtual void enterSeqApp(fmcSGrammar::SeqAppContext * /*ctx*/) override { }
   virtual void exitSeqApp(fmcSGrammar::SeqAppContext * /*ctx*/) override { }
 
-  virtual void enterSeqLocApp(fmcSGrammar::SeqLocAppContext * /*ctx*/) override { }
-  virtual void exitSeqLocApp(fmcSGrammar::SeqLocAppContext * /*ctx*/) override { }
-
   virtual void enterBinder(fmcSGrammar::BinderContext * /*ctx*/) override { }
   virtual void exitBinder(fmcSGrammar::BinderContext * /*ctx*/) override { }
 
@@ -45,6 +42,9 @@ public:
 
   virtual void enterSeqAbs(fmcSGrammar::SeqAbsContext * /*ctx*/) override { }
   virtual void exitSeqAbs(fmcSGrammar::SeqAbsContext * /*ctx*/) override { }
+
+  virtual void enterSeqLocApp(fmcSGrammar::SeqLocAppContext * /*ctx*/) override { }
+  virtual void exitSeqLocApp(fmcSGrammar::SeqLocAppContext * /*ctx*/) override { }
 
   virtual void enterSeqLocAbs(fmcSGrammar::SeqLocAbsContext * /*ctx*/) override { }
   virtual void exitSeqLocAbs(fmcSGrammar::SeqLocAbsContext * /*ctx*/) override { }

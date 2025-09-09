@@ -88,9 +88,18 @@ void Writer::Visit(const ast::SeqVarNode& node)
 		}
 		else if (closee.Is<StrHandle>())
 		{
-			if (auto string = GetString(closee.As<StrHandle>()))
+			StrHandle strHandle = closee.As<StrHandle>();
+			if (auto string = GetString(strHandle))
 			{
 				*m_Ss << *string;
+			}
+			else
+			{
+				*m_Ss << "(";
+				*m_Ss << strHandle.offset;
+				*m_Ss << ", ";
+				*m_Ss << strHandle.length;
+				*m_Ss << ")";
 			}
 		}
 	}

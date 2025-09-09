@@ -204,6 +204,34 @@ struct SeqAbsNode : public SeqTermNode
 	std::optional<AbsCast> Cast;
 };
 
+struct SeqLocAppNode : public SeqTermNode
+{
+	SeqLocAppNode() = default;
+	SeqLocAppNode(Owner_t<VarNode> arg, Owner_t<VarNode> loc = nullptr)
+		: Arg(std::move(arg))
+		, Loc(std::move(loc))
+	{}
+
+	virtual void Accept(Visitor& visitor) const override;
+
+	Owner_t<VarNode> Arg;
+	Owner_t<VarNode> Loc;
+};
+
+struct SeqLocAbsNode : public SeqTermNode
+{
+	SeqLocAbsNode() = default;
+	SeqLocAbsNode(Owner_t<VarNode> binder, Owner_t<VarNode> loc = nullptr)
+		: Binder(std::move(binder))
+		, Loc(std::move(loc))
+	{}
+
+	virtual void Accept(Visitor& visitor) const override;
+
+	Owner_t<VarNode> Binder;
+	Owner_t<VarNode> Loc;
+};
+
 struct SeqCondsNode : public SeqTermNode
 {
 	SeqCondsNode() = default;

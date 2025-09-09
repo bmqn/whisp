@@ -3,6 +3,9 @@ Notes on typing
 ----------------------------------------------------
 
 <@a : x> = <@a> . a<x>
+x, y, z : f = [x] . [y] . [z] . f
+
+----------------------------------------------------
 
 x : T
 a : #T
@@ -47,6 +50,15 @@ If s : ~T#, then
 s<...> or s(...) will bind the value at s, but not pop it
 s++<...> or s++(...) will bind the value at s, move the ptr forward, but not pop it
 
+Not sure how we'd track this though.
+What stores this ptr that gets incremented?
+Can they interact with eachother? i.e. pop, then read, then pop etc.
+
+I think a better solution is to encode a location offset, somehow?
+
+s!5<...> will bind the value at 5 cells back from the start
+s!l<...> will bind the value at l cells back from the start
+
 ----------------------------------------------------
 
 s : Char#
@@ -58,6 +70,8 @@ print  : Char# -> Nil
 f      = s(x : 0 -> *, [x]out . f)
 print  = <@s> . f
 
+s(x : ...) pops from s and binds in x for use in cases
+
 ----------------------------------------------------
 
 s : Char#
@@ -68,6 +82,8 @@ print  : ~Char# -> Nil
 
 f      = s++(x : 0 -> *, [x]out . f)
 print  = <~@s> . f
+
+s++(x : ...) reads from , moves the ptr forward, and binds in x for use in cases
 
 ----------------------------------------------------
 Notes on pattern matching
@@ -83,3 +99,24 @@ The matching looks like
 
 head cons . [h] . [t] = [h];
 head nil = [nil];
+
+----------------------------------------------------
+
+Define type str
+
+str : loc -> u64
+
+A string is a loc that points to data, and a u64 length.
+
+strlen : str -> u64
+strlen : (loc -> u64) -> u64
+strlen = <@p> . <l> . [l]
+
+str . strlen : u64
+
+Define function print
+
+print : str -> nil
+print : (loc -> u64) -> nil
+print = <@p> . l{0 -> *, p<x> . [x]out . [l] . [-1] . + . [#p] . [-1] . + . print}
+
