@@ -326,7 +326,8 @@ private:
 	virtual void Visit(const ast::SeqVarNode& node) override
 	{
 		// Don't substitute if the argument has a next term
-		if (node.Next)
+		// TODO: use a resolver for this
+		if (node.Next && !dynamic_cast<ast::SeqNilNode*>(node.Next.get()))
 		{
 			return;
 		}

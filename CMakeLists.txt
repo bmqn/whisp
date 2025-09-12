@@ -116,10 +116,12 @@ set(PRJ_SRC_SHARED
 	"${PRJ_SRC_DIR}/ast/TreeBuilder.hpp"
 	"${PRJ_SRC_DIR}/ast/Visitor.hpp"
 	"${PRJ_SRC_DIR}/ast/Printer.hpp"
+	"${PRJ_SRC_DIR}/compile/Compiler.hpp"
 	"${PRJ_SRC_DIR}/interp/Machine.hpp"
 	"${PRJ_SRC_DIR}/interp/Machine.cpp"
 	"${PRJ_SRC_DIR}/interp/Writer.hpp"
 	"${PRJ_SRC_DIR}/interp/Writer.cpp"
+	"${PRJ_SRC_DIR}/vm/Vm.hpp"
 	"${PRJ_SRC_DIR}/antlr/fmcSGrammar.h"
 	"${PRJ_SRC_DIR}/antlr/fmcSGrammar.cpp"
 	"${PRJ_SRC_DIR}/antlr/fmcSGrammarBaseListener.h"
@@ -184,6 +186,8 @@ target_compile_options(fmcS
 		-Wall
 		-Wextra
 		-Wpedantic
+		-Wno-unused-parameter
+		-Wno-switch
 )
 endif()
 target_compile_definitions(fmcS

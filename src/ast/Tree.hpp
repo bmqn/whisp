@@ -26,6 +26,7 @@ class Visitor;
 using NodePtr_t = Node*;
 using LitPtr_t = LitNode*;
 using TermPtr_t = SeqTermNode*;
+using AppPtr_t = SeqAppNode*;
 
 template<typename WrappedNode>
 using Owner_t = std::unique_ptr<WrappedNode>;

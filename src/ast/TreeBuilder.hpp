@@ -61,14 +61,20 @@ private:
 
 			seqVar->Snippet = ctx->seqVar()->getText();
 
-			if (ctx->seqVar()->EXCLAM())
-			{
-				seqVar->Strict = true;
-			}
-
 			if (ctx->seqTerm())
 			{
 				seqVar->Next = PopNextTerm();
+			}
+			else
+			{
+				auto seqNil = MakeOwner<SeqNilNode>();
+
+				seqVar->Next = std::move(seqNil);
+			}
+
+			if (ctx->seqVar()->EXCLAM())
+			{
+				seqVar->Strict = true;
 			}
 
 			PushNextTerm(std::move(seqVar));
@@ -84,6 +90,12 @@ private:
 				if (ctx->seqTerm())
 				{
 					seqAppLit->Next = PopNextTerm();
+				}
+				else
+				{
+					auto seqNil = MakeOwner<SeqNilNode>();
+
+					seqAppLit->Next = std::move(seqNil);
 				}
 
 				if (ctx->seqApp()->lit()->INT())
@@ -151,6 +163,12 @@ private:
 				{
 					seqApp->Next = PopNextTerm();
 				}
+				else
+				{
+					auto seqNil = MakeOwner<SeqNilNode>();
+
+					seqApp->Next = std::move(seqNil);
+				}
 
 				if (ctx->seqApp()->appCast())
 				{
@@ -201,6 +219,12 @@ private:
 			if (ctx->seqTerm())
 			{
 				seqAbs->Next = PopNextTerm();
+			}
+			else
+			{
+				auto seqNil = MakeOwner<SeqNilNode>();
+
+				seqAbs->Next = std::move(seqNil);
 			}
 
 			if (ctx->seqAbs()->binder())
@@ -255,6 +279,12 @@ private:
 			{
 				seqLocApp->Next = PopNextTerm();
 			}
+			else
+			{
+				auto seqNil = MakeOwner<SeqNilNode>();
+
+				seqLocApp->Next = std::move(seqNil);
+			}
 
 			if (ctx->seqLocApp()->var())
 			{
@@ -279,6 +309,12 @@ private:
 			if (ctx->seqTerm())
 			{
 				seqLocAbs->Next = PopNextTerm();
+			}
+			else
+			{
+				auto seqNil = MakeOwner<SeqNilNode>();
+
+				seqLocAbs->Next = std::move(seqNil);
 			}
 
 			if (ctx->seqLocAbs()->binder())
@@ -306,6 +342,12 @@ private:
 			if (ctx->seqTerm())
 			{
 				seqConds->Next = PopNextTerm();
+			}
+			else
+			{
+				auto seqNil = MakeOwner<SeqNilNode>();
+
+				seqConds->Next = std::move(seqNil);
 			}
 
 			if (ctx->seqConds()->seqTerm())
@@ -378,6 +420,17 @@ private:
 
 			seqOp->Snippet = ctx->seqOp()->getText();
 
+			if (ctx->seqTerm())
+			{
+				seqOp->Next = PopNextTerm();
+			}
+			else
+			{
+				auto seqNil = MakeOwner<SeqNilNode>();
+
+				seqOp->Next = std::move(seqNil);
+			}
+
 			if (ctx->seqOp()->PLUS())
 			{
 				seqOp->Op = Operation::Plus;
@@ -397,11 +450,6 @@ private:
 			else if (ctx->seqOp()->bitSftR())
 			{
 				seqOp->Op = Operation::BitShiftRight;
-			}
-
-			if (ctx->seqTerm())
-			{
-				seqOp->Next = PopNextTerm();
 			}
 
 			PushNextTerm(std::move(seqOp));
