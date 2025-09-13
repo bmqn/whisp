@@ -69,54 +69,65 @@ void DebugNoNode(std::format_string<Args...> fmt, Args&&... args)
 	std::cout << std::endl;
 }
 
-using TermPtr_t = uintptr_t;
 using Loc_t = uintptr_t;
 using S32_t = int32_t;
 using U32_t = uint32_t;
 using S64_t = int64_t;
 using U64_t = uint64_t;
 
+enum class CompiledType
+{
+	Unit,
+	Loc,		// This is a location
+	U32,		// This is an unsigned 4 byte integer
+	S32,		// This is a signed 4 byte integer
+	U64,		// This is an unsigned 8 byte integer
+	S64,		// This is a signed 8 byte integer
+	Closure		// This is a closure
+};
+
+constexpr std::string_view GetTypeName(CompiledType type)
+{
+	switch (type)
+	{
+		case CompiledType::Unit:
+			return "Unit";
+		case CompiledType::Loc:
+			return "Loc";
+		case CompiledType::U32:
+			return "U32";
+		case CompiledType::S32:
+			return "S32";
+		case CompiledType::U64:
+			return "U64";
+		case CompiledType::S64:
+			return "S64";
+		case CompiledType::Closure:
+			return "Closure";
+	}
+
+	return "(unknown)";
+}
+
 struct CompiledClosee
 {
-	enum Kind
+	static constexpr size_t GetSize(CompiledType type)
 	{
-		Unknown,
-		TermPtr,	// This is an instruction
-		Loc,		// This is a location
-		U32,		// This is an unsigned 4 byte integer
-		S32,		// This is a signed 4 byte integer
-		U64,		// This is an unsigned 8 byte integer
-		S64,		// This is a signed 8 byte integer
-	};
-
-	static constexpr size_t GetSize(Kind kind)
-	{
-		switch (kind)
+		switch (type)
 		{
-			case TermPtr:
-				return sizeof(TermPtr_t);
-			case Loc:
+			case CompiledType::Loc:
 				return sizeof(Loc_t);
-			case U32:
-			case S32:
-				return 4;
-			case U64:
-			case S64:
-				return 8;
+			case CompiledType::U32:
+				return sizeof(U32_t);
+			case CompiledType::S32:
+				return sizeof(S32_t);
+			case CompiledType::U64:
+				return sizeof(U64_t);
+			case CompiledType::S64:
+				return sizeof(S64_t);
 			default:
 				return 0;
 		}
-	}
-
-	static CompiledClosee FromTermPtr(TermPtr_t termPtr)
-	{
-		static_assert(sizeof(termPtr) <= sizeof(CompiledClosee));
-
-		CompiledClosee closee;
-		closee.kind = Kind::TermPtr;
-		std::memcpy(closee.data, &termPtr, sizeof(termPtr));
-
-		return closee;
 	}
 
 	static CompiledClosee FromLoc(Loc_t loc)
@@ -124,7 +135,7 @@ struct CompiledClosee
 		static_assert(sizeof(loc) <= sizeof(CompiledClosee));
 
 		CompiledClosee closee;
-		closee.kind = Kind::Loc;
+		closee.type = CompiledType::Loc;
 		std::memcpy(closee.data, &loc, sizeof(loc));
 
 		return closee;
@@ -135,7 +146,7 @@ struct CompiledClosee
 		static_assert(sizeof(val) <= sizeof(CompiledClosee));
 
 		CompiledClosee closee;
-		closee.kind = Kind::S32;
+		closee.type = CompiledType::S32;
 		std::memcpy(closee.data, &val, sizeof(val));
 
 		return closee;
@@ -157,8 +168,8 @@ struct CompiledClosee
 		return As<uintptr_t>();
 	}
 
-	Kind kind = Kind::Unknown;
-	uint8_t data[8] = {0};
+	CompiledType type = CompiledType::Unit;
+	uint8_t data[8] = { 0 };
 };
 
 class LitResolver : public ast::Visitor
@@ -238,37 +249,41 @@ struct CompiledProgram
 struct CompilerVariableInfo
 {
 	std::string name;
-	uint32_t localOffset;	// local offset of the variable
+	uint32_t localOffset = 0;	// local offset of the variable
 
-	bool isRecaptured;		// is this variable re-captured from the parent closure
-	uint32_t recaptureSlot;	// re-capture slot of the variable in parent closure
+	bool isRecaptured = false;	// is this variable re-captured from the parent closure
+	uint32_t recaptureSlot = 0;	// re-capture slot of the variable in parent closure
 
-	bool isCaptured;		// is this variable captured in this closure
-	uint32_t captureSlot;	// capture slot of the variable in this closure
+	bool isCaptured = false;	// is this variable captured in this closure
+	uint32_t captureSlot = 0;	// capture slot of the variable in this closure
+
+	CompiledType type = CompiledType::Unit;
 };
 
 struct CompilerEnvironment
 {
 	uint32_t instructionBase = 0;
 
-	std::vector<CompilerVariableInfo> *variableStack;
+	std::shared_ptr<std::vector<CompilerVariableInfo>> variableStack = nullptr;
 	std::set<std::string> variablesAdded;
 	uint32_t variableBase = 0;		// how far into the variable stack we are
 	uint32_t variableOffset = 0;	// how far past the variable base we are
 
 	std::set<std::string> captureVariablesAvailable;
 	uint32_t captureSlot = 0;
+
+	std::shared_ptr<std::vector<CompiledType>> typeStack = nullptr;
 };
 
 class Compiler : public ast::Visitor
 {
 public:
-	static Compiler Compile(ast::NodePtr_t node);
+	static Compiler Create(CompilerEnvironment&& env = {});
 
-	CompiledProgram GetProgram() const;
+	CompiledProgram Compile(ast::Node& node);
 
 private:
-	Compiler(ast::NodePtr_t node, CompilerEnvironment& env);
+	Compiler(CompilerEnvironment&& env);
 
 private:
 	virtual void Visit(const ast::SeqTermNode& node) override;
@@ -285,32 +300,43 @@ private:
 private:
 	void OmitInstruction(CompiledInstruction::Opcode opcode, CompiledInstruction::Operand operand);
 
-	uint32_t AddLiteral(const ast::LitNode& lit);
+	std::pair<uint32_t, CompiledType> AddLiteral(const ast::LitNode& lit);
 	uint32_t AddClosure(const ast::SeqAppNode& app);
 
-	std::pair<uint32_t, bool> ResolveVariable(const std::string& name);
+	std::tuple<uint32_t, bool, CompiledType> ResolveVariable(const std::string& name);
 
 private:
-	ast::NodePtr_t m_Node;
-	CompilerEnvironment& m_Env;
-
+	CompilerEnvironment m_Env;
 	CompiledProgram m_Program;
 };
 
-Compiler Compiler::Compile(ast::NodePtr_t node)
+Compiler Compiler::Create(CompilerEnvironment&& env)
 {
-	compile::CompilerEnvironment env;
+	if (!env.variableStack)
+	{
+		env.variableStack = std::make_shared<decltype(env.variableStack)::element_type>();
+	}
+	if (!env.typeStack)
+	{
+		env.typeStack = std::make_shared<decltype(env.typeStack)::element_type>();
+	}
 
-	std::vector<compile::CompilerVariableInfo> variableStack;
-	env.variableStack = &variableStack;
-
-	Compiler compiler(node, env);
-
-	return compiler;
+	return Compiler(std::move(env));
 }
 
-CompiledProgram Compiler::GetProgram() const
+CompiledProgram Compiler::Compile(ast::Node& node)
 {
+	node.Accept(*this);
+
+	// if (m_Env.typeStack->empty())
+	// {
+	// 	Unimplemented("Program didn't return a value", node);
+	// }
+	// else if (m_Env.typeStack->size() > 1)
+	// {
+	// 	Unimplemented("Program returned too many values", node);
+	// }
+
 	return m_Program;
 }
 
@@ -434,11 +460,9 @@ CompiledProgram Compiler::GetProgram() const
 // 	}
 // }
 
-Compiler::Compiler(ast::NodePtr_t node, CompilerEnvironment& env)
-	: m_Node(node)
-	, m_Env(env)
+Compiler::Compiler(CompilerEnvironment&& env)
+	: m_Env(std::move(env))
 {
-	m_Node->Accept(*this);
 }
 
 void Compiler::Visit(const ast::SeqTermNode& node)
@@ -459,7 +483,13 @@ void Compiler::Visit(const ast::SeqVarNode& node)
 	Debug("Visiting SeqVarNode", node);
 
 	std::string name = node.Name;
-	auto [offset, isCapture] = ResolveVariable(name);
+	auto [offset, isCapture, type] = ResolveVariable(name);
+
+	if (type != CompiledType::Closure)
+	{
+		Unimplemented("Variable '{}' of type '{}' cannot be called", node, name, GetTypeName(type));
+		return;
+	}
 
 	CompiledInstruction::Opcode opcode = CompiledInstruction::NoOp;
 	CompiledInstruction::Operand operand = 0;
@@ -496,18 +526,20 @@ void Compiler::Visit(const ast::SeqAppNode& node)
 	if (auto seqVarNode = dynamic_cast<ast::SeqVarNode*>(node.Arg.get()))
 	{
 		std::string name = seqVarNode->Name;
-		auto [offset, isCapture] = ResolveVariable(name);
+		auto [offset, isCapture, type] = ResolveVariable(name);
 
 		if (isCapture)
 		{
 			opcode = CompiledInstruction::PushVariableCapture;
 			operand = offset;
+			m_Env.typeStack->emplace_back(type);
 			Debug("Pushing variable from slot {}", node, offset);
 		}
 		else
 		{
 			opcode = CompiledInstruction::PushVariable;
 			operand = offset;
+			m_Env.typeStack->emplace_back(type);
 			Debug("Pushing variable from {}", node, offset);
 		}
 	}
@@ -516,6 +548,7 @@ void Compiler::Visit(const ast::SeqAppNode& node)
 		uint32_t index = AddClosure(node);
 		opcode = CompiledInstruction::PushClosure;
 		operand = index;
+		m_Env.typeStack->emplace_back(CompiledType::Closure);
 		Debug("Pushing closure from slot {}", node, index);
 	}
 
@@ -531,9 +564,10 @@ void Compiler::Visit(const ast::SeqAppLitNode& node)
 {
 	Debug("Visiting SeqAppLitNode", node);
 
-	uint32_t index = AddLiteral(*node.Lit);
+	auto [index, type] = AddLiteral(*node.Lit);
 	CompiledInstruction::Opcode opcode = CompiledInstruction::PushLiteral;
 	CompiledInstruction::Operand operand = index;
+	m_Env.typeStack->emplace_back(type);
 	Debug("Pushing literal from slot {}", node, index);
 	OmitInstruction(opcode, operand);
 
@@ -551,8 +585,21 @@ void Compiler::Visit(const ast::SeqAbsNode& node)
 	uint32_t localOffset = m_Env.variableOffset;
 	++m_Env.variableOffset;
 
+	CompiledType type;
+	if (m_Env.typeStack->empty())
+	{
+		Unimplemented("Could not determine type of bound variable '{}'", node, name);
+		return;
+	}
+	type = m_Env.typeStack->back();
+	m_Env.typeStack->pop_back();
+
 	Debug("Binding {} in {}", node, name, localOffset);
-	m_Env.variableStack->emplace_back(name, localOffset);
+	CompilerVariableInfo variable;
+	variable.name = name;
+	variable.localOffset = localOffset;
+	variable.type = type;
+	m_Env.variableStack->emplace_back(variable);
 	m_Env.variablesAdded.emplace(name);
 
 	CompiledInstruction::Opcode opcode = CompiledInstruction::BindVariable;
@@ -614,12 +661,12 @@ void Compiler::OmitInstruction(CompiledInstruction::Opcode opcode, CompiledInstr
 	}
 }
 
-uint32_t Compiler::AddLiteral(const ast::LitNode& lit)
+std::pair<uint32_t, CompiledType> Compiler::AddLiteral(const ast::LitNode& lit)
 {
 	CompiledClosee literal = LitResolver(lit).GetClosee();
 	size_t index = m_Program.literals.size();
 	m_Program.literals.emplace_back(literal);
-	return static_cast<uint32_t>(index);
+	return { static_cast<uint32_t>(index), literal.type };
 }
 
 uint32_t Compiler::AddClosure(const ast::SeqAppNode& app)
@@ -634,8 +681,9 @@ uint32_t Compiler::AddClosure(const ast::SeqAppNode& app)
 	newEnv.variableOffset = 0;
 	newEnv.captureVariablesAvailable = m_Env.variablesAdded;
 	newEnv.captureSlot = 0;
-
-	Compiler compiler(app.Arg.get(), newEnv);
+	newEnv.typeStack = m_Env.typeStack;
+	Compiler compiler = Compiler::Create(std::move(newEnv));
+	compiler.Compile(*app.Arg);
 
 	Debug("Finished compiling closure: literals = {}, closures = {}", app, compiler.m_Program.literals.size(), compiler.m_Program.closures.size());
 
@@ -697,7 +745,7 @@ uint32_t Compiler::AddClosure(const ast::SeqAppNode& app)
 	return static_cast<uint32_t>(closureIndex);
 }
 
-std::pair<uint32_t, bool> Compiler::ResolveVariable(const std::string& name)
+std::tuple<uint32_t, bool, CompiledType> Compiler::ResolveVariable(const std::string& name)
 {
 	DebugNoNode("Searching for variable '{}': variable base = {}", name, m_Env.variableBase);
 
@@ -709,39 +757,44 @@ std::pair<uint32_t, bool> Compiler::ResolveVariable(const std::string& name)
 		{
 			uint32_t offset = 0;
 			bool isCapture = false;
+			CompiledType type = CompiledType::Unit;
 			DebugNoNode("Found variable '{}' at index {}", name, i);
 			if (i < static_cast<int>(m_Env.variableBase) && m_Env.captureVariablesAvailable.count(variable.name) == 0)
 			{
 				DebugNoNode("(Re-Captured) variable '{}' to push is at index {}, capture slot = {}", name, i, m_Env.captureSlot);
 				offset = m_Env.captureSlot;
 				++m_Env.captureSlot;
+				isCapture = true;
+				type = variable.type;
 				variable.isRecaptured = true;
 				variable.recaptureSlot = variable.captureSlot;
 				variable.isCaptured = true;
 				variable.captureSlot = offset;
-				isCapture = true;
 			}
 			else if (i < static_cast<int>(m_Env.variableBase))
 			{
 				DebugNoNode("(Captured) variable '{}' to push is at index {}, capture slot = {}", name, i, m_Env.captureSlot);
 				offset = m_Env.captureSlot;
 				++m_Env.captureSlot;
+				isCapture = true;
+				type = variable.type;
 				variable.isCaptured = true;
 				variable.captureSlot = offset;
-				isCapture = true;
 			}
 			else
 			{
 				DebugNoNode("Variable '{}' to push is at index {}, local offset = {}", name, i, variable.localOffset);
 				offset = variable.localOffset;
+				isCapture = false;
+				type = variable.type;
 			}
-			return {offset, isCapture};
+			return { offset, isCapture, type };
 		}
 	}
 
 	UnimplementedNoNode("Could not find variable {}", name);
 
-	return {0, false};
+	return { 0, false, CompiledType::Unit };
 }
 
 } // namespace compile

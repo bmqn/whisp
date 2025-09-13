@@ -28,13 +28,13 @@ int main(int argc, char** argv)
 	// ast::Owner_t<ast::SeqTermNode> term = ast::TreeBuilder::Parse(
 	// 	"[1] . [2] . [3] . <x> . <y> . <z> . [4] . [5] . [<y> . [y]out . <p> . [[y]out . [z]out . [p]out] . <g> . [z] . [x] . g] . <f> . f . [x]out");
 	// ast::Owner_t<ast::SeqTermNode> term = ast::TreeBuilder::Parse(
-	// 	"[69] . <x> . [[5] . [x]] . <f> . [1] . [<x> . [f]] . <g> . g . <h> . h");
+	// 	"[69] . <x> . [[5] . [x]] . <f> . [1] . [<x> . [f]] . <g> . g . <h> . h . h");
 	ast::Owner_t<ast::SeqTermNode> term = ast::TreeBuilder::Parse(
-		"[10] . <a> . [20] . <b> . [[a] . [b]] . <makePair> . makePair");
+		"[out] . <a> . [69]a");
 
-	compile::Compiler compiler = compile::Compiler::Compile(term.get());
-	compile::CompiledProgram program = compiler.GetProgram();
-	vm::Vm vm;
+	compile::Compiler compiler = compile::Compiler::Create();
+	compile::CompiledProgram program = compiler.Compile(*term);
+	vm::Vm vm = vm::Vm();
 	vm::Value result = vm.Run(&program);
 
 	std::cout << result << std::endl;
